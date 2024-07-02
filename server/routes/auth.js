@@ -1,0 +1,105 @@
+import express from "express"
+import mongoose from "mongoose"
+import jsonwebtoken from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
+import axios from "axios"
+import 'dotenv/config'
+import { ObjectId } from "mongodb"
+
+const router = express.Router()
+
+mongoose.connect(process.env.ATLAS_URI)
+.then(() => {
+  console.log('Connected to MongoDB')
+})
+.catch((err) => {
+  console.error('Error connecting to MongoDB', err)
+})
+
+const userSchema = new mongoose.Schema({
+  username: String,
+  email: String,
+  password: String
+})
+
+const User = mongoose.model('User', userSchema)
+
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization']
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
+  jsonwebtoken.verify(token, 'secret', (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+    req.user = decoded
+    next()
+  })
+}
+
+router.post('/verifyCaptcha', async (req, res) => {
+  const { captchaValue } = req.body
+  const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
+  res.send(data)
+})
+
+router.post("/register", async (req, res) => {
+  console.log(req.body)
+  try {
+    const existingUser = await User.findOne({ email: req.body.email })
+    console.log(existingUser)
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' })
+    }
+
+    const newUser = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password
+    })
+
+    await newUser.save()
+    return res.status(200).json({ message: "User registered successfully", status: "ok" })
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+router.post("/login", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' })
+    }
+
+    const passwordMatch = bcrypt.compareSync(req.body.password, user.password)
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' })
+    }
+
+    const token = jsonwebtoken.sign({ email: user.email }, 'secret', { expiresIn: "30 days" })
+    res.status(200).json({ token })
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+router.get("/getUser", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email })
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+    res.status(200).json({ user })
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error'})
+  }
+})
+
+router.post("/logout", async (req, res) => {
+
+})
+
+export default router

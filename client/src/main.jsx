@@ -5,10 +5,12 @@ import App from "./App";
 import GameSearch from "./pages/GameSearch"
 import "./index.css";
 import GameDetails from "./pages/GameDetails";
-import Gallery from "./pages/Gallery";
 import GamesByCompany from "./pages/GamesByCompany";
 import GamesBySeries from "./pages/GamesBySeries"
 import SearchResults from "./pages/SearchResults";
+import Test from "./pages/Test";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const router = createBrowserRouter([
   {
@@ -36,8 +38,16 @@ const router = createBrowserRouter([
     element: <GameDetails />
   },
   {
-    path: "/gallery/:gameId",
-    element: <Gallery />
+    path: "/test",
+    element: <Test />
+  },
+  {
+    path: "/register",
+    element: <Register />
+  },
+  {
+    path: "/login",
+    element: <Login />
   }
 ]);
 

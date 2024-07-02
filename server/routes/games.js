@@ -1,13 +1,10 @@
 import express from "express";
+import 'dotenv/config'
 
 // Library for fetch requests
 import fetch from "node-fetch";
 
 const router = express.Router();
-
-const client_id = '9m587pfl3gw9930l6h59z9kn860u9s'
-const client_secret = 'n1ai27se55k8eo2i3af08mptl6ykw0'
-const access_token = 'Bearer 73vgz217cyfl6iuoj05uziig7ch87f'
 
 router.get('/search', async (req, res) => {
   try {
@@ -16,8 +13,8 @@ router.get('/search', async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           fields cover.*,name,first_release_date; 
@@ -40,8 +37,8 @@ router.get("/expandedSearch", async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           query games/count "Number of Results" {
@@ -93,8 +90,8 @@ router.get("/", async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           query games/count "Number of Matches" {
@@ -125,8 +122,8 @@ router.get("/:id", async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           fields artworks.image_id,collections,collections.name,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary,videos.*; 
@@ -142,15 +139,6 @@ router.get("/:id", async (req, res) => {
   }
 })
 
-router.get("games/companies/:id", async (req, res) => {
-  try {
-
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
-
 router.get("/company/:id", async (req, res) => {
   try {
     const response = await fetch("https://api.igdb.com/v4/companies",
@@ -158,8 +146,8 @@ router.get("/company/:id", async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           fields description,name;
@@ -182,8 +170,8 @@ router.get("/series/:seriesId", async (req, res) => {
         method:'POST',
         headers: {
           'Accept': 'application/json',
-          'Client-ID': client_id,
-          'Authorization': access_token
+          'Client-ID': process.env.API_CLIENT_ID,
+          'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
           fields *,games.name,games.cover.image_id;
@@ -199,26 +187,5 @@ router.get("/series/:seriesId", async (req, res) => {
   }
 })
 
-router.get("/:id/gallery", async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/games", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Client-ID': client_id,
-        'Authorization': access_token
-      },
-      body: `
-        fields artworks.image_id,screenshots.image_id;
-        where id = ${req.params.id};
-      `
-    })
-    const json = await response.json()
-    res.send(json).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
 
 export default router;
