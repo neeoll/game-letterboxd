@@ -15,7 +15,7 @@ const Test = () => {
   }, [])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col text-white">
       {data.map(entry => (
         <div>{entry.name}</div>
       ))}

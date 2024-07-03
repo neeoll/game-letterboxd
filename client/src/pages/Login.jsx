@@ -73,42 +73,39 @@ const Login = () => {
   }
 
   return(
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col gap-y-4 bg-neutral-900">
-      <Navbar />
-        <div className="flex gap-10 w-full justify-center items-center">
-          {!userData ? 
-            (
-              <form onSubmit={submitLogin}>
-                <div className="flex flex-col w-96 justify-center items-center gap-2">
-                  <input 
-                    onChange={(e) => {
-                      e.preventDefault()
-                      if (e.target.validity.valid) setEmail(e.target.value)
-                    }} 
-                    type="email" 
-                    placeholder="Email Address" 
-                    className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
-                    required 
-                  />
-                  <input 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    type="password" 
-                    placeholder="Password" 
-                    className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
-                    required 
-                  />
-                  <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-                  <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Login</button>
-                </div>
-              </form>
-            ) : (
-              <div className="flex flex-col justify-center items-center">
-                <pre className="text-white">{JSON.stringify(userData, null, 2)}</pre>
-                <button onClick={logout} className="w-24 bg-red-500 text-white rounded p-1">Logout</button>
-              </div>
-            )
-          }
-        </div>
+    <div className="flex gap-10 w-full justify-center items-center">
+      {!userData ? 
+        (
+          <form onSubmit={submitLogin}>
+            <div className="flex flex-col w-96 justify-center items-center gap-2">
+              <input 
+                onChange={(e) => {
+                  e.preventDefault()
+                  if (e.target.validity.valid) setEmail(e.target.value)
+                }} 
+                type="email" 
+                placeholder="Email Address" 
+                className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
+                required 
+              />
+              <input 
+                onChange={(e) => setPassword(e.target.value)} 
+                type="password" 
+                placeholder="Password" 
+                className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
+                required 
+              />
+              <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
+              <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Login</button>
+            </div>
+          </form>
+        ) : (
+          <div className="flex flex-col justify-center items-center">
+            <pre className="text-white">{JSON.stringify(userData, null, 2)}</pre>
+            <button onClick={logout} className="w-24 bg-red-500 text-white rounded p-1">Logout</button>
+          </div>
+        )
+      }
     </div>
   )
 }

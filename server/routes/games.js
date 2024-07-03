@@ -1,10 +1,10 @@
-import express from "express";
+import express from "express"
 import 'dotenv/config'
 
 // Library for fetch requests
-import fetch from "node-fetch";
+import fetch from "node-fetch"
 
-const router = express.Router();
+const router = express.Router()
 
 router.get('/search', async (req, res) => {
   try {
@@ -188,4 +188,4 @@ router.get("/series/:seriesId", async (req, res) => {
 })
 
 
-export default router;
+export default router

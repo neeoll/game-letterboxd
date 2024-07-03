@@ -30,8 +30,7 @@ const SearchResults = () => {
   }, [])
 
   return (
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col gap-y-4 bg-neutral-900">
-      <Navbar />
+    <div>
       {loading ? "Loading..." : (
         <div className="flex flex-col h-fit gap-y-2">
           <div className="flex justify-center text-white text-3xl">

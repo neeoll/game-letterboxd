@@ -33,8 +33,7 @@ const GamesByCompany = () => {
   }, [companyId])
 
   return(
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col gap-y-4 bg-neutral-900">
-      <Navbar />
+    <div>
       {loading ? "Loading..." : (
         <>
           <div className="flex flex-col mx-52 pb-4 text-white border-b border-white/50">

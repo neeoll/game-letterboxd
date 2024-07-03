@@ -29,8 +29,7 @@ const GameSearch = () => {
   }, [])
 
   return(
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col gap-y-4 bg-neutral-900">
-      <Navbar />
+    <div>
       {loading ? "Loading..." : <GameDisplay genre={params.genre} platform={params.platform} year={params.year} />}
     </div>
   )
