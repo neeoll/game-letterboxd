@@ -1,7 +1,6 @@
-import Navbar from "../components/Navbar"
-import GameDisplay from "../components/GameDisplay"
-import { useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { useLocation } from "react-router-dom"
+import { GameDisplay } from "../components"
 
 const GameSearch = () => {
   const location = useLocation()

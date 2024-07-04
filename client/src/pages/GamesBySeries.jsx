@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
-import Navbar from "../components/Navbar"
 import { useParams } from "react-router-dom"
-import GameDisplay from "../components/GameDisplay"
+import { GameDisplay } from "../components"
 
 const GamesBySeries = () => {
   const { seriesId } = useParams()

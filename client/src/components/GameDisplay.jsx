@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
-import FilterSidebar from "./FilterSidebar"
+import { Link } from "react-router-dom"
 import { Dialog, DialogPanel, Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react"
-import { genres } from "../dict/genres"
-import { platforms } from "../dict/platforms"
-import { sortCriteria } from "../dict/sort"
 import { RxCaretDown, RxCaretLeft, RxCaretRight, RxCross2, RxStarFilled, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
 import moment from "moment"
-import { Link } from "react-router-dom"
+import FilterSidebar from "./FilterSidebar"
+import { genres, platforms, sort_criteria } from "../dict"
 
 const GameDisplay = (props) => {
   const [count, setCount] = useState(0)
@@ -16,7 +14,7 @@ const GameDisplay = (props) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const [filters, setFilters] = useState({ genre: props.genre || null, platform: props.platform || null, year: props.year || null})
-  const [sort, setSort] = useState({ criteria: sortCriteria[props.defaultSort || 0], direction: 0 })
+  const [sort, setSort] = useState({ criteria: sort_criteria[props.defaultSort || 0], direction: 0 })
 
   useEffect(() => {
     console.log(props)
@@ -78,7 +76,7 @@ const GameDisplay = (props) => {
                 <ListboxButton className="flex text-white items-center gap-1 w-full text-sm">{sort.criteria.name}<RxCaretDown /></ListboxButton>
                 <ListboxOptions anchor="bottom" className="rounded bg-gray-800 text-xs">
                   {
-                    sortCriteria.map((criteria) => (
+                    sort_criteria.map((criteria) => (
                       <ListboxOption key={criteria.id} value={criteria} className="w-full p-1 hover:bg-gray-400">
                         <p className="text-white">{criteria.name}</p>
                       </ListboxOption>

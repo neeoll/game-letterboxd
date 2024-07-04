@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react"
-import Navbar from "../components/Navbar"
+import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import PasswordStrengthBar from 'react-password-strength-bar'
 import bcrypt from 'bcryptjs'
-import { useNavigate } from "react-router-dom"
 
 const Register = () => {
   const recaptcha = useRef()

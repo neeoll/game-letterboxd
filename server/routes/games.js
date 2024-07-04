@@ -1,7 +1,6 @@
 import express from "express"
 import 'dotenv/config'
 
-// Library for fetch requests
 import fetch from "node-fetch"
 
 const router = express.Router()
@@ -17,9 +16,10 @@ router.get('/search', async (req, res) => {
           'Authorization': process.env.API_ACCESS_TOKEN
         },
         body: `
-          fields cover.*,name,first_release_date; 
-          search "${req.query.title}";
-          where category != (1,2,3,4,5,7,8,12,13,14) & version_title = null;
+          fields cover.image_id,name,first_release_date; 
+          where name ~ *"${req.query.title}"* & category != (1,2,3,4,5,7,8,12,13,14);
+          limit 250;
+          sort aggregated_rating desc;
         `
       })
     const results = await response.json()

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react"
-import Navbar from "../components/Navbar"
-import { useLocation } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useLocation, Link } from "react-router-dom"
 
 const SearchResults = () => {
   const location = useLocation()

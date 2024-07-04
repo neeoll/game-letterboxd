@@ -1,9 +1,8 @@
-import { useState } from "react"
-import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from "@headlessui/react"
-import { genres } from "../dict/genres"
-import { platforms } from "../dict/platforms"
-import SimpleBar from 'simplebar-react'
-import 'simplebar-react/dist/simplebar.min.css'
+import { useState } from "react";
+import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react";
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
+import { genres, platforms } from '../dict';
 
 export function FilterSidebar(props) {
   const [genre, setGenre] = useState(genres.find(genre => genre.id === props.filters.genre) || {})

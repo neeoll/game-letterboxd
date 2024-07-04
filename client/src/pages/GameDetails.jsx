@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import moment from "moment"
 import { reviews } from "../temp/reviewPlaceholder"
-import SimpleBar from 'simplebar-react'
-import 'simplebar-react/dist/simplebar.min.css'
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 
@@ -71,7 +68,7 @@ const GameDetails = () => {
   useEffect(() => {
     async function getDetails() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/${gameId}?title=zelda`)
+      const response = await fetch(`http://127.0.0.1:5050/game/${gameId}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
@@ -102,7 +99,7 @@ const GameDetails = () => {
   return (
     <div>
       {!loading ? 
-        <div className="flex flex-col mt-10 px-40 pb-8 bg-gradient-to-t from-neutral-950 from-75%">
+        <div className="flex flex-col mt-10 px-40 pb-8 bg-gradient-to-t from-neutral-900 from-75%">
           {/* Header Portion */}
           <div className="flex items-end w-full">
             <div className="flex w-1/5 justify-center">
@@ -170,7 +167,7 @@ const GameDetails = () => {
                           </div>
                           <div className="flex w-full h-fit flex-wrap gap-2 justify-start">
                             {details.collection.map(game => (
-                              <Link to={`/game/${game.id}`} className="relative h-36 group text-white font-semibold">
+                              <Link key={game.id} to={`/game/${game.id}`} className="relative h-36 group text-white font-semibold">
                                 <img className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
                                 <p className="flex absolute inset-0 p-0.5 items-center justify-center text-center w-full h-full invisible group-hover:visible">{game.name}</p>
                               </Link>
@@ -185,7 +182,7 @@ const GameDetails = () => {
                   <p className="font-bold">Playable on</p>
                   <div className="flex w-full flex-wrap gap-2">
                     {details.platforms.map(platform => 
-                      <div className="flex gap-1 items-center text-sm border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
+                      <div key={platform.id} className="flex gap-1 items-center text-sm border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
                         <IoLogoGameControllerB />
                         <Link to={{ pathname: "/games", search: `?platform=${platform.id}`}}>{platform.name.length > 20 ? platform.abbreviation || platform.name : platform.name}</Link>
                       </div>
@@ -194,7 +191,7 @@ const GameDetails = () => {
                   <p className="font-bold">Genres</p>
                   <div className="flex flex-wrap gap-2">
                     {details.genres.map(genre => 
-                      <div className="w-fit text-xs border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
+                      <div key={genre.id} className="w-fit text-xs border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
                         <Link to={{ pathname: "/games", search: `?genre=${genre.id}`}}>{genre.name}</Link>
                       </div>
                     )}
@@ -231,7 +228,7 @@ const GameDetails = () => {
             </div>
           </div>
         </div>  : 
-        "Loading..."
+        <div className="text-white">Loading...</div>
       }
     </div>
   )

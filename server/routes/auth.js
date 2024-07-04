@@ -4,7 +4,6 @@ import jsonwebtoken from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import axios from "axios"
 import 'dotenv/config'
-import { ObjectId } from "mongodb"
 
 const router = express.Router()
 

@@ -1,23 +1,27 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom"
-import App from "./App"
-import GameSearch from "./pages/GameSearch"
+import SimpleBar from "simplebar-react"
+import 'simplebar-react/dist/simplebar.min.css'
 import "./index.css"
-import GameDetails from "./pages/GameDetails"
-import GamesByCompany from "./pages/GamesByCompany"
-import GamesBySeries from "./pages/GamesBySeries"
-import SearchResults from "./pages/SearchResults"
-import Test from "./pages/Test"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import Navbar from "./components/Navbar"
+import App from "./App"
+import { GameDetails, GamesByCompany, GamesBySeries, GameSearch, Login, Register, SearchResults, Test } from './pages'
+import { Navbar } from './components'
+
+const SimpleBarStyle = {
+  width: '100vw',
+  maxHeight: '100vh',
+}
 
 function NavbarWrapper() {
   return (
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900">
-      <Navbar />
-      <Outlet />
+    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-none">
+      <SimpleBar style={SimpleBarStyle}>
+        <Navbar />
+        <div className="pt-24">
+          <Outlet />
+        </div>
+      </SimpleBar>
     </div>
   )
 }

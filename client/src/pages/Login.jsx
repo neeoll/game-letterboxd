@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react"
-import Navbar from "../components/Navbar"
 import ReCAPTCHA from 'react-google-recaptcha'
 
 const Login = () => {
