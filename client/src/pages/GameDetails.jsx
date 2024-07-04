@@ -5,49 +5,7 @@ import moment from "moment"
 import { reviews } from "../temp/reviewPlaceholder"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
-
-const completionStatuses = [
-  {
-    id: 1,
-    element: () => (
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-green-500" />
-        <div>Completed</div>
-      </div>
-    ),
-    value: "completed"
-  },
-  {
-    id: 2,
-    element: () => (
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-sky-500" />
-        <div>Played</div>
-      </div>
-    ),
-    value: "played"
-  },
-  {
-    id: 3,
-    element: () => (
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-yellow-500" />
-        <div>Shelved</div>
-      </div>
-    ),
-    value: "shelved"
-  },
-  {
-    id: 4,
-    element: () => (
-      <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-red-500" />
-        <div>Abandoned</div>
-      </div>
-    ),
-    value: "abandoned"
-  },
-]
+import { completion_statuses } from "../dict"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -81,8 +39,6 @@ const GameDetails = () => {
       json.images = json.artworks && json.screenshots ? json.screenshots.concat(json.artworks) : (json.artworks || json.screenshots || [])
       json.artworks ? delete json.artworks : console.log("No artworks")
       json.screenshots ? delete json.screenshots : console.log("No screenshots")
-
-      console.log(json)
 
       let randomIndex = Math.floor((Math.random() * json.images.length))
       console.log(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
@@ -216,7 +172,7 @@ const GameDetails = () => {
                           size="small"
                         />
                         <div className="flex gap-1 text-white">
-                          {completionStatuses[Math.floor(Math.random() * 4)].element()}
+                          {completion_statuses[Math.floor(Math.random() * 4)].element()}
                           <p className="text-white/50">on <Link to={{ pathname: "/games", search: `?platform=${details.platforms[0].id}`}} className="text-white">{details.platforms[0].name}</Link></p>
                         </div>
                       </div>

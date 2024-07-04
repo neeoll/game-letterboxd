@@ -18,8 +18,6 @@ const GameSearch = () => {
         paramsObject[key] = parseInt(value)
       })
 
-      console.log(paramsObject)
-
       setParams(paramsObject)
       setLoading(false)
     }

@@ -14,12 +14,10 @@ const GamesByCompany = () => {
       const response = await fetch(`http://127.0.0.1:5050/game/company/${companyId}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
-        console.log(message)
+        alert(message)
         return
       }
       const json = await response.json()
-
-      console.log(json)
       
       json.games = json.published && json.developed ? json.developed.concat(json.published) : (json.published || json.developed || [])
       delete json.published

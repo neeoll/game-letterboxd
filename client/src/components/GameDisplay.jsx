@@ -17,19 +17,16 @@ const GameDisplay = (props) => {
   const [sort, setSort] = useState({ criteria: sort_criteria[props.defaultSort || 0], direction: 0 })
 
   useEffect(() => {
-    console.log(props)
     async function gameSearch() {
       setLoading(true)
       const response = await fetch(`http://127.0.0.1:5050/game?genre=${filters.genre || 0}&platform=${filters.platform || 0}&year=${filters.year || 0}&sortCriteria=${sort.criteria.value}&sortDirection=${sort.direction}&page=${page}&additionalFilter=${props.additionalFilter}`)
 
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
-        console.log(message)
+        alert(message)
         return
       }
       const json = await response.json()
-
-      console.log(json[1].result)
       
       setCount(json[0].count)
       setResults(json[1].result)

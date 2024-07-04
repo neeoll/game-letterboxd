@@ -87,7 +87,6 @@ export function FilterSidebar(props) {
       <div className="flex flex-col gap-2">
         <button 
         onClick={() => {
-          console.log(genre)
           props.setFilters({ genre: genre.id || null, platform: platform.id || null, year: year})
           props.setSidebarOpen(false)
         }} 

@@ -64,7 +64,6 @@ const Register = () => {
           'content-type': 'application/json'
         }
       })
-      console.log(response)
       const data = await response.json()
       if (data.status == "ok") {
         navigate('/login')

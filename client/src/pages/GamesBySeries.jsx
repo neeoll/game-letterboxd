@@ -14,12 +14,10 @@ const GamesBySeries = () => {
       const response = await fetch(`http://127.0.0.1:5050/game/series/${seriesId}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
-        console.log(message)
+        alert(message)
         return
       }
       const json = await response.json()
-      
-      console.log(json)
       
       setResults(json)
       setLoading(false)
