@@ -1,10 +1,3 @@
-client id: 9m587pfl3gw9930l6h59z9kn860u9s
-client secret: n1ai27se55k8eo2i3af08mptl6ykw0
-access token: 10ac4vwtl6uitx23v06y8csogofm3p
-
-mongodb username: ariasnoel24
-mongodb password: noDqz2k6T6qqFTvL
-
 TODO:
 User creation and authentication
 Review and rating operations
