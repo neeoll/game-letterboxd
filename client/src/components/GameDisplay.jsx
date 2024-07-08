@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Dialog, DialogPanel, Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react"
-import { RxCaretDown, RxCaretLeft, RxCaretRight, RxCross2, RxStarFilled, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
+import { RxCaretDown, RxCross2, RxStarFilled, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
 import moment from "moment"
 import FilterSidebar from "./FilterSidebar"
 import { genres, platforms, sort_criteria } from "../dict"
+import Pagination from "./Pagination"
 
 const GameDisplay = (props) => {
   const [count, setCount] = useState(0)
@@ -34,6 +35,12 @@ const GameDisplay = (props) => {
     }
     gameSearch()
   }, [filters, sort, page])
+
+  if (loading) {
+    return (
+      <div>Loading...</div>
+    )
+  }
 
   return(
     <>
@@ -93,57 +100,29 @@ const GameDisplay = (props) => {
           </div>
         </div>
       </div>
-      {loading ? 
-        <div className="flex justify-center items-center text-white">Loading...</div> :
-        <div className="flex flex-col justify-center gap-2"> 
-          <div className="flex flex-wrap gap-4 justify-start px-52">
-            {results.map(game =>
-              <div key={game.id} className="flex flex-col items-center gap-1">
-                <Link key={game.id} to={`/game/${game.id}`} className="relative h-56 group hover:rounded hover:outline hover:outline-4 hover:outline-indigo-500 hover:outline-offset-[-3px]">
-                  <img loading="lazy" className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
-                  <p className="flex absolute inset-0 p-0.5 items-center justify-center text-center font-semibold text-white w-full h-full invisible group-hover:visible">{game.name}</p>
-                </Link>
-                {sort.criteria.id == 2 ? 
-                  <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-                    {moment.unix(game.first_release_date).format("MM-D-YYYY")}
-                  </div> : <></>
-                }
-                {sort.criteria.id == 3 ?
-                  <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-                    <RxStarFilled />{((game.total_rating / 100) * 5).toFixed(1)}
-                  </div> : <></>
-                }
-              </div>
-            )}
-          </div>
-          <div className="px-52">
-            <div className="flex justify-center items-center overflow-x-hidden gap-4 text-white">
-              <button 
-              onClick={() => setPage(Math.max(1, page - 1))} 
-              className={`${page == 1 ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
-                <RxCaretLeft />
-              </button>
-              <div className="flex gap-2">
-                <p>Page</p>
-                <input 
-                  type="tel"
-                  min="1"
-                  placeholder={page}
-                  max={Math.ceil(count / 36)}
-                  onKeyDown={e => { if (e.key === 'Enter') setPage(e.target.value) }}
-                  className="w-10 text-center align-middle bg-transparent rounded border border-white/50"
-                />
-                <p>of {Math.ceil(count / 36)}</p>
-              </div>
-              <button 
-              onClick={() => setPage(Math.min(page + 1, Math.ceil(count / 36)))} 
-              className={`${page == Math.ceil(count / 36) ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
-                <RxCaretRight />
-              </button>
+      <div className="flex flex-col justify-center gap-2"> 
+        <div className="flex flex-wrap gap-4 justify-start px-52">
+          {results.map(game =>
+            <div key={game.id} className="flex flex-col items-center gap-1">
+              <Link key={game.id} to={`/game/${game.id}`} className="relative h-56 group hover:rounded hover:outline hover:outline-4 hover:outline-indigo-500 hover:outline-offset-[-3px]">
+                <img loading="lazy" className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
+                <p className="flex absolute inset-0 p-0.5 items-center justify-center text-center font-semibold text-white w-full h-full invisible group-hover:visible">{game.name}</p>
+              </Link>
+              {sort.criteria.id == 2 ? 
+                <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
+                  {moment.unix(game.first_release_date).format("MM-D-YYYY")}
+                </div> : <></>
+              }
+              {sort.criteria.id == 3 ?
+                <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
+                  <RxStarFilled />{((game.total_rating / 100) * 5).toFixed(1)}
+                </div> : <></>
+              }
             </div>
-          </div>
+          )}
         </div>
-      }
+        <Pagination page={page} count={count} setPage={setPage} />
+      </div>
     </>
   )
 }

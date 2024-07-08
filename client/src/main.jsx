@@ -5,7 +5,7 @@ import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import "./index.css"
 import App from "./App"
-import { GameDetails, GamesByCompany, GamesBySeries, GameSearch, Login, Register, SearchResults, Test } from './pages'
+import * as Pages from './pages'
 import { Navbar } from './components'
 
 const SimpleBarStyle = {
@@ -33,39 +33,39 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <App />
+        element: <Pages.Profile />
       },
       {
         path: "/games",
-        element: <GameSearch />
+        element: <Pages.GameSearch />
       },
       {
         path: "/games/search",
-        element: <SearchResults />
+        element: <Pages.SearchResults />
       },,
       {
         path: "/games/company/:companyId",
-        element: <GamesByCompany />
+        element: <Pages.GamesByCompany />
       },
       {
         path: "/games/series/:seriesId",
-        element: <GamesBySeries />
+        element: <Pages.GamesBySeries />
       },
       {
         path: "/game/:gameId",
-        element: <GameDetails />
+        element: <Pages.GameDetails />
       },
       {
         path: "/test",
-        element: <Test />
+        element: <Pages.Test />
       },
       {
         path: "/register",
-        element: <Register />
+        element: <Pages.Register />
       },
       {
         path: "/login",
-        element: <Login />
+        element: <Pages.Login />
       }
     ]
   }

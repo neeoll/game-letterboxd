@@ -1,30 +1,32 @@
-import { useState, useRef, useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
+import { IoWarningOutline } from "react-icons/io5"
 
 const Login = () => {
   const recaptcha = useRef()
+  const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [userData, setUserData] = useState(null)
+  const [failedLogin, setFailedLogin] = useState(false)
+
+  try {
+    const token = localStorage.getItem('jwt-token')
+    if (token) navigate('/profile')
+  } catch (err) {
+    console.error(err)
+  }
 
   useEffect(() => {
-    async function getUserInfo() {
-      const token = localStorage.getItem('jwt-token')
-      if (!token) return
+    function checkToken() {
       try {
-        const response = await fetch('http://127.0.0.1:5050/auth/getUser', {
-          headers: {
-            'authorization': token
-          }
-        })
-        const data = await response.json()
-        setUserData(data)
+        const token = localStorage.getItem('jwt-token')
+        if (token) navigate('/profile')
       } catch (err) {
         console.error(err)
-        return
       }
     }
-    getUserInfo()
+    checkToken()
     return
   }, [])
 
@@ -48,63 +50,58 @@ const Login = () => {
   async function submitLogin(e) {
     e.preventDefault()
     const captchaVerified = veryifyCaptcha()
-    if (captchaVerified) {
-      const response = await fetch('http://127.0.0.1:5050/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email: email, password: password }),
-        headers: {
-          'content-type': 'application/json'
-        }
-      })
-      const data = await response.json()
-      if (data.token) {
-        localStorage.setItem('jwt-token', data.token)
-        window.location.reload()
+    if (!captchaVerified) return alert('reCAPTCHA validation failed') 
+      
+    const response = await fetch('http://127.0.0.1:5050/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email: email, password: password }),
+      headers: {
+        'content-type': 'application/json'
       }
-    } else {
-      alert('reCAPTCHA validation failed')
+    })
+    if (response.status == 401) return setFailedLogin(true)
+    const data = await response.json()
+    if (data.token) {
+      localStorage.setItem('jwt-token', data.token)
+      navigate('/')
     }
   }
 
-  function logout() {
-    localStorage.removeItem('jwt-token')
-    window.location.reload()
-  }
-
-  return(
-    <div className="flex gap-10 w-full justify-center items-center">
-      {!userData ? 
-        (
-          <form onSubmit={submitLogin}>
-            <div className="flex flex-col w-96 justify-center items-center gap-2">
-              <input 
-                onChange={(e) => {
-                  e.preventDefault()
-                  if (e.target.validity.valid) setEmail(e.target.value)
-                }} 
-                type="email" 
-                placeholder="Email Address" 
-                className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
-                required 
-              />
-              <input 
-                onChange={(e) => setPassword(e.target.value)} 
-                type="password" 
-                placeholder="Password" 
-                className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
-                required 
-              />
-              <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-              <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Login</button>
-            </div>
-          </form>
-        ) : (
-          <div className="flex flex-col justify-center items-center">
-            <pre className="text-white">{JSON.stringify(userData, null, 2)}</pre>
-            <button onClick={logout} className="w-24 bg-red-500 text-white rounded p-1">Logout</button>
-          </div>
-        )
-      }
+  return (
+    <div className="flex flex-col gap-6 w-full justify-center items-center">
+      <form onSubmit={submitLogin}>
+        <div className="flex flex-col w-96 justify-center items-center gap-2">
+          <input 
+            onChange={(e) => {
+              e.preventDefault()
+              setFailedLogin(false)
+              if (e.target.validity.valid) setEmail(e.target.value)
+            }} 
+            type="email" 
+            placeholder="Email Address" 
+            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
+            required 
+          />
+          <input 
+            onChange={(e) => {
+              setFailedLogin(false)
+              setPassword(e.target.value)
+            }}
+            type="password" 
+            placeholder="Password" 
+            className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
+            required 
+          />
+          <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
+          <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Login</button>
+        </div>
+      </form>
+      {failedLogin ? (
+        <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-white">
+          <IoWarningOutline size={"1.25em"}/>
+          <p>Error: Incorrect username or password, please try again.</p>
+        </div>
+      ) : <></>}
     </div>
   )
 }

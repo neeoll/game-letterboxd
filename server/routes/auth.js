@@ -44,11 +44,26 @@ router.post('/verifyCaptcha', async (req, res) => {
   res.send(data)
 })
 
+router.post("/checkAvailability", async (req, res) => {
+  try {
+    if (req.body.username) {
+      const usernameExists = await User.findOne({ username: req.body.username })
+      if (usernameExists) return res.status(401).json({ username: req.body.username, userValid: false })
+      else return res.status(200).json({ username: req.body.username, userValid: true })
+    }
+    if (req.body.email) {
+      const emailExists = await User.findOne({ email: req.body.email })
+      if (emailExists) return res.status(401).json({ email: req.body.email, emailValid: false })
+      else return res.status(200).json({ email: req.body.email, emailValid: true })
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 router.post("/register", async (req, res) => {
-  console.log(req.body)
   try {
     const existingUser = await User.findOne({ email: req.body.email })
-    console.log(existingUser)
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' })
     }

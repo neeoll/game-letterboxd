@@ -3,35 +3,59 @@ import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import PasswordStrengthBar from 'react-password-strength-bar'
 import bcrypt from 'bcryptjs'
+import _debounce from 'debounce'
 
 const Register = () => {
   const recaptcha = useRef()
   const navigate = useNavigate()
+  const availabilityDebounce = _debounce((payload) => checkAvailability(payload), 500)
 
-  const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
+  const [regData, setRegData] = useState({ 
+    email: "", 
+    emailValid: false, 
+    username: "",
+    userValid: false,
+    password: ""
+  })
+
+  const updateRegData = (payload) => {
+    setRegData(prevState => ({
+      ...prevState,
+      ...payload
+    }))
+  }
+  
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
   useEffect(() => {
-    async function getUserInfo() {
-      const token = localStorage.getItem('jwt-token')
-      if (!token) return
+    function checkToken() {
       try {
-        const response = await fetch('http://127.0.0.1:5050/auth/getUser', {
-          headers: {
-            'authorization': token
-          }
-        })
-        const data = await response.json()
+        const token = localStorage.getItem('jwt-token')
+        if (token) navigate('/profile')
       } catch (err) {
         console.error(err)
-        return
       }
     }
-    getUserInfo()
+    checkToken()
     return
   }, [])
+
+  async function checkAvailability(payload) {
+    if (Object.entries(payload)[0][1] == "") {
+      updateRegData(payload)
+      return
+    }
+    const response = await fetch('http://127.0.0.1:5050/auth/checkAvailability', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    const data = await response.json()
+    updateRegData(data)
+  }
 
   async function veryifyCaptcha() {
     const captchaValue = recaptcha.current.getValue()
@@ -53,13 +77,13 @@ const Register = () => {
   async function submitRegister(e) {
     e.preventDefault()
     const captchaVerified = veryifyCaptcha()
-    if (captchaVerified) {
+    if (captchaVerified && regData.userValid && regData.emailValid) {
       const salt = bcrypt.genSaltSync(10)
       const hash = bcrypt.hashSync(password, salt)
 
       const response = await fetch('http://127.0.0.1:5050/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ username: username, email: email, password: hash }),
+        body: JSON.stringify({ username: regData.username, email: regData.email, password: hash }),
         headers: {
           'content-type': 'application/json'
         }
@@ -75,27 +99,6 @@ const Register = () => {
     }
   }
 
-  async function submitLogin(e) {
-    e.preventDefault()
-    const captchaVerified = veryifyCaptcha()
-    if (captchaVerified) {
-      const response = await fetch('http://127.0.0.1:5050/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email: email, password: password }),
-        headers: {
-          'content-type': 'application/json'
-        }
-      })
-      const data = await response.json()
-      if (data.token) {
-        localStorage.setItem('jwt-token', data.token)
-        alert("Successfully logged in")
-      }
-    } else {
-      alert('reCAPTCHA validation failed')
-    }
-  }
-
   return(
     <div className="flex gap-10 w-full justify-center items-center">
       {/* Register Form */}
@@ -103,10 +106,13 @@ const Register = () => {
         <div className="flex flex-col w-96 justify-center items-center gap-2">
           <div className="flex flex-col w-full items-end">
             <input 
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => availabilityDebounce({ username: e.target.value })}
               type="text" 
               placeholder="Username" 
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
+              className={`
+                w-full p-1 rounded bg-neutral-700 text-white/75 outline-none 
+                ${regData.username != "" ? regData.userValid == false ? "outline-red-500" : "outline-green-500" : ""}
+              `} 
               required 
             />
             <p className="text-sm text-white/50 font-extralight">Maximum of 16 characters</p>
@@ -114,11 +120,14 @@ const Register = () => {
           <input 
             onChange={(e) => {
               e.preventDefault()
-              if (e.target.validity.valid) setEmail(e.target.value)
+              if (e.target.validity.valid) availabilityDebounce({ email: e.target.value })
             }} 
             type="email" 
             placeholder="Email Address" 
-            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
+            className={`
+              w-full p-1 rounded bg-neutral-700 text-white/75 outline-none 
+              ${regData.email != "" ? regData.emailValid == false ? "outline-red-500" : "outline-green-500" : ""}
+            `}
             required 
           />
           <div className="flex flex-col w-full">

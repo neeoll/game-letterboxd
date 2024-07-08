@@ -29,18 +29,20 @@ const GamesByCompany = () => {
     gameSearch()
   }, [companyId])
 
+  if (loading) {
+    return (
+      <div>Loading...</div>
+    )
+  }
+
   return(
     <div>
-      {loading ? "Loading..." : (
-        <div>
-          <div className="flex flex-col mx-52 pb-4 text-white border-b border-white/50">
-            <p className="text-sm font-light text-white/50">Company</p>
-            <p className="text-3xl mb-2 font-semibold">{results.name}</p>
-            <p className="font-light text-white/75">{results.description}</p>
-          </div>
-          <GameDisplay defaultSort={1} additionalFilter={`involved_companies.company = ${companyId}`} />
-        </div>
-      )}
+      <div className="flex flex-col mx-52 pb-4 text-white border-b border-white/50">
+        <p className="text-sm font-light text-white/50">Company</p>
+        <p className="text-3xl mb-2 font-semibold">{results.name}</p>
+        <p className="font-light text-white/75">{results.description}</p>
+      </div>
+      <GameDisplay defaultSort={1} additionalFilter={`involved_companies.company = ${companyId}`} />
     </div>
   )
 }

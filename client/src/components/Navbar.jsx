@@ -1,16 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
-import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
-import { RxMagnifyingGlass } from 'react-icons/rx'
+import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
+import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _debounce from "debounce"
+
+const options = [
+  { id: 1, destination: 'Profile', href: '/' },
+  { id: 2, destination: 'Played', href: '/played' },
+  { id: 3, destination: 'Playing', href: '/playing' },
+  { id: 4, destination: 'Backlog', href: '/backlog' },
+  { id: 5, destination: 'Wishlist', href: '/wishlist' },
+  { id: 6, destination: 'Settings', href: '/settings' },
+]
 
 export default function Navbar() {
 
   const textDebounce = _debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
+  const [token, setToken] = useState(localStorage.getItem('jwt-token'))
   const [userData, setUserData] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   
   let navigate = useNavigate()
 
@@ -33,7 +44,7 @@ export default function Navbar() {
     }
     getUserInfo()
     return
-  }, [])
+  }, [token])
 
   const getGames = async (searchText) => {
     if (searchText == "") return
@@ -51,50 +62,78 @@ export default function Navbar() {
     setGames([])
   }
 
+  function logout() {
+    localStorage.removeItem('jwt-token')
+    navigate('/login')
+  }
+
   return (
     <nav className="absolute z-10 inset-0 items-center w-full h-fit py-6">
-      <div className="flex flex-row-reverse gap-4 px-12 items-center">
-        <div className="flex flex-row">
-          <Combobox 
-            onChange={(value) => { 
-              if (value != null) navigate(`/game/${value}`)
-            }}
-            onClose={resetNavbar}
-          >
-            <ComboboxInput
-              type="text"
-              className="h-8 rounded-l min-w-72 h-10 p-2 border-neutral-950 text-sm text-white/75 bg-neutral-800 focus:outline-none"
-              onChange={e => textDebounce(e.target.value)}
-              placeholder="Search"
-              onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${e.target.value}`}) }}
-              autoComplete="new-password"
-            />
-            <ComboboxOptions anchor="bottom start" className="bg-neutral-800" static={true}>
-              <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
-                {games.length > 0 ? games.map((game) => (
-                  <ComboboxOption key={game.id} value={game.id} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
-                      <div className="p-1 flex w-full items-center border-b border-white/25">
-                        <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
-                          <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />
-                        </div>
-                        <h1 className="text-white text-xs text-wrap">
-                          {`${game.name} `}
-                          <span className="text-white/75">
-                            {` (${new Date(game.first_release_date * 1000).getFullYear()})`}
-                          </span>
-                        </h1>
+      <div className="flex flex-row-reverse gap-3 px-12 items-center">
+        <Combobox 
+          onChange={(value) => { 
+            if (value != null) navigate(`/game/${value}`)
+          }}
+          onClose={resetNavbar}
+        >
+          <ComboboxInput
+            type="text"
+            className="h-8 rounded-l min-w-72 h-10 p-2 border-neutral-950 text-sm text-white/75 bg-neutral-800 focus:outline-none"
+            onChange={e => textDebounce(e.target.value)}
+            placeholder="Search"
+            onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${e.target.value}`}) }}
+            autoComplete="new-password"
+          />
+          <ComboboxOptions anchor="bottom start" className="bg-neutral-800" static={true}>
+            <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
+              {games.length > 0 ? games.map((game) => (
+                <ComboboxOption key={game.id} value={game.id} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
+                    <div className="p-1 flex w-full items-center border-b border-white/25">
+                      <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
+                        <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />
                       </div>
-                  </ComboboxOption>
-                )) : <></>}
-              </SimpleBar>
-            </ComboboxOptions>
-          </Combobox>
-          <button className="flex justify-center items-center h-8 w-8 p-1 bg-neutral-800 rounded-r text-white/50 hover:text-white"><RxMagnifyingGlass size="1.25em" /></button>
-        </div>
+                      <h1 className="text-white text-xs text-wrap">
+                        {`${game.name} `}
+                        <span className="text-white/75">
+                          {` (${new Date(game.first_release_date * 1000).getFullYear()})`}
+                        </span>
+                      </h1>
+                    </div>
+                </ComboboxOption>
+              )) : <></>}
+            </SimpleBar>
+          </ComboboxOptions>
+        </Combobox>
         <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
         {userData ? 
           (
-            <Link to={"TODO"} className="text-white/75 hover:text-white">Profile</Link>
+            <Menu>
+              <MenuButton>
+                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-white/75 hover:text-white">{userData.user.username}<RxCaretDown size={"1.25rem"}/></div>
+              </MenuButton>
+              <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom start">
+                <div className="bg-neutral-800 rounded mt-1">
+                  {options.map((option) => (
+                    <MenuItem>
+                      <Link onClick={() => setMenuOpen(false)} to={option.href} className="flex w-full justify-start text-white/75 py-1 px-3 text-sm block rounded hover:bg-neutral-900">
+                        {option.destination}
+                      </Link>
+                    </MenuItem>
+                  ))}
+                  <MenuItem>
+                    <button 
+                      onClick={() => {
+                        setMenuOpen(false)
+                        logout()
+                      }} 
+                      className="flex w-full justify-start text-white/75 py-1 px-3 text-sm block rounded hover:bg-red-900 hover:text-red-500"
+                    >
+                      Logout
+                    </button>
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Menu>
           ) :
           (
             <div className="flex gap-2">

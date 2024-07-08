@@ -27,34 +27,36 @@ const SearchResults = () => {
     return
   }, [])
 
+  if (loading) {
+    return (
+      <div>Loading...</div>
+    )
+  }
+
   return (
-    <div>
-      {loading ? "Loading..." : (
-        <div className="flex flex-col h-fit gap-y-2">
-          <div className="flex justify-center text-white text-3xl">
-            <p>{count} results for <span className="text-4xl font-semibold">"{searchText}"</span></p>
+    <div className="flex flex-col h-fit gap-y-2">
+      <div className="flex justify-center text-white text-3xl">
+        <p>{count} results for <span className="text-4xl font-semibold">"{searchText}"</span></p>
+      </div>
+      <div className="flex flex-col px-52">
+        {results.map(game => (
+          <div className="flex items-center gap-2 p-2 border-b border-white/10">
+            <div className="max-w-24 max-h-32 flex justify-start items-center">
+              <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
+            </div>
+            <div className="flex flex-col h-32 justify-start">
+              <Link to={`/game/${game.id}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.first_release_date * 1000).getFullYear()})</span></Link>
+              <p className="text-white text-sm">
+                {game.platforms.map((platform, index) => (
+                  <span>
+                    {platform.name}{index != game.platforms.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col px-52">
-            {results.map(game => (
-              <div className="flex items-center gap-2 p-2 border-b border-white/10">
-                <div className="max-w-24 max-h-32 flex justify-start items-center">
-                  <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
-                </div>
-                <div className="flex flex-col h-32 justify-start">
-                  <Link to={`/game/${game.id}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.first_release_date * 1000).getFullYear()})</span></Link>
-                  <p className="text-white text-sm">
-                    {game.platforms.map((platform, index) => (
-                      <span>
-                        {platform.name}{index != game.platforms.length - 1 ? ", " : ""}
-                      </span>
-                    ))}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   )
 }

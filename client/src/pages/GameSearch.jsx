@@ -25,10 +25,14 @@ const GameSearch = () => {
     getAllURLParams()
   }, [])
 
+  if (loading) {
+    return (
+      <div>Loading...</div>
+    )
+  }
+
   return(
-    <div>
-      {loading ? "Loading..." : <GameDisplay genre={params.genre} platform={params.platform} year={params.year} />}
-    </div>
+    <GameDisplay genre={params.genre} platform={params.platform} year={params.year} />
   )
 }
 
