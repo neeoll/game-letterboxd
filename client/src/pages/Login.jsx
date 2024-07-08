@@ -6,7 +6,7 @@ import { IoWarningOutline } from "react-icons/io5"
 const Login = () => {
   const recaptcha = useRef()
   const navigate = useNavigate()
-  const [email, setEmail] = useState("")
+  const [emailOrUsername, setEmailOrUsername] = useState("")
   const [password, setPassword] = useState("")
   const [failedLogin, setFailedLogin] = useState(false)
 
@@ -54,7 +54,7 @@ const Login = () => {
       
     const response = await fetch('http://127.0.0.1:5050/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email: email, password: password }),
+      body: JSON.stringify({ emailOrUsername: emailOrUsername, password: password }),
       headers: {
         'content-type': 'application/json'
       }
@@ -75,11 +75,11 @@ const Login = () => {
             onChange={(e) => {
               e.preventDefault()
               setFailedLogin(false)
-              if (e.target.validity.valid) setEmail(e.target.value)
+              setEmailOrUsername(e.target.value)
             }} 
-            type="email" 
-            placeholder="Email Address" 
-            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${email != "" ? "invalid:ring-2 invalid:ring-red-500" : ""}`}
+            type="text" 
+            placeholder="Email Address or Username" 
+            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none`}
             required 
           />
           <input 
