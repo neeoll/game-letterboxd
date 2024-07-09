@@ -52,6 +52,20 @@ const GameDetails = () => {
     return
   }, [gameId])
 
+  async function addGame(payload) {
+    console.log(JSON.stringify(payload))
+    const response = await fetch('http://127.0.0.1:5050/game/addGame', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'authorization': localStorage.getItem('jwt-token'),
+        'content-type': 'application/json'
+      }
+    })
+    const data = await response.json()
+    console.log(data)
+  }
+
   if (loading) {
     return (
       <div>Loading...</div>
@@ -80,19 +94,19 @@ const GameDetails = () => {
                 <StyledRating precision={0.5} size="large"/>
               </div>
               <div className="flex gap-2">
-                <button className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
+                <button onClick={() => addGame({ status: "played", id: details.id })} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
                   <IoLogoGameControllerB size={"1.25em"}/>
                   <p>Played</p>
                 </button>
-                <button className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
+                <button onClick={() => addGame({ status: "playing", id: details.id })} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
                   <IoIosPlay size={"1.25em"}/>
                   <p>Playing</p>
                 </button>
-                <button className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
+                <button onClick={() => addGame({ status: "backlog", id: details.id })} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
                   <IoIosBookmarks size={"1.25em"}/>
                   <p>Backlog</p>
                 </button>
-                <button className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
+                <button onClick={() => addGame({ status: "wishlist", id: details.id })} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white justify-center items-center">
                   <IoIosGift size={"1.25em"}/>
                   <p>Wishlist</p>
                 </button>

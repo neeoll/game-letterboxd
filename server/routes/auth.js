@@ -4,24 +4,11 @@ import jsonwebtoken from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import axios from "axios"
 import 'dotenv/config'
+import User from "../models/User.js"
 
 const router = express.Router()
 
 mongoose.connect(process.env.ATLAS_URI)
-.then(() => {
-  console.log('Connected to MongoDB')
-})
-.catch((err) => {
-  console.error('Error connecting to MongoDB', err)
-})
-
-const userSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String
-})
-
-const User = mongoose.model('User', userSchema)
 
 const verifyToken = (req, res, next) => {
   const token = req.headers['authorization']
@@ -113,10 +100,6 @@ router.get("/getUser", verifyToken, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Internal server error'})
   }
-})
-
-router.post("/logout", async (req, res) => {
-
 })
 
 export default router

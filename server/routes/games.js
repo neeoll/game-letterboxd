@@ -1,9 +1,56 @@
 import express from "express"
 import 'dotenv/config'
-
 import fetch from "node-fetch"
+import mongoose from "mongoose"
+import Game from "../models/Game.js"
+import User from "../models/User.js"
+
+import { verifyToken } from "../utils/verifyToken.js"
 
 const router = express.Router()
+
+mongoose.connect(process.env.ATLAS_URI)
+
+router.post('/addGame', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email })
+    const game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+    user.games.push({ gameRef: game._id, status: req.body.status, gameId: req.body.id })
+    await user.save()
+
+    res.status(200).json({ message: 'all good'})
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+router.post("/profileGames", async (req, res) => {
+  try {
+    const ids = []
+    req.body.games.forEach(game => ids.push(game.gameId))
+    const idFilter = `(${ids.join(',')})`
+    
+    const response = await fetch("https://api.igdb.com/v4/games", {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Client-ID': process.env.API_CLIENT_ID,
+        'Authorization': process.env.API_ACCESS_TOKEN
+      },
+      body: `
+        fields category,name,cover.image_id,first_release_date,total_rating_count,total_rating;
+        limit 500;
+        where id = ${idFilter};
+      `
+    })
+    const results = await response.json()
+    res.status(200).json({ games: results })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
 
 router.get('/search', async (req, res) => {
   try {

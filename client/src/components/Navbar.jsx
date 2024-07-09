@@ -19,9 +19,10 @@ export default function Navbar() {
 
   const textDebounce = _debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
-  const [token, setToken] = useState(localStorage.getItem('jwt-token'))
   const [userData, setUserData] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const token = localStorage.getItem('jwt-token')
   
   let navigate = useNavigate()
 
