@@ -92,6 +92,9 @@ router.post("/login", async (req, res) => {
 
 router.get("/getUser", verifyToken, async (req, res) => {
   try {
+    if (Math.floor(Date.now()) < req.user.exp) {
+      return res.status(401).json({ error: 'Login expired' })
+    }
     const user = await User.findOne({ email: req.user.email })
     if (!user) {
       return res.status(404).json({ error: 'User not found' })

@@ -53,7 +53,6 @@ const GameDetails = () => {
   }, [gameId])
 
   async function addGame(payload) {
-    console.log(JSON.stringify(payload))
     const response = await fetch('http://127.0.0.1:5050/game/addGame', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -63,7 +62,6 @@ const GameDetails = () => {
       }
     })
     const data = await response.json()
-    console.log(data)
   }
 
   if (loading) {

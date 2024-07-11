@@ -109,7 +109,7 @@ export default function Navbar() {
         {userData ? 
           (
             <Menu>
-              <MenuButton>
+              <MenuButton className="hover:cursor-default">
                 <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-white/75 hover:text-white">{userData.user.username}<RxCaretDown size={"1.25rem"}/></div>
               </MenuButton>
               <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom start">

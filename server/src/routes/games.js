@@ -5,7 +5,7 @@ import mongoose from "mongoose"
 import Game from "../models/Game.js"
 import User from "../models/User.js"
 
-import { verifyToken } from "../utils/verifyToken.js"
+import { verifyToken } from "../middleware/verifyToken.js"
 
 const router = express.Router()
 
@@ -14,7 +14,28 @@ mongoose.connect(process.env.ATLAS_URI)
 router.post('/addGame', verifyToken, async (req, res) => {
   try {
     const user = await User.findOne({ email: req.user.email })
-    const game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+    let game
+    switch (req.body.status) {
+      case "played":
+        console.log("played")
+        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
+        break
+      case "playing":
+        console.log("playing")
+        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+        break
+      case "backlog":
+        console.log("backlog")
+        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
+        break
+      case "wishlist":
+        console.log("wishlist")
+        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
+        break
+      default:
+        res.status(500).json({ error: 'Internal server error' })
+        break
+    }
     user.games.push({ gameRef: game._id, status: req.body.status, gameId: req.body.id })
     await user.save()
 
@@ -39,7 +60,7 @@ router.post("/profileGames", async (req, res) => {
         'Authorization': process.env.API_ACCESS_TOKEN
       },
       body: `
-        fields category,name,cover.image_id,first_release_date,total_rating_count,total_rating;
+        fields name,cover.image_id;
         limit 500;
         where id = ${idFilter};
       `

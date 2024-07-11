@@ -8,7 +8,7 @@ const gameSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['played', 'playing', 'backlog', 'wishlist'], // Example statuses, adjust as needed
+    enum: ['played', 'playing', 'backlog', 'wishlist'],
     required: true
   },
   gameId: {
