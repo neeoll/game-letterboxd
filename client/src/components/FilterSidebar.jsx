@@ -3,11 +3,14 @@ import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headl
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { genres, platforms } from '../dict';
+import { useSearchParams } from "react-router-dom";
 
 export function FilterSidebar(props) {
-  const [genre, setGenre] = useState(genres.find(genre => genre.id === props.filters.genre) || {})
-  const [platform, setPlatform] = useState(platforms.find(platform => platform.id === props.filters.platform) || {})
-  const [year, setYear] = useState(props.filters.year || 0)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [currentGenre, setGenre] = useState(searchParams.get('genre') || 0)
+  const [currentPlatform, setPlatform] = useState(searchParams.get('platform') || 0)
+  const [year, setYear] = useState(searchParams.get('year') || 0)
   
   const [genreQuery, setGenreQuery] = useState("")
   const [platformQuery, setPlatformQuery] = useState("")
@@ -25,9 +28,31 @@ export function FilterSidebar(props) {
           return platform.name.toLowerCase().includes(platformQuery.toLowerCase())
         })
 
+  const applyQueryParams = () => {
+    const updatedParams = new URLSearchParams(location.search)
+
+    updatedParams.set('year', year)
+    updatedParams.set('genre', currentGenre)
+    updatedParams.set('platform', currentPlatform)
+
+    setSearchParams(updatedParams)
+    props.setSidebarOpen(false)
+  }
+
+  const clearQueryParams = () => {
+    const updatedParams = new URLSearchParams(location.search)
+
+    updatedParams.delete('year')
+    updatedParams.delete('genre')
+    updatedParams.delete('platform')
+
+    setSearchParams(updatedParams)
+  }
+
   return (
     <div className={`flex flex-col absolute inset-0 h-screen w-60 p-4 gap-4 bg-neutral-800 text-neutral-300`}>
       <p className="text-3xl font-light border-b border-neutral-300 pb-2">Filters</p>
+      {/* Year Filter */}
       <div>
         <p className="text-xl font-light pb-2">Release Year</p>
         <div className="grid grid-cols-4 grid-rows-2 gap-1">
@@ -38,9 +63,10 @@ export function FilterSidebar(props) {
           <input onChange={(e) => {setYear(e.target.value)}} min="1950" max="2100" placeholder="Custom Year" type="number" className="flex col-start-3 col-end-5 rounded border p-0.5 justify-center p-1 border-neutral-300 bg-gray-600"/>
         </div>
       </div>
+      {/* Genre Filter */}
       <div>
         <p className="text-xl font-light pb-2">Genre</p>
-        <Combobox value={genre} onChange={(value) => { if (value != null) setGenre(value) }} onClose={() => setGenreQuery('')}>
+        <Combobox value={genres.find(genre => genre.id == currentGenre)} onChange={(value) => { if (value != null) setGenre(value.id) }} onClose={() => setGenreQuery('')}>
           <ComboboxInput
             className="h-8 rounded w-full p-1 border-neutral-300 text-sm bg-gray-600"
             displayValue={(genre) => genre?.name}
@@ -61,9 +87,10 @@ export function FilterSidebar(props) {
           </ComboboxOptions>
         </Combobox>
       </div>
+      {/* Platform Filter */}
       <div>
         <p className="text-xl font-light pb-2">Platform</p>
-        <Combobox value={platform} onChange={(value) => { if (value != null) setPlatform(value) }} onClose={() => setPlatformQuery('')}>
+        <Combobox value={platforms.find(platform => platform.id == currentPlatform)} onChange={(value) => { if (value != null) setPlatform(value.id) }} onClose={() => setPlatformQuery('')}>
           <ComboboxInput
             className="h-8 rounded w-full p-1 border-neutral-300 text-sm bg-gray-600"
             displayValue={(platform) => platform?.name}
@@ -85,25 +112,8 @@ export function FilterSidebar(props) {
         </Combobox>
       </div>
       <div className="flex flex-col gap-2">
-        <button 
-        onClick={() => {
-          props.setFilters({ genre: genre.id || null, platform: platform.id || null, year: year})
-          props.setSidebarOpen(false)
-        }} 
-        className="w-full h-8 rounded bg-indigo-500 text-white"
-        >
-          Apply Filters
-        </button>
-        <button
-        onClick={() => {
-          setGenre(null)
-          setPlatform(null)
-          setYear(null)
-        }}
-        className="w-full h-6 rounded bg-gray-500 text-white"
-        >
-          Clear
-        </button>
+        <button onClick={() => applyQueryParams()} className="w-full h-8 rounded bg-indigo-500 text-white">Apply Filters</button>
+        <button onClick={() => clearQueryParams()} className="w-full h-6 rounded bg-gray-500 text-white">Clear</button>
       </div>
     </div>
   )

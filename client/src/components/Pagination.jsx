@@ -1,11 +1,34 @@
+import { useSearchParams } from "react-router-dom"
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx"
 
-const Pagination = ({ page, count, setPage }) => {
+const Pagination = ({ page, count }) => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const getPage = () => {
+    return parseInt(searchParams.get('page') || 1, 10)
+  }
+
+  const setPage = (newPage) => {
+    const updatedParams = new URLSearchParams(searchParams)
+    updatedParams.set('page', newPage)
+    setSearchParams(updatedParams)
+  }
+
+  const incrementPage = () => {
+    const currentPage = getPage()
+    setPage(Math.min(currentPage + 1, Math.ceil(count / 36)))
+  }
+
+  const decrementPage = () => {
+    const currentPage = getPage()
+    setPage(Math.max(1, currentPage - 1))
+  }
+
   return (
     <div className="px-52">
       <div className="flex justify-center items-center overflow-x-hidden gap-4 text-white">
         <button 
-        onClick={() => setPage(Math.max(1, page - 1))} 
+        onClick={() => decrementPage()} 
         className={`${page == 1 ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
           <RxCaretLeft />
         </button>
@@ -22,7 +45,7 @@ const Pagination = ({ page, count, setPage }) => {
           <p>of {Math.ceil(count / 36)}</p>
         </div>
         <button 
-        onClick={() => setPage(Math.min(page + 1, Math.ceil(count / 36)))} 
+        onClick={() => incrementPage()} 
         className={`${page == Math.ceil(count / 36) ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
           <RxCaretRight />
         </button>

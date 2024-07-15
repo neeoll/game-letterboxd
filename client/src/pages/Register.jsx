@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import PasswordStrengthBar from 'react-password-strength-bar'
@@ -6,6 +6,8 @@ import bcrypt from 'bcryptjs'
 import _debounce from 'debounce'
 
 const Register = () => {
+  if (localStorage.getItem('jwt-token')) navigate('/profile')
+
   const recaptcha = useRef()
   const navigate = useNavigate()
   const availabilityDebounce = _debounce((payload) => checkAvailability(payload), 500)
@@ -27,19 +29,6 @@ const Register = () => {
   
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-
-  useEffect(() => {
-    function checkToken() {
-      try {
-        const token = localStorage.getItem('jwt-token')
-        if (token) navigate('/profile')
-      } catch (err) {
-        console.error(err)
-      }
-    }
-    checkToken()
-    return
-  }, [])
 
   async function checkAvailability(payload) {
     if (Object.entries(payload)[0][1] == "") {

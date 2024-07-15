@@ -34,6 +34,7 @@ const GameDetails = () => {
       }
       const json = await response.json()
       json.collection = json.collections ? json.collections[0].games.filter(game => game.id != gameId) : null
+      console.log(json.collection)
       json.collection ? json.collection.length = 6 : console.log("No collection")
 
       json.images = json.artworks && json.screenshots ? json.screenshots.concat(json.artworks) : (json.artworks || json.screenshots || [])

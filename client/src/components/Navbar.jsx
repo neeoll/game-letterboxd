@@ -28,7 +28,6 @@ export default function Navbar() {
 
   useEffect(() => {
     async function getUserInfo() {
-      const token = localStorage.getItem('jwt-token')
       if (!token) return
       try {
         const response = await fetch('http://127.0.0.1:5050/auth/getUser', {
@@ -49,14 +48,14 @@ export default function Navbar() {
 
   const getGames = async (searchText) => {
     if (searchText == "") return
-    const response = await fetch(`http://127.0.0.1:5050/game/search?title=${searchText}`)
+    const response = await fetch(`http://127.0.0.1:5050/game/search?title=${encodeURIComponent(searchText)}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
         return
       }
       const json = await response.json()
-      setGames(json)
+      setGames(json[0].results)
   }
 
   const resetNavbar = () => {
@@ -88,18 +87,18 @@ export default function Navbar() {
           <ComboboxOptions anchor="bottom start" className="bg-neutral-800" static={true}>
             <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
               {games.length > 0 ? games.map((game) => (
-                <ComboboxOption key={game.id} value={game.id} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
-                    <div className="p-1 flex w-full items-center border-b border-white/25">
+                <ComboboxOption key={game.gameId} value={game.gameId} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
+                    <Link className="p-1 flex w-full items-center border-b border-white/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
                         <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />
                       </div>
                       <h1 className="text-white text-xs text-wrap">
                         {`${game.name} `}
                         <span className="text-white/75">
-                          {` (${new Date(game.first_release_date * 1000).getFullYear()})`}
+                          {` (${new Date(game.release_date * 1000).getFullYear()})`}
                         </span>
                       </h1>
-                    </div>
+                    </Link>
                 </ComboboxOption>
               )) : <></>}
             </SimpleBar>

@@ -4,15 +4,16 @@ import { RxStarFilled } from "react-icons/rx"
 import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { game_statuses } from "../dict"
+import { GenerateRandomRatings } from "../temp/ratingPlaceholder"
 
 const Profile = () => {
+  if (!localStorage.getItem('jwt-token')) navigate('/login')
+
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
-  const [ratings, setRatings] = useState([])
-
-  if (!localStorage.getItem('jwt-token')) navigate('/login')
+  const ratings = GenerateRandomRatings(50)
 
   useEffect(() => {
     async function getUserInfo() {
@@ -35,32 +36,9 @@ const Profile = () => {
           }
         })
         const profileGames = await response.json()
+        console.log(profileGames)
 
-        setGames(profileGames.games)
-        
-        // DELETE THIS BLOCK LATER
-        const ratingArray = []
-        for (let i = 0; i < 50; i++) {
-          const randomRating = Math.max(1, Math.floor(Math.random() * 6))
-          ratingArray.push({ value: randomRating })
-        }
-
-        const percent_one = Math.floor((ratingArray.filter(rating => rating.value == 1).length / ratingArray.length) * 100)
-        const percent_two = Math.floor((ratingArray.filter(rating => rating.value == 2).length / ratingArray.length) * 100)
-        const percent_three = Math.floor((ratingArray.filter(rating => rating.value == 3).length / ratingArray.length) * 100)
-        const percent_four = Math.floor((ratingArray.filter(rating => rating.value == 4).length / ratingArray.length) * 100)
-        const percent_five = Math.floor((ratingArray.filter(rating => rating.value == 5).length / ratingArray.length) * 100)
-
-        const ratings = [
-          { value: 1, percent: percent_one, count: ratingArray.filter(rating => rating.value == 1).length },
-          { value: 2, percent: percent_two, count: ratingArray.filter(rating => rating.value == 2).length },
-          { value: 3, percent: percent_three, count: ratingArray.filter(rating => rating.value == 3).length },
-          { value: 4, percent: percent_four, count: ratingArray.filter(rating => rating.value == 4).length },
-          { value: 5, percent: percent_five, count: ratingArray.filter(rating => rating.value == 5).length },
-        ]
-        setRatings(ratings)
-        // DELETE THIS BLOCK LATER
-
+        setGames(profileGames)
         setLoading(false)
       } catch (err) {
         console.error(err)

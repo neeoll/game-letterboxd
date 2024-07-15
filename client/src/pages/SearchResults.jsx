@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useLocation, Link } from "react-router-dom"
+import { platforms } from "../dict"
 
 const SearchResults = () => {
   const location = useLocation()
@@ -12,15 +13,16 @@ const SearchResults = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/expandedSearch?title=${searchText}`)
+      const response = await fetch(`http://127.0.0.1:5050/game/newExpandedSearch?title=${searchText}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
         return
       }
       const json = await response.json()
-      setCount(json[0].count)
-      setResults(json[1].result)
+      console.log(json[0].results)
+      setCount(json[0].count[0].count)
+      setResults(json[0].results)
       setLoading(false)
     }
     gameSearch()
@@ -45,11 +47,11 @@ const SearchResults = () => {
               <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
             </div>
             <div className="flex flex-col h-32 justify-start">
-              <Link to={`/game/${game.id}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.first_release_date * 1000).getFullYear()})</span></Link>
+              <Link to={`/game/${game.gameId}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>
               <p className="text-white text-sm">
-                {game.platforms.map((platform, index) => (
+                {game.platforms.map((gamePlatform, index) => (
                   <span>
-                    {platform.name}{index != game.platforms.length - 1 ? ", " : ""}
+                    {platforms.find(platform => platform.id === gamePlatform).name}{index != game.platforms.length - 1 ? ", " : ""}
                   </span>
                 ))}
               </p>

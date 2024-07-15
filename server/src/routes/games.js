@@ -1,259 +1,215 @@
-import express from "express"
+import { Router } from "express"
 import 'dotenv/config'
 import fetch from "node-fetch"
-import mongoose from "mongoose"
-import Game from "../models/Game.js"
-import User from "../models/User.js"
-
+import Game from "../db/models/Game.js"
+import User from "../db/models/User.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
-const router = express.Router()
+const gamesRouter = Router()
+  .post('/addGame', verifyToken, async (req, res) => {
+    try {
+      const user = await User.findOne({ email: req.user.email })
+      let game
+      switch (req.body.status) {
+        case "played":
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
+          break
+        case "playing":
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+          break
+        case "backlog":
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
+          break
+        case "wishlist":
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
+          break
+        default:
+          res.status(500).json({ error: 'Internal server error' })
+          break
+      }
+      user.games.push({ gameRef: game._id, status: req.body.status })
+      await user.save()
 
-mongoose.connect(process.env.ATLAS_URI)
-
-router.post('/addGame', verifyToken, async (req, res) => {
-  try {
-    const user = await User.findOne({ email: req.user.email })
-    let game
-    switch (req.body.status) {
-      case "played":
-        console.log("played")
-        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
-        break
-      case "playing":
-        console.log("playing")
-        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
-        break
-      case "backlog":
-        console.log("backlog")
-        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
-        break
-      case "wishlist":
-        console.log("wishlist")
-        game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
-        break
-      default:
-        res.status(500).json({ error: 'Internal server error' })
-        break
+      res.status(200).json({ message: 'all good'})
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'Internal server error' })
     }
-    user.games.push({ gameRef: game._id, status: req.body.status, gameId: req.body.id })
-    await user.save()
+  })
+  .post("/profileGames", async (req, res) => {
+    try {
+      const ids = []
+      req.body.games.forEach(game => ids.push(game.gameRef))
 
-    res.status(200).json({ message: 'all good'})
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Internal server error' })
-  }
-})
-
-router.post("/profileGames", async (req, res) => {
-  try {
-    const ids = []
-    req.body.games.forEach(game => ids.push(game.gameId))
-    const idFilter = `(${ids.join(',')})`
-    
-    const response = await fetch("https://api.igdb.com/v4/games", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Client-ID': process.env.API_CLIENT_ID,
-        'Authorization': process.env.API_ACCESS_TOKEN
-      },
-      body: `
-        fields name,cover.image_id;
-        limit 500;
-        where id = ${idFilter};
-      `
-    })
-    const results = await response.json()
-    res.status(200).json({ games: results })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Internal server error' })
-  }
-})
-
-router.get('/search', async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/games",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
-        },
-        body: `
-          fields cover.image_id,name,first_release_date; 
-          where name ~ *"${req.query.title}"* & category != (1,2,3,4,5,7,8,12,13,14);
-          limit 250;
-          sort aggregated_rating desc;
-        `
-      })
-    const results = await response.json()
-    res.send(results).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
-
-router.get("/expandedSearch", async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/multiquery",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
-        },
-        body: `
-          query games/count "Number of Results" {
-            where name ~ *"${req.query.title}"* & category != (1,2,3,4,5,7,8,12,13,14);
-          };
-
-          query games "Search Results" {
-            fields aggregated_rating,platforms.abbreviation,platforms.name,cover.*,name,first_release_date; 
-            where name ~ *"${req.query.title}"* & category != (1,2,3,4,5,7,8,12,13,14);
-            sort aggregated_rating desc;
-          };
-        `
-      })
-    const results = await response.json()
-    res.send(results).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
-
-router.get("/", async (req, res) => {
-  try {
-    const genre = parseInt(req.query.genre)
-    const platform = parseInt(req.query.platform)
-    const year = parseInt(req.query.year)
-    const sortCriteria = req.query.sortCriteria
-    const sortDirection = parseInt(req.query.sortDirection) == 0 ? "desc" : "asc"
-    const page = parseInt(req.query.page) - 1
-    const add_filter = req.query.additionalFilter
-    
-    let release_date_filter = ""
-    switch (year) {
-      case 0:
-        release_date_filter = `where first_release_date < ${Math.floor(Date.now() / 1000)}`
-        break
-      case 1:
-        release_date_filter = `where first_release_date > ${Math.floor(Date.now() / 1000)}`
-        break
-      default:
-        const start = Math.floor(new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0)).getTime() / 1000)
-        const end = Math.floor(new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999)).getTime() / 1000)
-        release_date_filter = `where first_release_date >= ${start} & first_release_date <= ${end}`
-        break
+      const results = await Game.find({ _id: { $in: ids }})
+      res.status(200).json(results)
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'Internal server error' })
     }
-    
-    const response = await fetch("https://api.igdb.com/v4/multiquery",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
+  })
+  .get('/search', async (req, res) => {
+    try {
+      console.log(req.query)
+      const results = await Game.aggregate([
+        { 
+          $match: { name: { $regex: req.query.title, $options: "i" } }
+        }, 
+        { 
+          $facet: {
+            results: [
+              { $project: { name: 1, cover: 1, gameId: 1, release_date: 1, platforms: 1, _id: 0 } }
+            ],
+            count: [
+              { $count: "count" }
+            ]
+          }
+        }
+      ])
+      res.status(200).json(results)
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  })
+  .get('/unknownCount', async (req, res) => {
+    try {
+      const results = await Game.aggregate([
+        {
+          $match: { release_date: "Unknown" }
         },
-        body: `
-          query games/count "Number of Matches" {
-            fields name,cover.image_id,first_release_date,total_rating_count,total_rating;
-            ${release_date_filter}${genre != 0 ? ` & genres = ${genre}` : ''}${platform != 0 ? ` & platforms = ${platform}` : ''}${add_filter != "undefined" ? ` & ${add_filter}` : ''} & category != (3,5,11) & version_title = null & cover != null;
-          };
-          query games "Custom filter" {
-            fields category,name,cover.image_id,first_release_date,total_rating_count,total_rating;
-            sort ${sortCriteria} ${sortDirection};
-            limit 36;
-            offset ${page * 36};
-            ${release_date_filter}${genre != 0 ? ` & genres = ${genre}` : ''}${platform != 0 ? ` & platforms = ${platform}` : ''}${add_filter != "undefined" ? ` & ${add_filter}` : ''} & category != (3,5,11) & version_title = null & cover != null;
-          };
-        `
-      })
-    const results = await response.json()
-    res.send(results).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
+        {
+          $facet: {
+            count: [ { $count: "count" } ],
+            results: [
+              { $project: { name: 1, gameId: 1, _id: 0 } }
+            ],
+          }
+        }
+      ])
+      res.status(200).json(results)
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: 'Internal server error' })
+    }
+  })
+  .get('/', async (req, res) => {
+    try {
+      const genre = req.query.genre !== '0' ? req.query.genre : null
+      const platform = req.query.platform !== '0' ? req.query.platform : null
+      const year = parseInt(req.query.year)
+      const page = parseInt(req.query.page) - 1
+      const sortBy = req.query.sortBy || 'release_date'
+      const sortOrder = parseInt(req.query.sortOrder)
+      
+      const pipeline = []
+      const filters = {}
 
-router.get("/:id", async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/games",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
-        },
-        body: `
-          fields artworks.image_id,collections,collections.name,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary,videos.*; 
-          where id = ${req.params.id};
+      if (genre) filters.genres = parseInt(genre)
+      if (platform) filters.platforms = parseInt(platform)
+      if (year != null) {
+        const currentTime = Math.floor(new Date() / 1000)
+        if (year == 0) filters.release_date = { $lt: currentTime }
+        else if (year == 1) filters.release_date = { $gt: currentTime }
+        else {
+          const start = Math.floor(new Date(year, 0, 1) / 1000)
+          const end = Math.floor(new Date(year, 11, 31, 23, 59, 59, 999) / 1000)
+          filters.release_date = { $gte: start, $lt: end }
+        }
+      }
+      filters.release_date = { ...filters.release_date, $ne: "Unknown" }
+
+      if (Object.keys(filters).length > 0) { pipeline.push({ $match: filters }) }
+      pipeline.push({ $sort: { [sortBy]: sortOrder }})
+      pipeline.push({ 
+        $facet: {
+          results: [
+            { $project: { name: 1, cover: 1, gameId: 1, release_date: 1, platforms: 1, _id: 0 } },
+
+            { $skip: page * 36 },
+            { $limit: 36 }
+          ],
+          count: [
+            { $count: "count" }
+          ]
+        }
+      })
+
+      const results = await Game.aggregate(pipeline)
+      res.send(results).status(200)
+    } catch (err) {
+      console.error(err)
+      res.send("An error occurred").status(500)
+    }
+  })
+  .get("/:id", async (req, res) => {
+    try {
+      const response = await fetch("https://api.igdb.com/v4/games",
+        {
+          method:'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Client-ID': process.env.API_CLIENT_ID,
+            'Authorization': process.env.API_ACCESS_TOKEN
+          },
+          body: `
+            fields artworks.image_id,collections,collections.name,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary; 
+            where id = ${req.params.id};
+            `
+        })
+      const data = await response.json()
+      
+      res.send(data[0]).status(200)
+    } catch (err) {
+      console.error(err)
+      res.send("An error occurred").status(500)
+    }
+  })
+  .get("/company/:id", async (req, res) => {
+    try {
+      const response = await fetch("https://api.igdb.com/v4/companies",
+        {
+          method:'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Client-ID': process.env.API_CLIENT_ID,
+            'Authorization': process.env.API_ACCESS_TOKEN
+          },
+          body: `
+            fields description,name;
+            where id = ${parseInt(req.params.id)};
+            limit 500;
           `
-      })
-    const data = await response.json()
-    
-    res.send(data[0]).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
+        })
+      const results = await response.json()
+      res.send(results[0]).status(200)
+    } catch (err) {
+      console.error(err)
+      res.send("An error occurred").status(500)
+    }
+  })
+  .get("/series/:seriesId", async (req, res) => {
+    try {
+      const response = await fetch("https://api.igdb.com/v4/collections",
+        {
+          method:'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Client-ID': process.env.API_CLIENT_ID,
+            'Authorization': process.env.API_ACCESS_TOKEN
+          },
+          body: `
+            fields *,games.name,games.cover.image_id;
+            where id = ${parseInt(req.params.seriesId)};
+            limit 500;
+          `
+        })
+      const results = await response.json()
+      res.send(results[0]).status(200)
+    } catch (err) {
+      console.error(err)
+      res.send("An error occurred").status(200)
+    }
+  })
 
-router.get("/company/:id", async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/companies",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
-        },
-        body: `
-          fields description,name;
-          where id = ${parseInt(req.params.id)};
-          limit 500;
-        `
-      })
-    const results = await response.json()
-    res.send(results[0]).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(500)
-  }
-})
-
-router.get("/series/:seriesId", async (req, res) => {
-  try {
-    const response = await fetch("https://api.igdb.com/v4/collections",
-      {
-        method:'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Client-ID': process.env.API_CLIENT_ID,
-          'Authorization': process.env.API_ACCESS_TOKEN
-        },
-        body: `
-          fields *,games.name,games.cover.image_id;
-          where id = ${parseInt(req.params.seriesId)};
-          limit 500;
-        `
-      })
-    const results = await response.json()
-    res.send(results[0]).status(200)
-  } catch (err) {
-    console.error(err)
-    res.send("An error occurred").status(200)
-  }
-})
-
-
-export default router
+export default gamesRouter
