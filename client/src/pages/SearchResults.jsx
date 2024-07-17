@@ -13,16 +13,16 @@ const SearchResults = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/newExpandedSearch?title=${searchText}`)
+      const response = await fetch(`http://127.0.0.1:5050/game/search?title=${searchText}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
         return
       }
       const json = await response.json()
-      console.log(json[0].results)
-      setCount(json[0].count[0].count)
-      setResults(json[0].results)
+      console.log(json)
+      setCount(json.count[0].count)
+      setResults(json.results)
       setLoading(false)
     }
     gameSearch()
@@ -47,7 +47,7 @@ const SearchResults = () => {
               <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
             </div>
             <div className="flex flex-col h-32 justify-start">
-              <Link to={`/game/${game.gameId}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>
+              <Link to={`/game/${game.game_id}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>
               <p className="text-white text-sm">
                 {game.platforms.map((gamePlatform, index) => (
                   <span>

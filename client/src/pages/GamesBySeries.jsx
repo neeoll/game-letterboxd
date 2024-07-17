@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { GameDisplay } from "../components"
 
 const GamesBySeries = () => {
   const { seriesId } = useParams()
 
-  const [results, setResults] = useState([])
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [loading, setLoading] = useState(true)
+  const [count, setCount] = useState(0)
+  const [results, setResults] = useState([])
+
+  const year = parseInt(searchParams.get('year') || '0')
+  const currentGenre = parseInt(searchParams.get('genre') || '0')
+  const currentPlatform = parseInt(searchParams.get('platform') || '0')
+  const sortBy = searchParams.get('sortBy') || "release_date"
+  const sortOrder = parseInt(searchParams.get('sortOrder') || '-1')
+  const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
     async function gameSearch() {
@@ -17,11 +27,18 @@ const GamesBySeries = () => {
         return
       }
       const json = await response.json()
-      
+      console.log(json)
       setResults(json)
+      setLoading(false)
     }
     gameSearch()
   }, [seriesId])
+
+  if (loading) {
+    return (
+      <div className="text-white">Loading...</div>
+    )
+  }
 
   return(
     <div>
@@ -29,7 +46,7 @@ const GamesBySeries = () => {
         <p className="text-sm font-light text-white/50">Series</p>
         <p className="text-3xl font-semibold">{results.name}</p>
       </div>
-      <GameDisplay additionalFilter={`collections = ${seriesId}`} />
+      <GameDisplay count={results.results[0].count[0].count} results={results.results[0].games} />
     </div>
   )
 }

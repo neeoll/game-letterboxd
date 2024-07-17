@@ -14,7 +14,7 @@ const ratingSchema = new mongoose.Schema({
 })
 
 const gameSchema = new mongoose.Schema({
-  gameId: Number,
+  game_id: Number,
   playing: [mongoose.Schema.Types.ObjectId],
   played: [mongoose.Schema.Types.ObjectId],
   backlog: [mongoose.Schema.Types.ObjectId],

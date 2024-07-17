@@ -10,10 +10,6 @@ const gameSchema = new mongoose.Schema({
     type: String,
     enum: ['played', 'playing', 'backlog', 'wishlist'],
     required: true
-  },
-  gameId: {
-    type: Number,
-    required: true
   }
 })
 

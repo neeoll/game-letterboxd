@@ -70,7 +70,7 @@ const Profile = () => {
         {/* Games */}
         <div className="col-start-2 col-end-6 flex h-fit gap-2 flex-wrap justify-center">
           {games.map(game => (
-            <Link key={game.id} to={`/game/${game.id}`} className="relative h-32 group">
+            <Link key={game.game_id} to={`/game/${game.game_id}`} className="relative h-32 group">
               <img className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
               <p className="flex absolute inset-0 p-0.5 items-center justify-center text-white text-xs text-center w-full h-full invisible group-hover:visible">{game.name}</p>
             </Link>

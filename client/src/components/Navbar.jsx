@@ -87,7 +87,7 @@ export default function Navbar() {
           <ComboboxOptions anchor="bottom start" className="bg-neutral-800" static={true}>
             <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
               {games.length > 0 ? games.map((game) => (
-                <ComboboxOption key={game.gameId} value={game.gameId} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
+                <ComboboxOption key={game.game_id} value={game.game_id} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
                     <Link className="p-1 flex w-full items-center border-b border-white/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
                         <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />

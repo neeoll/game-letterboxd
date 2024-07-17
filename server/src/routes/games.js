@@ -3,6 +3,7 @@ import 'dotenv/config'
 import fetch from "node-fetch"
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
+import Collection from "../db/models/Collection.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
 const gamesRouter = Router()
@@ -12,16 +13,16 @@ const gamesRouter = Router()
       let game
       switch (req.body.status) {
         case "played":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
           break
         case "playing":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
           break
         case "backlog":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
           break
         case "wishlist":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
           break
         default:
           res.status(500).json({ error: 'Internal server error' })
@@ -58,7 +59,7 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, cover: 1, gameId: 1, release_date: 1, platforms: 1, _id: 0 } }
+              { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } }
             ],
             count: [
               { $count: "count" }
@@ -66,28 +67,7 @@ const gamesRouter = Router()
           }
         }
       ])
-      res.status(200).json(results)
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  })
-  .get('/unknownCount', async (req, res) => {
-    try {
-      const results = await Game.aggregate([
-        {
-          $match: { release_date: "Unknown" }
-        },
-        {
-          $facet: {
-            count: [ { $count: "count" } ],
-            results: [
-              { $project: { name: 1, gameId: 1, _id: 0 } }
-            ],
-          }
-        }
-      ])
-      res.status(200).json(results)
+      res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Internal server error' })
@@ -124,7 +104,7 @@ const gamesRouter = Router()
       pipeline.push({ 
         $facet: {
           results: [
-            { $project: { name: 1, cover: 1, gameId: 1, release_date: 1, platforms: 1, _id: 0 } },
+            { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } },
 
             { $skip: page * 36 },
             { $limit: 36 }
@@ -136,7 +116,7 @@ const gamesRouter = Router()
       })
 
       const results = await Game.aggregate(pipeline)
-      res.send(results).status(200)
+      res.send(results[0]).status(200)
     } catch (err) {
       console.error(err)
       res.send("An error occurred").status(500)
@@ -188,27 +168,46 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/series/:seriesId", async (req, res) => {
+  .get("/series/:id", async (req, res) => {
     try {
-      const response = await fetch("https://api.igdb.com/v4/collections",
+      const results = await Collection.aggregate([
         {
-          method:'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Client-ID': process.env.API_CLIENT_ID,
-            'Authorization': process.env.API_ACCESS_TOKEN
-          },
-          body: `
-            fields *,games.name,games.cover.image_id;
-            where id = ${parseInt(req.params.seriesId)};
-            limit 500;
-          `
-        })
-      const results = await response.json()
+          $match: { series_id: parseInt(req.params.id) }
+        },
+        {
+          $project: { name: 1 }
+        },
+        {
+          $lookup: {
+            from: 'games',
+            pipeline: [
+              {
+                $match: {
+                  collections: {
+                    $elemMatch: { id: parseInt(req.params.id) }
+                  }
+                }
+              },
+              {
+                $facet: {
+                  games: [
+                    { $project: { game_id: 1, name: 1, cover: 1, release_date: 1 } },
+                    { $limit: 36 }
+                  ],
+                  count: [
+                    { $count: 'count' }
+                  ]
+                }
+              }
+            ], 
+            as: 'results'
+          }
+        }
+      ])
       res.send(results[0]).status(200)
     } catch (err) {
       console.error(err)
-      res.send("An error occurred").status(200)
+      res.status(500).json({ error: 'Internal server error'})
     }
   })
 

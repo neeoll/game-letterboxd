@@ -17,7 +17,7 @@ const StyledRating = styled(Rating)({
 })
 
 const GameDetails = () => {
-  const { gameId } = useParams()
+  const { game_id } = useParams()
 
   const [details, setDetails] = useState({})
   const [randomImg, setRandomImg] = useState('')
@@ -26,14 +26,14 @@ const GameDetails = () => {
   useEffect(() => {
     async function getDetails() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/${gameId}`)
+      const response = await fetch(`http://127.0.0.1:5050/game/${game_id}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
         return
       }
       const json = await response.json()
-      json.collection = json.collections ? json.collections[0].games.filter(game => game.id != gameId) : null
+      json.collection = json.collections ? json.collections[0].games.filter(game => game.id != game_id) : null
       console.log(json.collection)
       json.collection ? json.collection.length = 6 : console.log("No collection")
 
@@ -42,16 +42,15 @@ const GameDetails = () => {
       json.screenshots ? delete json.screenshots : console.log("No screenshots")
 
       let randomIndex = Math.floor((Math.random() * json.images.length))
-      console.log(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
-
-      setRandomImg(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
+      // if (json.images.length != 0) setRandomImg(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
+      console.log(json)
       setDetails(json)
       setLoading(false)
     }
     getDetails()
 
     return
-  }, [gameId])
+  }, [game_id])
 
   async function addGame(payload) {
     const response = await fetch('http://127.0.0.1:5050/game/addGame', {
@@ -80,7 +79,16 @@ const GameDetails = () => {
         </div>
         <div className="flex flex-col w-4/5 gap-1">
           <h1 className="text-5xl font-semibold text-indigo-100">{details.name}</h1>
-          <p className="text-xl text-indigo-100/50">Released on <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.first_release_date).year()}`}} className="text-indigo-100/75 font-semibold hover:text-white">{moment.unix(details.first_release_date).format("MMM D, YYYY")}</Link> by <Link to={`/games/company/${details.involved_companies[0].company.id}`} className="text-indigo-100/75 font-semibold hover:text-white">{details.involved_companies[0].company.name}</Link></p>
+          <div className="flex gap-2 text-xl text-indigo-100/50">
+            <p>Released on</p> 
+            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.first_release_date).year()}`}} className="text-indigo-100/75 font-semibold hover:text-white">{moment.unix(details.first_release_date).format("MMM D, YYYY")}</Link>
+            {details.involved_companies ? (
+              <>
+                <p>by</p> 
+                <Link to={`/games/company/${details.involved_companies[0].company.id}`} className="text-indigo-100/75 font-semibold hover:text-white">{details.involved_companies[0].company.name}</Link>
+              </>
+            ): <></>}
+          </div>
         </div>
       </div>
       <div className="flex w-full">
@@ -158,7 +166,7 @@ const GameDetails = () => {
                 <div className="flex flex-col gap-2">
                   <p className="text-indigo-100/75 border-b border-indigo-100/75 pb-2">{details.summary}</p>
                   {/* Series */}
-                  {details.collection != null ?
+                  {details.collections != null ?
                     <div className="flex flex-col">
                       <div className="flex justify-between">
                         <p className="font-semibold text-indigo-100">Other Games in Series</p>
