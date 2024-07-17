@@ -8,7 +8,6 @@ const GamesBySeries = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [loading, setLoading] = useState(true)
-  const [count, setCount] = useState(0)
   const [results, setResults] = useState([])
 
   const year = parseInt(searchParams.get('year') || '0')
@@ -36,7 +35,7 @@ const GamesBySeries = () => {
 
   if (loading) {
     return (
-      <div className="text-white">Loading...</div>
+      <div>Loading...</div>
     )
   }
 

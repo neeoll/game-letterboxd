@@ -4,6 +4,7 @@ import fetch from "node-fetch"
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
 import Collection from "../db/models/Collection.js"
+import Company from "../db/models/Company.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
 const gamesRouter = Router()
@@ -147,21 +148,37 @@ const gamesRouter = Router()
   })
   .get("/company/:id", async (req, res) => {
     try {
-      const response = await fetch("https://api.igdb.com/v4/companies",
+      const results = await Company.aggregate([
+        { $match: { company_id: parseInt(req.params.id) } },
+        { $project: { name: 1, description: 1 } },
         {
-          method:'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Client-ID': process.env.API_CLIENT_ID,
-            'Authorization': process.env.API_ACCESS_TOKEN
-          },
-          body: `
-            fields description,name;
-            where id = ${parseInt(req.params.id)};
-            limit 500;
-          `
-        })
-      const results = await response.json()
+          $lookup: {
+            from: 'games',
+            pipeline: [
+              {
+                $match: {
+                  companies: {
+                    $elemMatch: { 'company.id': parseInt(req.params.id) }
+                  }
+                }
+              },
+              {
+                $facet: {
+                  games: [
+                    { $project: { game_id: 1, name: 1, cover: 1, release_date: 1 } },
+                    { $limit: 36 }
+                  ],
+                  count: [
+                    { $count: 'count' }
+                  ]
+                }
+              }
+            ],
+            as: 'results'
+          }
+        }
+      ])
+      console.log(results)
       res.send(results[0]).status(200)
     } catch (err) {
       console.error(err)
@@ -171,12 +188,8 @@ const gamesRouter = Router()
   .get("/series/:id", async (req, res) => {
     try {
       const results = await Collection.aggregate([
-        {
-          $match: { series_id: parseInt(req.params.id) }
-        },
-        {
-          $project: { name: 1 }
-        },
+        { $match: { series_id: parseInt(req.params.id) } },
+        { $project: { name: 1 } },
         {
           $lookup: {
             from: 'games',
