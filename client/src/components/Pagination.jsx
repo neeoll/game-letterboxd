@@ -26,10 +26,10 @@ const Pagination = ({ count }) => {
 
   return (
     <div className="px-52">
-      <div className="flex justify-center items-center overflow-x-hidden gap-4 text-white">
+      <div className="flex justify-center items-center overflow-x-hidden gap-4 text-indigo-50">
         <button 
         onClick={() => decrementPage()} 
-        className={`${getPage() == 1 ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
+        className={`${getPage() == 1 ? "pointer-events-none text-indigo-50/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
           <RxCaretLeft />
         </button>
         <div className="flex gap-2">
@@ -46,7 +46,7 @@ const Pagination = ({ count }) => {
         </div>
         <button 
         onClick={() => incrementPage()} 
-        className={`${getPage() == Math.ceil(count / 36) ? "pointer-events-none text-white/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
+        className={`${getPage() == Math.ceil(count / 36) ? "pointer-events-none text-indigo-50/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
           <RxCaretRight />
         </button>
       </div>

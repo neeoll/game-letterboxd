@@ -1,11 +1,10 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
 import { Dialog, DialogPanel, Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react"
-import { RxCaretDown, RxCross2, RxStarFilled, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
-import moment from "moment"
+import { RxCaretDown, RxCross2, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
 import FilterSidebar from "./FilterSidebar"
 import { genres, platforms, sort_criteria } from "../dict"
 import Pagination from "./Pagination"
+import GameCard from "./GameCard"
 import { useSearchParams } from "react-router-dom"
 
 const GameDisplay = (props) => {
@@ -32,46 +31,46 @@ const GameDisplay = (props) => {
   }
 
   return(
-    <>
+    <div className="flex flex-col gap-2">
       <div className="px-52">
         {/* Filter Buttons */}
         <div className="flex gap-2">
           {year != null ? (
-            <button onClick={() => removeQueryParameter('year')} className="flex text-xs font-semibold text-neutral-300 bg-gray-700 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-indigo-400 hover:text-white">
-              <RxCross2 className="border rounded-full" size={"1.25em"}/>
+            <button onClick={() => removeQueryParameter('year')} className="flex text-xs font-semibold text-indigo-300 bg-indigo-800 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-amber-400 hover:text-amber-200 group">
+              <RxCross2 className="border rounded-full group-hover:border-amber-300" size={"1.25em"}/>
               <p>Release Year: {year == 0 ? "Released" : year == 1 ? "Unreleased" : year}</p>
             </button>
           ) : ""}
           {currentGenre != 0 ? (
-            <button onClick={() => removeQueryParameter('genre')} className="flex text-xs font-semibold text-neutral-300 bg-gray-700 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-indigo-400 hover:text-white">
-              <RxCross2 className="border rounded-full" size={"1.25em"}/>
+            <button onClick={() => removeQueryParameter('genre')} className="flex text-xs font-semibold text-indigo-300 bg-indigo-800 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-amber-400 hover:text-amber-200 group">
+              <RxCross2 className="border rounded-full group-hover:border-amber-300" size={"1.25em"}/>
               <p>Genre: {genres.find(genre => genre.id === currentGenre).name}</p>
             </button>
           ) : ""}
           {currentPlatform != 0 ? (
-            <button onClick={() => removeQueryParameter('platform')} className="flex text-xs font-semibold text-neutral-300 bg-gray-700 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-indigo-400 hover:text-white">
-              <RxCross2 className="border rounded-full" size={"1.25em"}/>
+            <button onClick={() => removeQueryParameter('platform')} className="flex text-xs font-semibold text-indigo-300 bg-indigo-800 outline outline-1 rounded-xl p-1 px-2 gap-2 items-center hover:outline-amber-400 hover:text-amber-200 group">
+              <RxCross2 className="border rounded-full group-hover:border-amber-300" size={"1.25em"}/>
               <p>Platform: {platforms.find(platform => platform.id === currentPlatform).name}</p>
             </button>
           ) : ""}
         </div>
         {/* Game Count and Sort/Filter Options */}
         <div className="flex w-full justify-between">
-          <div className="flex justify-center items-end text-white/50 font-light text-sm">{props.count.toLocaleString()} Games</div>
+          <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{props.count.toLocaleString()} Games</div>
           <div className="flex justify-end gap-2">
             <div className="flex w-fit items-center">
-              <p className="text-white/50 text-sm font-light text-nowrap">Sort By</p>
+              <p className="text-indigo-50/50 text-sm font-light text-nowrap">Sort By</p>
               <button onClick={() => updateQueryParameter('sortOrder', (sortOrder == -1 ? 1 : -1))} className="flex flex-col">
-                <RxTriangleUp className={`${sortOrder == 1 ? "text-white" : "text-white/50"} text-2xl -mb-2`}/>
-                <RxTriangleDown className={`${sortOrder == -1 ? "text-white" : "text-white/50"} text-2xl -mt-2`}/>
+                <RxTriangleUp className={`${sortOrder == 1 ? "text-indigo-50" : "text-indigo-50/50"} text-2xl -mb-2`}/>
+                <RxTriangleDown className={`${sortOrder == -1 ? "text-indigo-50" : "text-indigo-50/50"} text-2xl -mt-2`}/>
               </button>
               <Listbox value={sort_criteria.find(sort => sort.value == sortBy)} onChange={(value) => { if (value != null) updateQueryParameter('sortBy', value.value) }}>
-                <ListboxButton className="flex text-white items-center gap-1 w-full text-sm">{sort_criteria.find(sort => sort.value == sortBy).name}<RxCaretDown /></ListboxButton>
+                <ListboxButton className="flex text-indigo-50 items-center gap-1 w-full text-sm">{sort_criteria.find(sort => sort.value == sortBy).name}<RxCaretDown /></ListboxButton>
                 <ListboxOptions anchor="bottom" className="rounded bg-gray-800 text-xs">
                   {
                     sort_criteria.map((criteria) => (
                       <ListboxOption key={criteria.id} value={criteria} className="w-full p-1 hover:bg-gray-400">
-                        <p className="text-white">{criteria.name}</p>
+                        <p className="text-indigo-50">{criteria.name}</p>
                       </ListboxOption>
                     ))
                   }
@@ -80,7 +79,7 @@ const GameDisplay = (props) => {
             </div>
             <button onClick={() => setSidebarOpen(true)} className="text-sm text-indigo-500 font-bold">Filters</button>
             <Dialog open={sidebarOpen} onClose={() => setSidebarOpen(false)} className="relative z-50">
-              <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-neutral-900/75">
+              <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-indigo-900/75">
                 <DialogPanel>
                   <FilterSidebar setSidebarOpen={setSidebarOpen} />
                 </DialogPanel>
@@ -92,27 +91,12 @@ const GameDisplay = (props) => {
       <div className="flex flex-col justify-center gap-2"> 
         <div className="flex flex-wrap gap-4 justify-start px-52">
           {props.results.map(game =>
-            <div key={game.game_id} className="flex flex-col items-center gap-1">
-              <Link key={game.game_id} to={`/game/${game.game_id}`} className="relative h-56 group hover:rounded hover:outline hover:outline-4 hover:outline-indigo-500 hover:outline-offset-[-3px]">
-                <img loading="lazy" className="max-w-full max-h-full rounded group-hover:brightness-50" src={`https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg`} />
-                <p className="flex absolute inset-0 p-0.5 items-center justify-center text-center font-semibold text-white w-full h-full invisible group-hover:visible">{game.name}</p>
-              </Link>
-              {sort_criteria.find(sort => sort.value == sortBy).id == 1 ? 
-                <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-                  {moment.unix(game.release_date).format("MM-D-YYYY")}
-                </div> : <></>
-              }
-              {sort_criteria.find(sort => sort.value == sortBy).id == 3 ?
-                <div className="w-fit h-fit flex justify-center items-center text-white/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-                  <RxStarFilled />{((game.total_rating / 100) * 5).toFixed(1)}
-                </div> : <></>
-              }
-            </div>
+            <GameCard game={game} sortBy={sortBy} />
           )}
         </div>
         <Pagination count={props.count} />
       </div>
-    </>
+    </div>
   )
 }
 

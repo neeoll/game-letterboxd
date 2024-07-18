@@ -99,12 +99,12 @@ const Register = () => {
               type="text" 
               placeholder="Username" 
               className={`
-                w-full p-1 rounded bg-neutral-700 text-white/75 outline-none 
+                w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none 
                 ${regData.username != "" ? regData.userValid == false ? "outline-red-500" : "outline-green-500" : ""}
               `} 
               required 
             />
-            <p className="text-sm text-white/50 font-extralight">Maximum of 16 characters</p>
+            <p className="text-sm text-indigo-50/50 font-extralight">Maximum of 16 characters</p>
           </div>
           <input 
             onChange={(e) => {
@@ -114,7 +114,7 @@ const Register = () => {
             type="email" 
             placeholder="Email Address" 
             className={`
-              w-full p-1 rounded bg-neutral-700 text-white/75 outline-none 
+              w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none 
               ${regData.email != "" ? regData.emailValid == false ? "outline-red-500" : "outline-green-500" : ""}
             `}
             required 
@@ -124,7 +124,7 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)} 
               type="password" 
               placeholder="Password" 
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
+              className="w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none" 
               required 
             />
             <PasswordStrengthBar 
@@ -145,11 +145,11 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)} 
             type="password" 
             placeholder="Confirm Password" 
-            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none ${password != "" ? confirmPassword == password ? "ring-2 ring-green-500" : "ring-2 ring-red-500" : ""}`} 
+            className={`w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none ${password != "" ? confirmPassword == password ? "ring-2 ring-green-500" : "ring-2 ring-red-500" : ""}`} 
             required 
           />
           <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-          <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Register</button>
+          <button type="submit" className="w-full rounded text-indigo-50 bg-red-500 p-1">Register</button>
         </div>
       </form>
     </div>

@@ -50,17 +50,14 @@ export function FilterSidebar(props) {
   }
 
   return (
-    <div className={`flex flex-col absolute inset-0 h-screen w-60 p-4 gap-4 bg-neutral-800 text-neutral-300`}>
-      <p className="text-3xl font-light border-b border-neutral-300 pb-2">Filters</p>
+    <div className={`flex flex-col absolute inset-0 h-screen w-60 p-4 gap-4 bg-indigo-950 text-white/75`}>
       {/* Year Filter */}
       <div>
         <p className="text-xl font-light pb-2">Release Year</p>
-        <div className="grid grid-cols-4 grid-rows-2 gap-1">
-          <button onClick={() => setYear(1)} className={`flex col-start-1 col-end-3 rounded border p-0.5 justify-center hover:border-indigo-500 ${year == 1 ? "border-indigo-500" : ""}`}>Unreleased</button>
-          <button onClick={() => setYear(0)} className={`flex col-start-3 col-end-5 rounded border p-0.5 justify-center hover:border-indigo-500 ${year == 0 ? "border-indigo-500" : ""}`}>Released</button>
-          <button onClick={() => setYear(2023)} className={`flex rounded border p-0.5 justify-center hover:border-indigo-500 ${year == 2023 ? "border-indigo-500" : ""}`}>2023</button>
-          <button onClick={() => setYear(2024)} className={`flex rounded border p-0.5 justify-center hover:border-indigo-500 ${year == 2024 ? "border-indigo-500" : ""}`}>2024</button>
-          <input onChange={(e) => {setYear(e.target.value)}} min="1950" max="2100" placeholder="Custom Year" type="number" className="flex col-start-3 col-end-5 rounded border p-0.5 justify-center p-1 border-neutral-300 bg-gray-600"/>
+        <div className="grid grid-cols-2 grid-rows-2 gap-2">
+          <button onClick={() => setYear(1)} className={`flex col-start-1 col-end-2 rounded border p-0.5 justify-center hover:border-amber-300 hover:text-amber-300 ${year == 1 ? "border-amber-300 shadow-[0_0_10px_2px_rgba(252,211,77,0.75)] text-amber-300" : ""}`}>Unreleased</button>
+          <button onClick={() => setYear(0)} className={`flex col-start-2 col-end-3 rounded border p-0.5 justify-center hover:border-amber-300 hover:text-amber-300 ${year == 0 ? "border-amber-300 shadow-[0_0_10px_2px_rgba(252,211,77,0.75)] text-amber-300" : ""}`}>Released</button>
+          <input onChange={(e) => {setYear(e.target.value)}} min="1950" max="2100" placeholder="Custom Year" type="number" className="flex col-start-1 col-end-3 rounded border p-0.5 justify-center p-1 border-indigo-300 bg-indigo-800"/>
         </div>
       </div>
       {/* Genre Filter */}
@@ -68,18 +65,18 @@ export function FilterSidebar(props) {
         <p className="text-xl font-light pb-2">Genre</p>
         <Combobox value={genres.find(genre => genre.id == currentGenre)} onChange={(value) => { if (value != null) setGenre(value.id) }} onClose={() => setGenreQuery('')}>
           <ComboboxInput
-            className="h-8 rounded w-full p-1 border-neutral-300 text-sm bg-gray-600"
+            className="h-8 rounded w-full p-1 border-indigo-300 text-sm bg-indigo-800 text-amber-300"
             displayValue={(genre) => genre?.name}
             onChange={(e) => setGenreQuery(e.target.value)}
             placeholder="Genre"
             autoComplete="new-password"
           />
-          <ComboboxOptions anchor="bottom" className="w-52 rounded bg-gray-600 mt-2">
+          <ComboboxOptions anchor="bottom" className="w-52 rounded bg-indigo-800 mt-2">
             <SimpleBar autoHide={false} style={{ maxHeight: 200 }}>
               {
                 filteredGenres.map((genre) => (
-                  <ComboboxOption key={genre.id} value={genre} className="w-full p-1 hover:bg-gray-400">
-                    <p className="text-white">{genre.name}</p>
+                  <ComboboxOption key={genre.id} value={genre} className="w-full p-1 hover:bg-indigo-700">
+                    <p className="text-amber-200">{genre.name}</p>
                   </ComboboxOption>
                 ))
               }
@@ -92,18 +89,18 @@ export function FilterSidebar(props) {
         <p className="text-xl font-light pb-2">Platform</p>
         <Combobox value={platforms.find(platform => platform.id == currentPlatform)} onChange={(value) => { if (value != null) setPlatform(value.id) }} onClose={() => setPlatformQuery('')}>
           <ComboboxInput
-            className="h-8 rounded w-full p-1 border-neutral-300 text-sm bg-gray-600"
+            className="h-8 rounded w-full p-1 border-indigo-300 text-sm bg-indigo-800 text-amber-300"
             displayValue={(platform) => platform?.name}
             onChange={(e) => setPlatformQuery(e.target.value)}
             placeholder="Platform"
             autoComplete="new-password"
           />
-          <ComboboxOptions anchor="bottom" className="w-52 rounded bg-gray-600 mt-2">
+          <ComboboxOptions anchor="bottom" className="w-52 rounded bg-indigo-800 mt-2">
             <SimpleBar autoHide={false} style={{ maxHeight: 200 }}>
               {
                 filteredPlatforms.map((platform) => (
-                  <ComboboxOption key={platform.id} value={platform} className="w-full p-1 hover:bg-gray-400">
-                    <p className="text-white">{platform.name}</p>
+                  <ComboboxOption key={platform.id} value={platform} className="w-full p-1 hover:bg-indigo-700">
+                    <p className="text-amber-200">{platform.name}</p>
                   </ComboboxOption>
                 ))
               }
@@ -112,8 +109,8 @@ export function FilterSidebar(props) {
         </Combobox>
       </div>
       <div className="flex flex-col gap-2">
-        <button onClick={() => applyQueryParams()} className="w-full h-8 rounded bg-indigo-500 text-white">Apply Filters</button>
-        <button onClick={() => clearQueryParams()} className="w-full h-6 rounded bg-gray-500 text-white">Clear</button>
+        <button onClick={() => applyQueryParams()} className="w-full h-8 rounded bg-indigo-600 text-indigo-50 hover:bg-indigo-700 hover:text-amber-300">Apply Filters</button>
+        <button onClick={() => clearQueryParams()} className="w-full h-6 rounded bg-indigo-600 text-indigo-50 hover:bg-indigo-700 hover:text-amber-300">Clear</button>
       </div>
     </div>
   )

@@ -55,7 +55,8 @@ export default function Navbar() {
         return
       }
       const json = await response.json()
-      setGames(json[0].results)
+      console.log(json)
+      setGames(json.results)
   }
 
   const resetNavbar = () => {
@@ -78,23 +79,23 @@ export default function Navbar() {
         >
           <ComboboxInput
             type="text"
-            className="h-8 rounded-l min-w-72 h-10 p-2 border-neutral-950 text-sm text-white/75 bg-neutral-800 focus:outline-none"
+            className="h-8 rounded-l min-w-72 h-10 p-2 border-indigo-950 text-sm text-indigo-50/75 bg-indigo-800 focus:outline-none"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
             onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${e.target.value}`}) }}
             autoComplete="new-password"
           />
-          <ComboboxOptions anchor="bottom start" className="bg-neutral-800" static={true}>
+          <ComboboxOptions anchor="bottom start" className="bg-indigo-800" static={true}>
             <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
               {games.length > 0 ? games.map((game) => (
-                <ComboboxOption key={game.game_id} value={game.game_id} className="px-1 rounded-md hover:bg-neutral-950 hover:cursor-pointer">
-                    <Link className="p-1 flex w-full items-center border-b border-white/25">
+                <ComboboxOption key={game.game_id} value={game.game_id} className="px-1 rounded-md hover:bg-indigo-950 hover:cursor-pointer">
+                    <Link className="p-1 flex w-full items-center border-b border-amber-100/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
                         <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />
                       </div>
-                      <h1 className="text-white text-xs text-wrap">
+                      <h1 className="text-indigo-50 text-xs text-wrap">
                         {`${game.name} `}
-                        <span className="text-white/75">
+                        <span className="text-indigo-50/75">
                           {` (${new Date(game.release_date * 1000).getFullYear()})`}
                         </span>
                       </h1>
@@ -104,18 +105,18 @@ export default function Navbar() {
             </SimpleBar>
           </ComboboxOptions>
         </Combobox>
-        <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
+        <Link to={"/games"} className="text-indigo-50/75 hover:text-indigo-50">Games</Link>
         {userData ? 
           (
             <Menu>
               <MenuButton className="hover:cursor-default">
-                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-white/75 hover:text-white">{userData.user.username}<RxCaretDown size={"1.25rem"}/></div>
+                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-indigo-50/75 hover:text-indigo-50">{userData.user.username}<RxCaretDown size={"1.25rem"}/></div>
               </MenuButton>
               <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom start">
-                <div className="bg-neutral-800 rounded mt-1">
+                <div className="bg-indigo-800 rounded mt-1">
                   {options.map((option) => (
                     <MenuItem>
-                      <Link onClick={() => setMenuOpen(false)} to={option.href} className="flex w-full justify-start text-white/75 py-1 px-3 text-sm block rounded hover:bg-neutral-900">
+                      <Link onClick={() => setMenuOpen(false)} to={option.href} className="flex w-full justify-start text-indigo-50/75 py-1 px-3 text-sm block rounded hover:bg-indigo-900">
                         {option.destination}
                       </Link>
                     </MenuItem>
@@ -126,7 +127,7 @@ export default function Navbar() {
                         setMenuOpen(false)
                         logout()
                       }} 
-                      className="flex w-full justify-start text-white/75 py-1 px-3 text-sm block rounded hover:bg-red-900 hover:text-red-500"
+                      className="flex w-full justify-start text-indigo-50/75 py-1 px-3 text-sm block rounded hover:bg-red-900 hover:text-red-500"
                     >
                       Logout
                     </button>
@@ -137,8 +138,8 @@ export default function Navbar() {
           ) :
           (
             <div className="flex gap-2">
-              <Link to={"/register"} className="text-white/75 hover:text-white">Register</Link>
-              <Link to={"/login"} className="text-white/75 hover:text-white">Login</Link>
+              <Link to={"/register"} className="text-indigo-50/75 hover:text-indigo-50">Register</Link>
+              <Link to={"/login"} className="text-indigo-50/75 hover:text-indigo-50">Login</Link>
             </div>
           )
         }

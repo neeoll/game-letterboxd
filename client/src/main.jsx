@@ -1,35 +1,15 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom"
-import SimpleBar from "simplebar-react"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import 'simplebar-react/dist/simplebar.min.css'
 import "./index.css"
 import App from "./App"
 import * as Pages from './pages'
-import { Navbar } from './components'
-
-const SimpleBarStyle = {
-  width: '100vw',
-  maxHeight: '100vh',
-}
-
-function NavbarWrapper() {
-  return (
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-none">
-      <SimpleBar style={SimpleBarStyle}>
-        <Navbar />
-        <div className="pt-24">
-          <Outlet />
-        </div>
-      </SimpleBar>
-    </div>
-  )
-}
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <NavbarWrapper />,
+    element: <App />,
     children: [
       {
         path: "/",
@@ -54,10 +34,6 @@ const router = createBrowserRouter([
       {
         path: "/game/:game_id",
         element: <Pages.GameDetails />
-      },
-      {
-        path: "/test",
-        element: <Pages.Test />
       },
       {
         path: "/register",

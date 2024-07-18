@@ -134,7 +134,7 @@ const gamesRouter = Router()
             'Authorization': process.env.API_ACCESS_TOKEN
           },
           body: `
-            fields artworks.image_id,collections,collections.name,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary; 
+            fields artworks.image_id,collections,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary; 
             where id = ${req.params.id};
             `
         })

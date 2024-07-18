@@ -37,7 +37,7 @@ const SearchResults = () => {
 
   return (
     <div className="flex flex-col h-fit gap-y-2">
-      <div className="flex justify-center text-white text-3xl">
+      <div className="flex justify-center text-indigo-50 text-3xl">
         <p>{count} results for <span className="text-4xl font-semibold">"{searchText}"</span></p>
       </div>
       <div className="flex flex-col px-52">
@@ -47,8 +47,8 @@ const SearchResults = () => {
               <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
             </div>
             <div className="flex flex-col h-32 justify-start">
-              <Link to={`/game/${game.game_id}`} className="text-white text-xl min-w-fit">{game.name} <span className="text-white/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>
-              <p className="text-white text-sm">
+              <Link to={`/game/${game.game_id}`} className="text-indigo-50 text-xl min-w-fit">{game.name} <span className="text-indigo-50/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>
+              <p className="text-indigo-50 text-sm">
                 {game.platforms.map((gamePlatform, index) => (
                   <span>
                     {platforms.find(platform => platform.id === gamePlatform).name}{index != game.platforms.length - 1 ? ", " : ""}

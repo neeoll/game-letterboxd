@@ -61,7 +61,7 @@ const Login = () => {
             }} 
             type="text" 
             placeholder="Email Address or Username" 
-            className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none`}
+            className={`w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none`}
             required 
           />
           <input 
@@ -71,15 +71,15 @@ const Login = () => {
             }}
             type="password" 
             placeholder="Password" 
-            className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none" 
+            className="w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none" 
             required 
           />
           <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-          <button type="submit" className="w-full rounded text-white bg-red-500 p-1">Login</button>
+          <button type="submit" className="w-full rounded text-indigo-50 bg-red-500 p-1">Login</button>
         </div>
       </form>
       {failedLogin ? (
-        <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-white">
+        <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-indigo-50">
           <IoWarningOutline size={"1.25em"}/>
           <p>Error: Incorrect username or password, please try again.</p>
         </div>

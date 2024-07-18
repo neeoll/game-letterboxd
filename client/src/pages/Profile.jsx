@@ -59,11 +59,11 @@ const Profile = () => {
     <div className="flex flex-col w-full gap-4 justify-center items-center px-12">
       <div className="grid grid-cols-6 grid-rows-1 justify-between w-full gap-4 border-b">
         {/* Game Counts */}
-        <div className="col-start-1 col-end-2 flex flex-col text-white/75 bg-neutral-800 rounded p-1">
+        <div className="col-start-1 col-end-2 flex flex-col text-indigo-50/75 bg-indigo-800 rounded p-1">
           <div className="">Game Stats:</div>
           {game_statuses.map((status) => (
             <Link className="flex justify-center items-center align-middle group">
-              <div className="group-hover:text-white">{status.name}: {user.games.filter(game => game.status == status.value).length}</div>
+              <div className="group-hover:text-indigo-50">{status.name}: {user.games.filter(game => game.status == status.value).length}</div>
             </Link>
           ))}
         </div>
@@ -72,7 +72,7 @@ const Profile = () => {
           {games.map(game => (
             <Link key={game.game_id} to={`/game/${game.game_id}`} className="relative h-32 group">
               <img className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
-              <p className="flex absolute inset-0 p-0.5 items-center justify-center text-white text-xs text-center w-full h-full invisible group-hover:visible">{game.name}</p>
+              <p className="flex absolute inset-0 p-0.5 items-center justify-center text-indigo-50 text-xs text-center w-full h-full invisible group-hover:visible">{game.name}</p>
             </Link>
           ))}
         </div>
@@ -87,13 +87,13 @@ const Profile = () => {
               ))}
             </div>
             <div className="flex justify-between px-2">
-              <div className="flex text-white/75 text-sm justify-center items-center">1 <RxStarFilled /></div>
-              <div className="flex text-white/75 text-sm justify-center items-center">5 <RxStarFilled /></div>
+              <div className="flex text-indigo-50/75 text-sm justify-center items-center">1 <RxStarFilled /></div>
+              <div className="flex text-indigo-50/75 text-sm justify-center items-center">5 <RxStarFilled /></div>
             </div>
           </div>
         </div>
       </div>
-      <pre className="text-white">{JSON.stringify(user, null, 2)}</pre>
+      <pre className="text-indigo-50">{JSON.stringify(user, null, 2)}</pre>
     </div>
   )
 }

@@ -41,11 +41,11 @@ const GamesByCompany = () => {
   }
 
   return(
-    <div>
-      <div className="flex flex-col mx-52 pb-4 text-white border-b border-white/50">
-        <p className="text-sm font-light text-white/50">Company</p>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col mx-52 pb-4 text-indigo-50 border-b border-white/50">
+        <p className="text-sm font-light text-indigo-50/50">Company</p>
         <p className="text-3xl mb-2 font-semibold">{results.name}</p>
-        <p className="font-light text-white/75">{results.description != "N/A" ? results.description : ""}</p>
+        <p className="font-light text-indigo-50/75">{results.description != "N/A" ? results.description : ""}</p>
       </div>
       <GameDisplay count={results.results[0].count[0].count} results={results.results[0].games} />
     </div>
