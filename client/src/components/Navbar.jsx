@@ -110,7 +110,7 @@ export default function Navbar() {
           (
             <Menu>
               <MenuButton className="hover:cursor-default">
-                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-indigo-50/75 hover:text-indigo-50">{userData.user.username}<RxCaretDown size={"1.25rem"}/></div>
+                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 justify-center items-center text-indigo-50/75 hover:text-indigo-50">{userData.username}<RxCaretDown size={"1.25rem"}/></div>
               </MenuButton>
               <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom start">
                 <div className="bg-indigo-800 rounded mt-1">

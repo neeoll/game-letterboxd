@@ -4,7 +4,26 @@ import { RxStarFilled } from "react-icons/rx"
 import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { game_statuses } from "../dict"
-import { GenerateRandomRatings } from "../temp/ratingPlaceholder"
+
+const calculateRatingDistribution = (ratings) => {
+  const ratingArray = []
+  ratings.forEach(rating => {
+    ratingArray.push(rating.rating)
+  })
+
+  const distributions = [
+    { value: 1, percent: Math.floor((ratingArray.filter(rating => rating == 1).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 1).length },
+    { value: 2, percent: Math.floor((ratingArray.filter(rating => rating == 2).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 2).length },
+    { value: 3, percent: Math.floor((ratingArray.filter(rating => rating == 3).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 3).length },
+    { value: 4, percent: Math.floor((ratingArray.filter(rating => rating == 4).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 4).length },
+    { value: 5, percent: Math.floor((ratingArray.filter(rating => rating == 5).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 5).length },
+  ]
+
+  const sum = ratingArray.reduce((acc, current) => acc + current, 0)
+  const average = sum / ratingArray.length
+
+  return { distributions: distributions, average: average }
+}
 
 const Profile = () => {
   if (!localStorage.getItem('jwt-token')) navigate('/login')
@@ -13,7 +32,7 @@ const Profile = () => {
   const [user, setUser] = useState(null)
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
-  const ratings = GenerateRandomRatings(50)
+  const [ratings, setRatings] = useState([])
 
   useEffect(() => {
     async function getUserInfo() {
@@ -26,17 +45,17 @@ const Profile = () => {
           }
         })
         const userData = await response.json()
-        setUser(userData.user)
+        setUser(userData)
+        setRatings(calculateRatingDistribution(userData.ratings))
 
         response = await fetch('http://127.0.0.1:5050/game/profileGames', {
           method: 'POST',
-          body: JSON.stringify({ games: userData.user.games }),
+          body: JSON.stringify({ games: userData.games }),
           headers: {
             'content-type': 'application/json'
           }
         })
         const profileGames = await response.json()
-        console.log(profileGames)
 
         setGames(profileGames)
         setLoading(false)
@@ -79,10 +98,10 @@ const Profile = () => {
         {/* Ratings */}
         <div className="col-start-6 col-end-7 flex flex-col justify-start">
           <div className="flex flex-col">
-            <div className="flex h-48 gap-1 border-b">
-              {ratings.map(rating => (
+            <div className="flex h-32 gap-1 border-b">
+              {ratings.distributions.map(rating => (
                 <div className="flex flex-col w-1/5 justify-end">
-                  <div className={`bg-red-500 hover:bg-red-300 rounded-t`} style={{ height: `calc(${rating.percent}% + 10px)`}} />
+                  <div className={`bg-amber-400 hover:bg-amber-300 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
                 </div>
               ))}
             </div>

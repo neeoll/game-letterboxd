@@ -3,6 +3,9 @@ import moment from "moment"
 import { RxStarFilled } from "react-icons/rx"
 
 export function GameCard(props) {
+  if (props.game.game_id == 418) {
+    console.log(props.game.avg_rating.toFixed(1))
+  }
   return (
     <div key={props.game.game_id} className="flex flex-col items-center gap-2">
       <Link key={props.game.game_id} to={`/game/${props.game.game_id}`} className="relative h-56 group hover:rounded hover:outline hover:outline-3 hover:outline-amber-200 hover:outline-offset-3 hover:shadow-[0_0_10px_5px_rgba(252,211,77,0.75)]">
@@ -16,7 +19,7 @@ export function GameCard(props) {
       }
       {props.sortBy == "avg_rating" ?
         <div className="w-fit h-fit flex justify-center items-center text-yellow-50/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-          <RxStarFilled />{((props.game.avg_rating / 100) * 5).toFixed(1)}
+          <RxStarFilled />{props.game.avg_rating ? props.game.avg_rating.toFixed(1) : (0.0).toFixed(1)}
         </div> : <></>
       }
     </div>

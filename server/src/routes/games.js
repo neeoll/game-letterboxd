@@ -14,16 +14,16 @@ const gamesRouter = Router()
       let game
       switch (req.body.status) {
         case "played":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {played: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {played: user._id} }, { returnDocument: "after" })
           break
         case "playing":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {playing: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {playing: user._id} }, { returnDocument: "after" })
           break
         case "backlog":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {backlog: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {backlog: user._id} }, { returnDocument: "after" })
           break
         case "wishlist":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {wishlist: user._id} }, { upsert: true, returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {wishlist: user._id} }, { returnDocument: "after" })
           break
         default:
           res.status(500).json({ error: 'Internal server error' })
@@ -36,6 +36,28 @@ const gamesRouter = Router()
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Internal server error' })
+    }
+  })
+  .post('/rateGame', verifyToken, async (req, res) => {
+    try {
+      const user = await User.findOne({ email: req.user.email })
+      const game = await Game.findOneAndUpdate(
+        { game_id: req.body.game_id, 'ratings.userRef': user._id }, 
+        { $set: { 'ratings.$.value': req.body.rating } },
+        { returnDocument: 'after' }
+      )
+      if (!game) {
+        const updatedGame = await Game.findOneAndUpdate(
+          { game_id: req.body.game_id },
+          { $addToSet: { ratings: { value: req.body.rating, userRef: user._id }}},
+          { returnDocument: 'after' }
+        )
+      }
+      await user.save()
+      res.status(200).json(user)
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
     }
   })
   .post("/profileGames", async (req, res) => {
@@ -105,7 +127,7 @@ const gamesRouter = Router()
       pipeline.push({ 
         $facet: {
           results: [
-            { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } },
+            { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
 
             { $skip: page * 36 },
             { $limit: 36 }

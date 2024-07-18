@@ -6,6 +6,7 @@ import { reviews } from "../temp/reviewPlaceholder"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 import { completion_statuses } from "../dict"
+import { GenerateRandomRatings } from '../temp/ratingPlaceholder'
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -22,6 +23,7 @@ const GameDetails = () => {
   const [details, setDetails] = useState({})
   const [randomImg, setRandomImg] = useState('')
   const [loading, setLoading] = useState(true)
+  const ratings = GenerateRandomRatings(50)
 
   useEffect(() => {
     async function getDetails() {
@@ -34,7 +36,6 @@ const GameDetails = () => {
       }
       const json = await response.json()
       json.collection = json.collections ? json.collections[0].games.filter(game => game.id != game_id) : null
-      console.log(json.collection)
       json.collection ? json.collection.length = 6 : console.log("No collection")
 
       json.images = json.artworks && json.screenshots ? json.screenshots.concat(json.artworks) : (json.artworks || json.screenshots || [])
@@ -43,7 +44,6 @@ const GameDetails = () => {
 
       let randomIndex = Math.floor((Math.random() * json.images.length))
       // if (json.images.length != 0) setRandomImg(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
-      console.log(json)
       setDetails(json)
       setLoading(false)
     }
@@ -62,6 +62,20 @@ const GameDetails = () => {
       }
     })
     const data = await response.json()
+  }
+
+  async function rateGame(rating) {
+    console.log(rating)
+    const response = await fetch('http://127.0.0.1:5050/game/rateGame', {
+      method: 'POST',
+      body: JSON.stringify({ game_id: game_id, rating: rating}),
+      headers: {
+        'authorization': localStorage.getItem('jwt-token'),
+        'content-type': 'application/json'
+      }
+    })
+    const data = await response.json()
+    console.log(data)
   }
 
   if (loading) {
@@ -98,7 +112,7 @@ const GameDetails = () => {
             <div className="flex flex-col gap-2 items-center bg-indigo-800 rounded p-2 pt-12 -mt-12">
               <button className="w-full bg-red-500 rounded text-indigo-50 p-1">Log or Review</button>
               <div className="flex justify-center p-1 w-full border-b">
-                <StyledRating precision={0.5} size="large"/>
+                <StyledRating onChange={(event, newValue) => rateGame(newValue)} size="large"/>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => addGame({ status: "played", id: details.id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
@@ -122,9 +136,15 @@ const GameDetails = () => {
           }
           <div className="flex flex-col gap-2 text-indigo-50 items-center bg-indigo-800 rounded p-2">
             <p className="font-semibold text-md text-indigo-50/50">Avg. Rating</p> 
-            <p className="font-bold text-3xl">{((details.total_rating / 100) * 5).toFixed(1)}</p>
-            <div className="flex flex-wrap text-indigo-50/25 border-b rounded p-2 justify-center items-center text-center">
-              TODO: Rating Distribution Chart
+            <p className="font-bold text-3xl">{(ratings.average).toFixed(1)}</p>
+            <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
+              <div className="w-full flex h-24 gap-1 border-b border-l">
+                {ratings.ratingDistribution.map(rating => (
+                  <div className="flex flex-col w-1/5 justify-end">
+                    <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="flex flex-col w-full font-light text-indigo-50/75">
               <div className="flex w-full px-2 justify-between">
