@@ -91,7 +91,7 @@ export default function Navbar() {
                 <ComboboxOption key={game.game_id} value={game.game_id} className="px-1 rounded-md hover:bg-indigo-950 hover:cursor-pointer">
                     <Link className="p-1 flex w-full items-center border-b border-amber-100/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
-                        <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.image_id}.jpg` : ""} />
+                        <img className="max-w-full max-h-full rounded" src={game.cover_id ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover_id}.jpg` : ""} />
                       </div>
                       <h1 className="text-indigo-50 text-xs text-wrap">
                         {`${game.name} `}

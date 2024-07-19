@@ -44,7 +44,7 @@ const SearchResults = () => {
         {results.map(game => (
           <div className="flex items-center gap-2 p-2 border-b border-white/10">
             <div className="max-w-24 max-h-32 flex justify-start items-center">
-              <img className="max-w-full max-h-full rounded" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
+              <img className="max-w-full max-h-full rounded" src={game.cover_id ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover_id.image_id}.jpg` : ""} />
             </div>
             <div className="flex flex-col h-32 justify-start">
               <Link to={`/game/${game.game_id}`} className="text-indigo-50 text-xl min-w-fit">{game.name} <span className="text-indigo-50/75">({new Date(game.release_date * 1000).getFullYear()})</span></Link>

@@ -5,7 +5,7 @@ import moment from "moment"
 import { reviews } from "../temp/reviewPlaceholder"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
-import { completion_statuses } from "../dict"
+import { completion_statuses, platforms, genres } from "../dict"
 import { GenerateRandomRatings } from '../temp/ratingPlaceholder'
 
 const StyledRating = styled(Rating)({
@@ -21,30 +21,27 @@ const GameDetails = () => {
   const { game_id } = useParams()
 
   const [details, setDetails] = useState({})
-  const [randomImg, setRandomImg] = useState('')
   const [loading, setLoading] = useState(true)
   const ratings = GenerateRandomRatings(50)
 
   useEffect(() => {
     async function getDetails() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/${game_id}`)
+      const response = await fetch(`http://127.0.0.1:5050/game/${game_id}`, {
+        headers: {
+          'view-token': localStorage.getItem(`${game_id}_view_token`)
+        }
+      })
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)
         return
       }
       const json = await response.json()
-      json.collection = json.collections ? json.collections[0].games.filter(game => game.id != game_id) : null
-      json.collection ? json.collection.length = 6 : console.log("No collection")
-
-      json.images = json.artworks && json.screenshots ? json.screenshots.concat(json.artworks) : (json.artworks || json.screenshots || [])
-      json.artworks ? delete json.artworks : console.log("No artworks")
-      json.screenshots ? delete json.screenshots : console.log("No screenshots")
-
-      let randomIndex = Math.floor((Math.random() * json.images.length))
-      // if (json.images.length != 0) setRandomImg(`https://images.igdb.com/igdb/image/upload/t_screenshot_big_2x/${json.images[randomIndex].image_id}.jpg`)
-      setDetails(json)
+      
+      if (json.token) localStorage.setItem(`${game_id}_view_token`, json.token)
+      
+      setDetails(json.data)
       setLoading(false)
     }
     getDetails()
@@ -89,17 +86,17 @@ const GameDetails = () => {
       {/* Header Portion */}
       <div className="flex items-end w-full">
         <div className="flex w-1/5 justify-center">
-          <img className="max-w-40 rounded border border-black z-10" src={details.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${details.cover.image_id}.jpg` : ''} />
+          <img className="max-w-40 rounded border border-black z-10" src={details.cover_id ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${details.cover_id}.jpg` : ''} />
         </div>
         <div className="flex flex-col w-4/5 gap-1">
           <h1 className="text-5xl font-semibold text-indigo-100">{details.name}</h1>
           <div className="flex gap-2 text-xl text-indigo-100/50">
             <p>Released on</p> 
-            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.first_release_date).year()}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{moment.unix(details.first_release_date).format("MMM D, YYYY")}</Link>
-            {details.involved_companies ? (
+            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.release_date).year()}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{moment.unix(details.release_date).format("MMM D, YYYY")}</Link>
+            {details.companies ? (
               <>
                 <p>by</p> 
-                <Link to={`/games/company/${details.involved_companies[0].company.id}`} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{details.involved_companies[0].company.name}</Link>
+                <Link to={`/games/company/${details.companies[0].company_id}`} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{details.companies[0].name}</Link>
               </>
             ): <></>}
           </div>
@@ -190,12 +187,12 @@ const GameDetails = () => {
                     <div className="flex flex-col">
                       <div className="flex justify-between">
                         <p className="font-semibold text-indigo-100">Other Games in Series</p>
-                        <Link to={`/games/series/${details.collections[0].id}`} className="text-sm font-semibold text-indigo-300 hover:underline">See more</Link>
+                        <Link to={`/games/series/${details.collections[0]}`} className="text-sm font-semibold text-indigo-300 hover:underline">See more</Link>
                       </div>
                       <div className="flex w-full h-fit flex-wrap gap-2 justify-start">
                         {details.collection.map(game => (
-                          <Link key={game.id} to={`/game/${game.id}`} className="relative h-36 group text-indigo-50 font-semibold">
-                            <img className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover.image_id}.jpg` : ""} />
+                          <Link key={game.game_id} to={`/game/${game.game_id}`} className="relative h-36 group text-indigo-50 font-semibold">
+                            <img className="max-w-full max-h-full rounded group-hover:brightness-50" src={game.cover_id ? `https://images.igdb.com/igdb/image/upload/t_720p/${game.cover_id}.jpg` : ""} />
                             <p className="flex absolute inset-0 p-0.5 items-center justify-center text-center w-full h-full invisible group-hover:visible">{game.name}</p>
                           </Link>
                         ))}
@@ -209,17 +206,17 @@ const GameDetails = () => {
               <p className="font-bold">Playable on</p>
               <div className="flex w-full flex-wrap gap-2">
                 {details.platforms.map(platform => 
-                  <div key={platform.id} className="flex gap-1 items-center text-sm border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
+                  <div key={platform} className="flex gap-1 items-center text-sm border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
                     <IoLogoGameControllerB />
-                    <Link to={{ pathname: "/games", search: `?platform=${platform.id}`}}>{platform.name.length > 20 ? platform.abbreviation || platform.name : platform.name}</Link>
+                    <Link to={{ pathname: "/games", search: `?platform=${platform}`}}>{platforms.find(plat => plat.id == platform).name}</Link>
                   </div>
                 )}
               </div>
               <p className="font-bold">Genres</p>
               <div className="flex flex-wrap gap-2">
                 {details.genres.map(genre => 
-                  <div key={genre.id} className="w-fit text-xs border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
-                    <Link to={{ pathname: "/games", search: `?genre=${genre.id}`}}>{genre.name}</Link>
+                  <div key={genre} className="w-fit text-xs border border-indigo-100/75 rounded p-1 hover:border-indigo-500">
+                    <Link to={{ pathname: "/games", search: `?genre=${genre}`}}>{genres.find(gen => gen.id == genre).name}</Link>
                   </div>
                 )}
               </div>
@@ -244,7 +241,7 @@ const GameDetails = () => {
                     />
                     <div className="flex gap-1 text-indigo-50">
                       {completion_statuses[Math.floor(Math.random() * 4)].element()}
-                      <p className="text-indigo-50/50">on <Link to={{ pathname: "/games", search: `?platform=${details.platforms[0].id}`}} className="text-indigo-50">{details.platforms[0].name}</Link></p>
+                      <p className="text-indigo-50/50">on <Link to={{ pathname: "/games", search: `?platform=${details.platforms[0]}`}} className="text-indigo-50">{platforms.find(platform => platform.id == details.platforms[0]).name}</Link></p>
                     </div>
                   </div>
                   <div>{review.body}</div>

@@ -1,11 +1,28 @@
-import { Router } from "express"
+import { json, Router } from "express"
 import 'dotenv/config'
+import jsonwebtoken from 'jsonwebtoken'
 import fetch from "node-fetch"
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
 import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
 import { verifyToken } from "../middleware/verifyToken.js"
+
+const checkViewToken = (req, res, next) => {
+  const token = req.headers['view-token']
+  
+  jsonwebtoken.verify(token, 'secret', (err, decoded) => {
+    if (err) {
+      if (err.expiredAt) { 
+        req.token = null
+        return next()
+       }
+      return next()
+    }
+    req.token = decoded
+    next()
+  })
+}
 
 const gamesRouter = Router()
   .post('/addGame', verifyToken, async (req, res) => {
@@ -82,7 +99,7 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } }
+              { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } }
             ],
             count: [
               { $count: "count" }
@@ -127,7 +144,7 @@ const gamesRouter = Router()
       pipeline.push({ 
         $facet: {
           results: [
-            { $project: { name: 1, cover: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
+            { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
 
             { $skip: page * 36 },
             { $limit: 36 }
@@ -145,24 +162,55 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", async (req, res) => {
+  .get("/:id", checkViewToken, async (req, res) => {
     try {
-      const response = await fetch("https://api.igdb.com/v4/games",
+      const results = await Game.aggregate([
         {
-          method:'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Client-ID': process.env.API_CLIENT_ID,
-            'Authorization': process.env.API_ACCESS_TOKEN
-          },
-          body: `
-            fields artworks.image_id,collections,collections.games.cover.image_id,collections.games.name,cover.image_id,first_release_date,genres.name,involved_companies.company.name,involved_companies.developer,involved_companies.publisher,name,platforms.abbreviation,platforms.name,total_rating,screenshots.image_id,summary; 
-            where id = ${req.params.id};
-            `
-        })
-      const data = await response.json()
+          $match: { game_id: parseInt(req.params.id) }
+        },
+        {
+          $lookup: {
+            from: 'companies',
+            let: { companiesArray: '$companies.company'},
+            pipeline: [
+              {
+                $match: { 
+                  $expr: {
+                    $in: ['$company_id', '$$companiesArray']
+                  }
+                 }
+              },
+              { $project: { name: 1, company_id: 1 } }
+            ],
+            as: 'companies'
+          }
+        },
+        {
+          $lookup: {
+            from: 'games',
+            let: { collection_id: { $arrayElemAt: ['$collections', 0] } },
+            pipeline: [
+              { 
+                $match: {
+                  $expr: {
+                    $in: ['$$collection_id', '$collections']
+                  }
+                }
+              },
+              { $project: { name: 1, cover_id: 1, game_id: 1 } },
+              { $limit: 6 }
+            ],
+            as: 'collection'
+          }
+        }
+      ])
       
-      res.send(data[0]).status(200)
+      if (req.token == null) {
+        let view_token = jsonwebtoken.sign({ game_id: req.params.id }, 'secret', { expiresIn: "30 seconds" })
+        return res.send({ data: results[0], token: view_token }).status(200)
+      }
+      
+      res.send({ data: results[0] }).status(200)
     } catch (err) {
       console.error(err)
       res.send("An error occurred").status(500)
@@ -172,7 +220,7 @@ const gamesRouter = Router()
     try {
       const results = await Company.aggregate([
         { $match: { company_id: parseInt(req.params.id) } },
-        { $project: { name: 1, description: 1 } },
+        { $project: { _id: 0 } },
         {
           $lookup: {
             from: 'games',
@@ -180,14 +228,14 @@ const gamesRouter = Router()
               {
                 $match: {
                   companies: {
-                    $elemMatch: { 'company.id': parseInt(req.params.id) }
+                    $elemMatch: { 'company': parseInt(req.params.id) }
                   }
                 }
               },
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover: 1, release_date: 1 } },
+                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1 } },
                     { $limit: 36 }
                   ],
                   count: [
@@ -218,15 +266,15 @@ const gamesRouter = Router()
             pipeline: [
               {
                 $match: {
-                  collections: {
-                    $elemMatch: { id: parseInt(req.params.id) }
+                  $expr: {
+                    $in: [parseInt(req.params.id), '$collections']
                   }
                 }
               },
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover: 1, release_date: 1 } },
+                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1 } },
                     { $limit: 36 }
                   ],
                   count: [
