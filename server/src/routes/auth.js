@@ -61,7 +61,7 @@ const authRouter = Router()
         return res.status(401).json({ error: 'Invalid credentials' })
       }
 
-      const token = jsonwebtoken.sign({ email: user.email }, 'secret', { expiresIn: "30 days" })
+      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, 'secret', { expiresIn: "30 days" })
       res.status(200).json({ token })
     } catch (err) {
       res.status(500).json({ error: 'Internal server error' })

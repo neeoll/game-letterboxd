@@ -1,39 +1,50 @@
 import app from './app.js'
 import mongoose from 'mongoose'
 import 'dotenv/config'
+import { calculateAvgRating, calculatePopularity } from './utils/changeStreamHelper.js'
 
 const PORT = process.env.PORT
 
-const proceed = false
-
-const setUpChangeStream = () => {
-  const db = mongoose.connection
-  const gamesCollection = db.collection('games')
-  const changeStream = gamesCollection.watch()
+const ratingUpdateStream = () => {
+  const gamesCollection = mongoose.connection.collection('games')
+  const changeStream = gamesCollection.watch([
+    {
+      $match: {
+        operationType: 'update',
+        $or: [
+          { 'updateDescription.updatedFields.ratings': { $exists: true } },
+          { 'updateDescription.updatedFields': { $regex: '/^ratings\.\d+\.value$/' } },
+          { 'updateDescription.updatedFields.views': { $exists: true } }
+        ]
+      }
+    }
+  ])
 
   changeStream.on('change', async (change) => {
     console.log(change)
-    if (change.operationType == 'update') {
+    if (change.updateDescription.updatedFields.views) {
       const game = await gamesCollection.findOne({ _id: change.documentKey._id })
-      const ratings = game.ratings
-      const sum = ratings.reduce((acc, current) => acc + current.value, 0)
-      const average = sum / ratings.length
-      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avg_rating: average } }, { new: true, useFindAndModify: true } )
-        .then(() => console.log("document successfully updated"))
+      const commentCount = game.reviews.length
+      const likeCount = game.ratings.filter(rating => rating.value > 3).length
+      const popularity = calculatePopularity(commentCount, likeCount, game.views)
+      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { popularity: popularity } }, { new: true, useFindAndModify: true })
+      return
+    } else {
+      const game = await gamesCollection.findOne({ _id: change.documentKey._id })
+      const average = calculateAvgRating(game.ratings)
+      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avg_rating: average } }, { new: true, useFindAndModify: true })
+      return
     }
   })
-
-  console.log('change stream set up')
 }
 
 mongoose.connect(process.env.ATLAS_URI)
 .then(() => {
   console.log("connected to mongodb")
-  setUpChangeStream()
+  ratingUpdateStream()
+
+  console.log('change streams set up, listening for changes...')
 })
-
-
-
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)

@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        rubberBiscuit: ["Rubber Biscuit", 'sans-serif']
+      }
+    },
   },
   variants: {
     extend: {

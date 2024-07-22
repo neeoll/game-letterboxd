@@ -6,7 +6,6 @@ import { reviews } from "../temp/reviewPlaceholder"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 import { completion_statuses, platforms, genres } from "../dict"
-import { GenerateRandomRatings } from '../temp/ratingPlaceholder'
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -17,19 +16,35 @@ const StyledRating = styled(Rating)({
   }
 })
 
+const calculateRatingDistribution = (ratings) => {
+  const ratingArray = []
+  ratings.forEach(rating => {
+    ratingArray.push(rating.value)
+  })
+
+  return [
+    { value: 1, percent: Math.floor((ratingArray.filter(rating => rating == 1).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 1).length },
+    { value: 2, percent: Math.floor((ratingArray.filter(rating => rating == 2).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 2).length },
+    { value: 3, percent: Math.floor((ratingArray.filter(rating => rating == 3).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 3).length },
+    { value: 4, percent: Math.floor((ratingArray.filter(rating => rating == 4).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 4).length },
+    { value: 5, percent: Math.floor((ratingArray.filter(rating => rating == 5).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 5).length },
+  ]
+}
+
 const GameDetails = () => {
   const { game_id } = useParams()
 
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)
-  const ratings = GenerateRandomRatings(50)
+  const [ratingDistributions, setRatingDistributions]  = useState([])
 
   useEffect(() => {
     async function getDetails() {
       setLoading(true)
       const response = await fetch(`http://127.0.0.1:5050/game/${game_id}`, {
         headers: {
-          'view-token': localStorage.getItem(`${game_id}_view_token`)
+          'view-token': localStorage.getItem(`${game_id}_view_token`),
+          'authorization': localStorage.getItem('jwt-token')
         }
       })
       if (!response.ok) {
@@ -38,10 +53,13 @@ const GameDetails = () => {
         return
       }
       const json = await response.json()
+
+      console.log(json)
       
       if (json.token) localStorage.setItem(`${game_id}_view_token`, json.token)
       
       setDetails(json.data)
+      json.data.ratings ? setRatingDistributions(calculateRatingDistribution(json.data.ratings)) : console.log("no ratings")
       setLoading(false)
     }
     getDetails()
@@ -109,7 +127,7 @@ const GameDetails = () => {
             <div className="flex flex-col gap-2 items-center bg-indigo-800 rounded p-2 pt-12 -mt-12">
               <button className="w-full bg-red-500 rounded text-indigo-50 p-1">Log or Review</button>
               <div className="flex justify-center p-1 w-full border-b">
-                <StyledRating onChange={(event, newValue) => rateGame(newValue)} size="large"/>
+                <StyledRating defaultValue={details.userRating || 0} onChange={(event, newValue) => rateGame(newValue)} size="large"/>
               </div>
               <div className="flex gap-2">
                 <button onClick={() => addGame({ status: "played", id: details.id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
@@ -133,10 +151,10 @@ const GameDetails = () => {
           }
           <div className="flex flex-col gap-2 text-indigo-50 items-center bg-indigo-800 rounded p-2">
             <p className="font-semibold text-md text-indigo-50/50">Avg. Rating</p> 
-            <p className="font-bold text-3xl">{(ratings.average).toFixed(1)}</p>
+            <p className="font-bold text-3xl">{(details.avg_rating || 0).toFixed(1)}</p>
             <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
               <div className="w-full flex h-24 gap-1 border-b border-l">
-                {ratings.ratingDistribution.map(rating => (
+                {ratingDistributions.map(rating => (
                   <div className="flex flex-col w-1/5 justify-end">
                     <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
                   </div>

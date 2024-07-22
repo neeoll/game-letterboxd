@@ -1,28 +1,12 @@
-import { json, Router } from "express"
+import { Router } from "express"
 import 'dotenv/config'
 import jsonwebtoken from 'jsonwebtoken'
-import fetch from "node-fetch"
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
 import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
 import { verifyToken } from "../middleware/verifyToken.js"
-
-const checkViewToken = (req, res, next) => {
-  const token = req.headers['view-token']
-  
-  jsonwebtoken.verify(token, 'secret', (err, decoded) => {
-    if (err) {
-      if (err.expiredAt) { 
-        req.token = null
-        return next()
-       }
-      return next()
-    }
-    req.token = decoded
-    next()
-  })
-}
+import { checkViewToken } from "../middleware/checkViewToken.js"
 
 const gamesRouter = Router()
   .post('/addGame', verifyToken, async (req, res) => {
@@ -57,21 +41,29 @@ const gamesRouter = Router()
   })
   .post('/rateGame', verifyToken, async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.user.email })
-      const game = await Game.findOneAndUpdate(
-        { game_id: req.body.game_id, 'ratings.userRef': user._id }, 
-        { $set: { 'ratings.$.value': req.body.rating } },
+      await Game.updateOne(
+        { game_id: req.body.game_id },
+        { $pull: { ratings: { userRef: req.user.id } } }
+      )
+
+      const updatedGame = await Game.findOneAndUpdate(
+        { game_id: req.body.game_id },
+        { $addToSet: { ratings: { value: req.body.rating, userRef: req.user.id } } },
         { returnDocument: 'after' }
       )
-      if (!game) {
-        const updatedGame = await Game.findOneAndUpdate(
-          { game_id: req.body.game_id },
-          { $addToSet: { ratings: { value: req.body.rating, userRef: user._id }}},
-          { returnDocument: 'after' }
-        )
-      }
-      await user.save()
-      res.status(200).json(user)
+
+      await User.updateOne(
+        { _id: req.user.id },
+        { $pull: { ratings: { gameRef: updatedGame._id } } }
+      )
+      
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user.id },
+        { $addToSet: { ratings: { gameRef: updatedGame._id, rating: req.body.rating } } },
+        { returnDocument: 'after' }
+      )
+
+      res.status(200).json(updatedUser)
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })
@@ -91,7 +83,6 @@ const gamesRouter = Router()
   })
   .get('/search', async (req, res) => {
     try {
-      console.log(req.query)
       const results = await Game.aggregate([
         { 
           $match: { name: { $regex: req.query.title, $options: "i" } }
@@ -144,7 +135,7 @@ const gamesRouter = Router()
       pipeline.push({ 
         $facet: {
           results: [
-            { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
+            { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, popularity: 1, _id: 0 } },
 
             { $skip: page * 36 },
             { $limit: 36 }
@@ -162,7 +153,7 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", checkViewToken, async (req, res) => {
+  .get("/:id", [verifyToken, checkViewToken], async (req, res) => {
     try {
       const results = await Game.aggregate([
         {
@@ -202,11 +193,46 @@ const gamesRouter = Router()
             ],
             as: 'collection'
           }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            let: { game_ref: '$_id' },
+            pipeline: [
+              {
+                $match: { email: req.user.email }
+              },
+              {
+                $project: {
+                  ratings: {
+                    $filter: {
+                      input: '$ratings',
+                      as: 'rating',
+                      cond: { $eq: ['$$rating.gameRef', "$$game_ref"] }
+                    }
+                  }
+                }
+              },
+              {
+                $project: {
+                  rating: { $arrayElemAt: ['$ratings.rating', 0] }
+                }
+              }
+            ],
+            as: 'userRating'
+          }
+        },
+        {
+          $addFields: {
+            userRating: { $arrayElemAt: ['$userRating.rating', 0] }
+          }
         }
       ])
       
       if (req.token == null) {
-        let view_token = jsonwebtoken.sign({ game_id: req.params.id }, 'secret', { expiresIn: "30 seconds" })
+        console.log('writing new token')
+        const game = await Game.findOneAndUpdate({ game_id: req.params.id }, { $inc: { views: 1 } }, { new: true })
+        let view_token = jsonwebtoken.sign({ game_id: req.params.id }, 'secret', { expiresIn: "5 seconds" })
         return res.send({ data: results[0], token: view_token }).status(200)
       }
       
@@ -248,7 +274,6 @@ const gamesRouter = Router()
           }
         }
       ])
-      console.log(results)
       res.send(results[0]).status(200)
     } catch (err) {
       console.error(err)

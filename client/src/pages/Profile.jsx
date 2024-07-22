@@ -22,13 +22,15 @@ const calculateRatingDistribution = (ratings) => {
   const sum = ratingArray.reduce((acc, current) => acc + current, 0)
   const average = sum / ratingArray.length
 
+  console.log(distributions)
+
   return { distributions: distributions, average: average }
 }
 
 const Profile = () => {
-  if (!localStorage.getItem('jwt-token')) navigate('/login')
-
   const navigate = useNavigate()
+  
+  if (!localStorage.getItem('jwt-token')) navigate('/login')
   const [user, setUser] = useState(null)
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)

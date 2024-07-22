@@ -22,6 +22,10 @@ const gameSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  popularity: {
+    type: mongoose.Schema.Types.Decimal128,
+    default: 0
+  },
   playing: [mongoose.Schema.Types.ObjectId],
   played: [mongoose.Schema.Types.ObjectId],
   backlog: [mongoose.Schema.Types.ObjectId],

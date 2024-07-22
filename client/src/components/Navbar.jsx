@@ -69,8 +69,11 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="absolute z-10 inset-0 items-center w-full h-fit py-6">
-      <div className="flex flex-row-reverse gap-3 px-12 items-center">
+    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-12">
+      <div className="font-rubberBiscuit text-white/75 text-2xl">
+        <Link>Arcade Archives</Link>
+      </div>
+      <div className="flex flex-row-reverse gap-3 items-center">
         <Combobox 
           onChange={(value) => { 
             if (value != null) navigate(`/game/${value}`)
