@@ -1,50 +1,21 @@
 import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
-import PasswordStrengthBar from 'react-password-strength-bar'
 import bcrypt from 'bcryptjs'
 import _debounce from 'debounce'
+import { RxCheck, RxCross2 } from 'react-icons/rx'
 
 const Register = () => {
+  const navigate = useNavigate()
   if (localStorage.getItem('jwt-token')) navigate('/profile')
 
   const recaptcha = useRef()
-  const navigate = useNavigate()
-  const availabilityDebounce = _debounce((payload) => checkAvailability(payload), 500)
-
-  const [regData, setRegData] = useState({ 
-    email: "", 
-    emailValid: false, 
-    username: "",
-    userValid: false,
-    password: ""
-  })
-
-  const updateRegData = (payload) => {
-    setRegData(prevState => ({
-      ...prevState,
-      ...payload
-    }))
-  }
-  
+  const [email, setEmail] = useState("")
+  const [emailValid, setEmailValid] = useState(true)
+  const [username, setUsername] = useState("")
+  const [usernameValid, setUsernameValid] = useState(true)
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-
-  async function checkAvailability(payload) {
-    if (Object.entries(payload)[0][1] == "") {
-      updateRegData(payload)
-      return
-    }
-    const response = await fetch('http://127.0.0.1:5050/auth/checkAvailability', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        'content-type': 'application/json'
-      }
-    })
-    const data = await response.json()
-    updateRegData(data)
-  }
 
   async function veryifyCaptcha() {
     const captchaValue = recaptcha.current.getValue()
@@ -66,13 +37,13 @@ const Register = () => {
   async function submitRegister(e) {
     e.preventDefault()
     const captchaVerified = veryifyCaptcha()
-    if (captchaVerified && regData.userValid && regData.emailValid) {
+    if (captchaVerified) {
       const salt = bcrypt.genSaltSync(10)
       const hash = bcrypt.hashSync(password, salt)
 
       const response = await fetch('http://127.0.0.1:5050/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ username: regData.username, email: regData.email, password: hash }),
+        body: JSON.stringify({ username: username, email: email, password: hash }),
         headers: {
           'content-type': 'application/json'
         }
@@ -81,7 +52,8 @@ const Register = () => {
       if (data.status == "ok") {
         navigate('/login')
       } else {
-        alert(data.error)
+        if (data.error == 'Username already in use') { setUsernameValid(false) }
+        if (data.error == 'Email already in use') { setEmailValid(false) }
       }
     } else {
       alert('reCAPTCHA validation failed')
@@ -89,69 +61,83 @@ const Register = () => {
   }
 
   return(
-    <div className="flex gap-10 w-full justify-center items-center">
+    <div className="flex flex-col gap-4 w-full justify-center items-center pb-2">
       {/* Register Form */}
-      <form onSubmit={submitRegister}>
+      <form className={`group/form`} onSubmit={submitRegister}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">
-          <div className="flex flex-col w-full items-end">
+          {/* Username */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Username</p>
             <input 
-              onChange={(e) => availabilityDebounce({ username: e.target.value })}
-              type="text" 
-              placeholder="Username" 
-              className={`
-                w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none 
-                ${regData.username != "" ? regData.userValid == false ? "outline-red-500" : "outline-green-500" : ""}
-              `} 
-              required 
-            />
-            <p className="text-sm text-indigo-50/50 font-extralight">Maximum of 16 characters</p>
-          </div>
-          <input 
-            onChange={(e) => {
-              e.preventDefault()
-              if (e.target.validity.valid) availabilityDebounce({ email: e.target.value })
-            }} 
-            type="email" 
-            placeholder="Email Address" 
-            className={`
-              w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none 
-              ${regData.email != "" ? regData.emailValid == false ? "outline-red-500" : "outline-green-500" : ""}
-            `}
-            required 
-          />
-          <div className="flex flex-col w-full">
-            <input 
-              onChange={(e) => setPassword(e.target.value)} 
-              type="password" 
-              placeholder="Password" 
-              className="w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none" 
-              required 
-            />
-            <PasswordStrengthBar 
-              password={password} 
-              minLength={6} 
-              shortScoreWord="Minimum of 6 characters" 
-              scoreWords={["Weak","Weak","Okay","Good","Strong"]}
-              barColors={['#444', '#ef4836', '#f6b44d', '#2b90ef', '#25c281']}
-              scoreWordStyle={{
-                fontSize: '0.875rem',
-                lineHeight: '1rem',
-                fontWeight: 300,
-                color: 'rgba(255,255,255,0.5)'
+              onChange={(e) => {
+                setUsernameValid(true)
+                setUsername(e.target.value)
               }}
+              type="text"
+              className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none"
+              maxLength={16}
+              required 
+            />
+            <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{username}" is already in use.</p>
+          </div>
+          {/* Email */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Email</p>
+            <input 
+              onChange={(e) => {
+                setEmailValid(true)
+                setEmail(e.target.value)
+              }}
+              type="email"
+              className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none peer"
+              required 
+            />
+            <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
+            <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{email}" is already in use.</p>
+          </div>
+          {/* Password */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Password</p>
+            <input 
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none"
+              minLength={6}
+              required 
             />
           </div>
-          <input 
-            onChange={(e) => setConfirmPassword(e.target.value)} 
-            type="password" 
-            placeholder="Confirm Password" 
-            className={`w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none ${password != "" ? confirmPassword == password ? "ring-2 ring-green-500" : "ring-2 ring-red-500" : ""}`} 
-            required 
-          />
+          {/* Confirm Password */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Confirm Password</p>
+            <input 
+              onChange={(e) => setConfirmPassword(e.target.value)} 
+              type="password" 
+              className={`w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none`} 
+              minLength={password.length}
+              required 
+            />
+          </div>
+          <div className={`flex flex-col ${password == "" || confirmPassword == "" ? "invisible h-0" : "visible h-fit"}`}>
+            {confirmPassword != password ? (
+              <div className="flex gap-2 text-pink-500 items-center">
+                <RxCross2 size={"1.25em"}/>
+                <p>Passwords do not match</p>
+              </div>
+            ) : (
+              <div className="flex gap-2 text-green-500 items-center">
+                <RxCheck size={"1.25em"}/>
+                <p>Passwords match</p>
+              </div>
+            )}
+          </div>
           <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-          <button type="submit" className="w-full rounded text-indigo-50 bg-red-500 p-1">Register</button>
+          <div className={`relative w-96 group ${password == confirmPassword ? "" : "pointer-events-none brightness-50"} group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Register</div>
+            <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Register</button>
+          </div>
         </div>
       </form>
+      
     </div>
   )
 }

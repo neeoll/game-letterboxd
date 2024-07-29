@@ -1,4 +1,4 @@
-export const game_statuses = [
+export const gameStatuses = [
   {
     id: 1,
     name: "Played",

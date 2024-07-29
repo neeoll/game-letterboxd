@@ -21,20 +21,14 @@ const ratingUpdateStream = () => {
   ])
 
   changeStream.on('change', async (change) => {
-    console.log(change)
-    if (change.updateDescription.updatedFields.views) {
       const game = await gamesCollection.findOne({ _id: change.documentKey._id })
       const commentCount = game.reviews.length
       const likeCount = game.ratings.filter(rating => rating.value > 3).length
       const popularity = calculatePopularity(commentCount, likeCount, game.views)
-      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { popularity: popularity } }, { new: true, useFindAndModify: true })
-      return
-    } else {
-      const game = await gamesCollection.findOne({ _id: change.documentKey._id })
       const average = calculateAvgRating(game.ratings)
-      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avg_rating: average } }, { new: true, useFindAndModify: true })
+      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avg_rating: average, popularity: popularity } }, { new: true, useFindAndModify: true })
+      console.log(`${game.name} updated fields: \nPopularity: ${popularity} \nAverage Rating: ${average}`)
       return
-    }
   })
 }
 

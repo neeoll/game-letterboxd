@@ -6,6 +6,10 @@ const gameSchema = new mongoose.Schema({
     ref: 'Game',
     required: true
   },
+  lastUpdated: {
+    type: Number,
+    required: true
+  },
   status: {
     type: String,
     enum: ['played', 'playing', 'backlog', 'wishlist'],

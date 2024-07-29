@@ -30,9 +30,13 @@ const authRouter = Router()
   })
   .post("/register", async (req, res) => {
     try {
-      const existingUser = await User.findOne({ email: req.body.email })
-      if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' })
+      const existingUsername = await User.findOne({ username: req.body.username })
+      if (existingUsername) {
+        return res.status(400).json({ error: 'Username already in use' })
+      }
+      const existingEmail = await User.findOne({ email: req.body.email })
+      if (existingEmail) {
+        return res.status(400).json({ error: 'Email already in use' })
       }
 
       const newUser = new User({

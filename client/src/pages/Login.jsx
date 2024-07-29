@@ -4,10 +4,10 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 
 const Login = () => {
+  const navigate = useNavigate()
   if (localStorage.getItem('jwt-token')) navigate('/profile')
 
   const recaptcha = useRef()
-  const navigate = useNavigate()
   const [emailOrUsername, setEmailOrUsername] = useState("")
   const [password, setPassword] = useState("")
   const [failedLogin, setFailedLogin] = useState(false)
@@ -50,32 +50,42 @@ const Login = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full justify-center items-center">
-      <form onSubmit={submitLogin}>
+    <div className="flex flex-col gap-10 w-full justify-center items-center pb-2">
+      <form className="group/form" onSubmit={submitLogin}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">
-          <input 
-            onChange={(e) => {
-              e.preventDefault()
-              setFailedLogin(false)
-              setEmailOrUsername(e.target.value)
-            }} 
-            type="text" 
-            placeholder="Email Address or Username" 
-            className={`w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none`}
-            required 
-          />
-          <input 
-            onChange={(e) => {
-              setFailedLogin(false)
-              setPassword(e.target.value)
-            }}
-            type="password" 
-            placeholder="Password" 
-            className="w-full p-1 rounded bg-indigo-700 text-indigo-50/75 outline-none" 
-            required 
-          />
+          {/* Email or Username */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Email or Username</p>
+            <input 
+              onChange={(e) => {
+                e.preventDefault()
+                setFailedLogin(false)
+                setEmailOrUsername(e.target.value)
+              }} 
+              type="text" 
+              className={`w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none`}
+              required 
+            />
+          </div>
+          {/* Password */}
+          <div className="flex flex-col w-full items-start">
+            <p className="text-sm text-indigo-50/50 font-extralight">Password</p>
+            <input 
+              onChange={(e) => {
+                setFailedLogin(false)
+                setPassword(e.target.value)
+              }}
+              type="password"
+              className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none"
+              minLength={6}
+              required 
+            />
+          </div>
           <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
-          <button type="submit" className="w-full rounded text-indigo-50 bg-red-500 p-1">Login</button>
+          <div className="relative w-96 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50">
+            <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Login</div>
+            <button type="submit" className="relative w-full rounded text-indigo-50 bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Login</button>
+          </div>
         </div>
       </form>
       {failedLogin ? (

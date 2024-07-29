@@ -7,6 +7,8 @@ import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 import { checkViewToken } from "../middleware/checkViewToken.js"
+import { decodeToken } from "../middleware/decodeToken.js"
+import mongoose from "mongoose"
 
 const gamesRouter = Router()
   .post('/addGame', verifyToken, async (req, res) => {
@@ -30,7 +32,8 @@ const gamesRouter = Router()
           res.status(500).json({ error: 'Internal server error' })
           break
       }
-      user.games.push({ gameRef: game._id, status: req.body.status })
+      
+      user.games.push({ gameRef: game._id, lastUpdated: Math.floor(new Date() / 1000), status: req.body.status })
       await user.save()
 
       res.status(200).json({ message: 'all good'})
@@ -71,10 +74,45 @@ const gamesRouter = Router()
   })
   .post("/profileGames", async (req, res) => {
     try {
-      const ids = []
-      req.body.games.forEach(game => ids.push(game.gameRef))
+      const ids = req.body.games.map(game => new mongoose.Types.ObjectId(game.gameRef))
+      const lastUpdatedMap = req.body.games.reduce((map, game) => {
+        map[game.gameRef] = game.lastUpdated;
+        return map;
+      }, {})
 
-      const results = await Game.find({ _id: { $in: ids }})
+      const results = await Game.aggregate([
+        {
+          $match: { 
+            _id: { $in: ids }
+          }
+        },
+        {
+          $addFields: {
+            lastUpdated: {
+              $reduce: {
+                input: Object.entries(lastUpdatedMap).map(([key, value]) => ({
+                  k: new mongoose.Types.ObjectId(key),
+                  v: value
+                })),
+                initialValue: null,
+                in: {
+                  $cond: [
+                    { $eq: ['$_id', '$$this.k'] },
+                    '$$this.v',
+                    '$$value'
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          $project: { name: 1, cover_id: 1, game_id: 1, lastUpdated: 1, release_date: 1, genres: 1, platforms: 1, _id: 0 }
+        },
+        {
+          $sort: { lastUpdated: -1 }
+        }
+      ])
       res.status(200).json(results)
     } catch (err) {
       console.error(err)
@@ -90,7 +128,8 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, _id: 0 } }
+              { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
+              { $limit: 100 }
             ],
             count: [
               { $count: "count" }
@@ -137,8 +176,8 @@ const gamesRouter = Router()
           results: [
             { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, popularity: 1, _id: 0 } },
 
-            { $skip: page * 36 },
-            { $limit: 36 }
+            { $skip: page * 35 },
+            { $limit: 35 }
           ],
           count: [
             { $count: "count" }
@@ -153,48 +192,47 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", [verifyToken, checkViewToken], async (req, res) => {
+  .get("/:id", [decodeToken, checkViewToken], async (req, res) => {
     try {
-      const results = await Game.aggregate([
-        {
-          $match: { game_id: parseInt(req.params.id) }
-        },
-        {
-          $lookup: {
-            from: 'companies',
-            let: { companiesArray: '$companies.company'},
-            pipeline: [
-              {
-                $match: { 
-                  $expr: {
-                    $in: ['$company_id', '$$companiesArray']
-                  }
-                 }
-              },
-              { $project: { name: 1, company_id: 1 } }
-            ],
-            as: 'companies'
-          }
-        },
-        {
-          $lookup: {
-            from: 'games',
-            let: { collection_id: { $arrayElemAt: ['$collections', 0] } },
-            pipeline: [
-              { 
-                $match: {
-                  $expr: {
-                    $in: ['$$collection_id', '$collections']
-                  }
+      const pipeline = []
+      pipeline.push({$match: { game_id: parseInt(req.params.id) }})
+      pipeline.push({
+        $lookup: {
+          from: 'companies',
+          let: { companiesArray: '$companies.company'},
+          pipeline: [
+            {
+              $match: { 
+                $expr: {
+                  $in: ['$company_id', '$$companiesArray']
                 }
-              },
-              { $project: { name: 1, cover_id: 1, game_id: 1 } },
-              { $limit: 6 }
-            ],
-            as: 'collection'
-          }
-        },
-        {
+               }
+            },
+            { $project: { name: 1, company_id: 1, _id: 0 } }
+          ],
+          as: 'companies'
+        }
+      })
+      pipeline.push({
+        $lookup: {
+          from: 'games',
+          let: { collection_id: { $arrayElemAt: ['$collections', 0] } },
+          pipeline: [
+            { 
+              $match: {
+                $expr: {
+                  $in: ['$$collection_id', '$collections']
+                }
+              }
+            },
+            { $project: { name: 1, cover_id: 1, game_id: 1, _id: 0 } },
+            { $limit: 6 }
+          ],
+          as: 'collection'
+        }
+      })
+      if (req.user) {
+        pipeline.push({
           $lookup: {
             from: 'users',
             let: { game_ref: '$_id' },
@@ -221,13 +259,14 @@ const gamesRouter = Router()
             ],
             as: 'userRating'
           }
-        },
-        {
-          $addFields: {
-            userRating: { $arrayElemAt: ['$userRating.rating', 0] }
-          }
+        })
+      }
+      pipeline.push({
+        $addFields: {
+          userRating: { $arrayElemAt: ['$userRating.rating', 0] }
         }
-      ])
+      })
+      const results = await Game.aggregate(pipeline)
       
       if (req.token == null) {
         console.log('writing new token')
@@ -261,8 +300,8 @@ const gamesRouter = Router()
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1 } },
-                    { $limit: 36 }
+                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1, _id: 0 } },
+                    { $limit: 35 }
                   ],
                   count: [
                     { $count: 'count' }
@@ -299,8 +338,8 @@ const gamesRouter = Router()
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1 } },
-                    { $limit: 36 }
+                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1, _id: 0 } },
+                    { $limit: 35 }
                   ],
                   count: [
                     { $count: 'count' }

@@ -1,8 +1,8 @@
-import { completion_statuses } from "./completion_statuses"
-import { game_statuses } from "./game_statuses"
+import { completionStatuses } from "./completionStatuses"
+import { gameStatuses } from "./gameStatuses"
 import { genres } from "./genres"
 import { platforms } from "./platforms"
-import { rating_categories, rating_names } from "./ratings"
-import { sort_criteria } from "./sort"
+import { ratingCategories, ratingNames } from "./ratings"
+import { profileSortCriteria, sortCriteria } from "./sort"
 
-export { completion_statuses, game_statuses, genres, platforms, rating_categories, rating_names, sort_criteria }
+export { completionStatuses, gameStatuses, genres, platforms, ratingCategories, ratingNames, profileSortCriteria, sortCriteria }

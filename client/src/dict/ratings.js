@@ -1,4 +1,4 @@
-export const rating_categories = {
+export const ratingCategories = {
   1: "ESRB",
   2: "PEGI",
   3: "CERO",
@@ -8,7 +8,7 @@ export const rating_categories = {
   7: "ACB"
 }
 
-export const rating_names = {
+export const ratingNames = {
   1: "Three",
   2: "Seven",
   3: "Twelve",

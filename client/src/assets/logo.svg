@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='ascii'?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="64" height="64">
+    <g id="ViewLayer_LineSet" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:groupmode="lineset" inkscape:label="ViewLayer_LineSet">
+        <g xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" inkscape:groupmode="layer" id="strokes" inkscape:label="strokes">
+            <!-- Top Half -->
+            <path fill="rgb(255, 0, 255)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 0, 255)" stroke-linejoin="round" d=" M 17.265, 0.463 27.265, 0.463 37.265, 0.463 44.326, 0.463 43.535, 3.470 33.535, 3.470 23.535, 3.470 16.474, 3.470 17.265, 0.463 " />
+
+            <path fill="rgb(255, 18, 227)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 18, 227)" stroke-linejoin="round" d=" M 10.779, 6.477 20.779, 6.477 30.779, 6.477 40.779, 6.477 46.860, 6.477 46.185, 9.484 36.185, 9.484 26.185, 9.484 16.185, 9.484 10.104, 9.484 10.779, 6.477 " />
+
+            <path fill="rgb(255, 58, 197)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 58, 197)" stroke-linejoin="round" d=" M 8.629, 15.497 18.629, 15.497 20.363, 15.497 21.053, 12.490 11.053, 12.490 9.378, 12.490 8.629, 15.497 " />
+            <path fill="rgb(255, 58, 197)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 58, 197)" stroke-linejoin="round" d=" M 32.390, 15.497 42.390, 15.497 44.710, 15.497 45.459, 12.490 35.459, 12.490 33.080, 12.490 32.390, 15.497 " />
+
+            <path fill="rgb(255, 75, 172)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 75, 172)" stroke-linejoin="round" d=" M 60.476, 18.504 50.476, 18.504 40.476, 18.504 30.476, 18.504 20.476, 18.504 10.476, 18.504 7.866, 18.504 7.096, 21.511 17.096, 21.511 27.096, 21.511 37.096, 21.511 47.096, 21.511 57.096, 21.511 59.978, 21.511 60.476, 18.504 " />
+
+            <path fill="rgb(255, 85, 151)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 85, 151)" stroke-linejoin="round" d=" M 6.321, 24.517 16.321, 24.517 26.321, 24.517 36.321, 24.517 46.321, 24.517 56.321, 24.517 63.073, 24.517 62.547, 27.524 52.547, 27.524 42.547, 27.524 32.547, 27.524 22.547, 27.524 12.547, 27.524 5.543, 27.524 6.321, 24.517 " />
+
+            <!-- Center -->
+            <path fill="rgb(255, 93, 132)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 93, 132)" stroke-linejoin="round" d=" M 3.980, 33.538 13.980, 33.538 15.866, 33.538 16.635, 30.531 6.635, 30.531 4.762, 30.531 3.980, 33.538 " />
+            <path fill="rgb(255, 93, 132)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 93, 132)" stroke-linejoin="round" d=" M 27.893, 33.538 37.893, 33.538 40.061, 33.538 40.843, 30.531 30.843, 30.531 28.662, 30.531 27.893, 33.538 " />
+            <path fill="rgb(255, 93, 132)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 93, 132)" stroke-linejoin="round" d=" M 51.142, 33.538 61.142, 33.538 61.402, 33.538 61.988, 30.531 51.988, 30.531 51.842, 30.531 51.142, 33.538 " />
+            <!-- Bottom Half -->
+            <path fill="rgb(255, 100, 113)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 100, 113)" stroke-linejoin="round" d=" M 2.412, 39.551 12.412, 39.551 14.318, 39.551 15.093, 36.544 5.093, 36.544 3.196, 36.544 2.412, 39.551 " />
+            <path fill="rgb(255, 100, 113)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 100, 113)" stroke-linejoin="round" d=" M 60.164, 39.551 60.793, 36.544 50.793, 36.544 40.793, 36.544 30.793, 36.544 27.120, 36.544 26.345, 39.551 36.345, 39.551 46.345, 39.551 56.345, 39.551 60.164, 39.551 " />
+
+            <path fill="rgb(255, 105, 92)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 105, 92)" stroke-linejoin="round" d=" M 0.840, 45.565 10.840, 45.565 12.762, 45.565 13.541, 42.558 3.541, 42.558 1.626, 42.558 0.840, 45.565 " />
+            <path fill="rgb(255, 105, 92)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 105, 92)" stroke-linejoin="round" d=" M 58.856, 45.565 59.517, 42.558 49.517, 42.558 39.517, 42.558 29.517, 42.558 25.568, 42.558 24.789, 45.565 34.789, 45.565 44.789, 45.565 54.789, 45.565 58.856, 45.565 " />
+
+            <path fill="rgb(255, 110, 67)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 110, 67)" stroke-linejoin="round" d=" M 23.228, 51.578 33.228, 51.578 35.347, 51.578 36.134, 48.571 26.134, 48.571 24.009, 48.571 23.228, 51.578 " />
+            <path fill="rgb(255, 110, 67)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 110, 67)" stroke-linejoin="round" d=" M 46.740, 51.578 56.740, 51.578 57.497, 51.578 58.182, 48.571 48.182, 48.571 47.490, 48.571 46.740, 51.578 " />
+
+            <path fill="rgb(255, 116, 31)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 116, 31)" stroke-linejoin="round" d=" M 21.662, 57.592 31.662, 57.592 33.772, 57.592 34.559, 54.585 24.559, 54.585 22.445, 54.585 21.662, 57.592 " />
+            <path fill="rgb(255, 116, 31)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 116, 31)" stroke-linejoin="round" d=" M 45.229, 57.592 55.229, 57.592 56.100, 57.592 56.803, 54.585 46.803, 54.585 45.986, 54.585 45.229, 57.592 " />
+
+            <path fill="rgb(255, 128, 0)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 128, 0)" stroke-linejoin="round" d=" M 20.093, 63.605 30.093, 63.605 32.195, 63.605 32.984, 60.598 22.984, 60.598 20.878, 60.598 20.093, 63.605 " />
+            <path fill="rgb(255, 128, 0)" stroke-width="0.25" stroke-linecap="butt" stroke-opacity="1.0" stroke="rgb(255, 128, 0)" stroke-linejoin="round" d=" M 43.705, 63.605 53.705, 63.605 54.672, 63.605 55.389, 60.598 45.389, 60.598 44.468, 60.598 43.705, 63.605 " />
+        </g>
+    </g>
+</svg>

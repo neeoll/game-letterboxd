@@ -9,7 +9,7 @@ const SimpleBarStyle = {
 
 const App = () => {
   return (
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-indigo-950 overflow-none">
+    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-none">
       <SimpleBar style={SimpleBarStyle}>
         <Navbar />
         <div className="pt-24">

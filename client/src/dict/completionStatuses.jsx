@@ -1,4 +1,4 @@
-export const completion_statuses = [
+export const completionStatuses = [
   {
     id: 1,
     element: () => (

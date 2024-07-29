@@ -1,54 +1,47 @@
-import { useSearchParams } from "react-router-dom"
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx"
 
-const Pagination = ({ count }) => {
-  const [searchParams, setSearchParams] = useSearchParams()
+const Pagination = ({ page, count, update }) => {
 
-  const getPage = () => {
-    return parseInt(searchParams.get('page') || 1, 10)
-  }
-
-  const setPage = (newPage) => {
-    const updatedParams = new URLSearchParams(searchParams)
-    updatedParams.set('page', newPage)
-    setSearchParams(updatedParams)
-  }
+  const maxPage = Math.ceil(count / 36)
 
   const incrementPage = () => {
-    const currentPage = getPage()
-    setPage(Math.min(currentPage + 1, Math.ceil(count / 36)))
+    const newPage = Math.min(page + 1, maxPage)
+    update([{ params: 'page', value: newPage }])
   }
 
   const decrementPage = () => {
-    const currentPage = getPage()
-    setPage(Math.max(1, currentPage - 1))
+    const newPage = Math.max(1, page - 1)
+    update([{ params: 'page', value: newPage }])
   }
 
   return (
     <div className="px-52">
-      <div className="flex justify-center items-center overflow-x-hidden gap-4 text-indigo-50">
-        <button 
-        onClick={() => decrementPage()} 
-        className={`${getPage() == 1 ? "pointer-events-none text-indigo-50/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
-          <RxCaretLeft />
-        </button>
+      <div className="flex justify-center items-center overflow-x-hidden gap-4 text-indigo-50 py-2">
+
+        <div className={`${page == 1 ? "pointer-events-none text-indigo-50/50" : ""} relative w-8 h-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+          <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-l hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1"><RxCaretLeft /></div>
+          <button onClick={() => decrementPage()} className="flex justify-center items-center relative w-full h-full rounded-md bg-neutral-900">
+            <RxCaretLeft />
+          </button>
+        </div>
         <div className="flex gap-2">
           <p>Page</p>
           <input 
             type="tel"
             min="1"
-            placeholder={getPage()}
-            max={Math.ceil(count / 36)}
-            onKeyDown={e => { if (e.key === 'Enter') setPage(e.target.value) }}
+            placeholder={page}
+            max={maxPage}
+            onKeyDown={e => { if (e.key === 'Enter') update([{ params: 'page', value: e.target.value }]) }}
             className="w-10 text-center align-middle bg-transparent rounded border border-white/50"
           />
-          <p>of {Math.ceil(count / 36)}</p>
+          <p>of {maxPage}</p>
         </div>
-        <button 
-        onClick={() => incrementPage()} 
-        className={`${getPage() == Math.ceil(count / 36) ? "pointer-events-none text-indigo-50/50" : ""} flex min-h-8 min-w-8 justify-center items-center rounded-lg hover:border`}>
-          <RxCaretRight />
-        </button>
+        <div className={`${page == maxPage ? "pointer-events-none text-indigo-50/50" : ""} relative w-8 h-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+          <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1"><RxCaretLeft /></div>
+          <button onClick={() => incrementPage()} className="flex justify-center items-center relative w-full h-full rounded-md bg-neutral-900">
+            <RxCaretRight />
+          </button>
+        </div>
       </div>
     </div>
   )

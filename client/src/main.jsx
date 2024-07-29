@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         element: <Pages.GamesBySeries />
       },
       {
-        path: "/game/:game_id",
+        path: "/game/:gameId",
         element: <Pages.GameDetails />
       },
       {
