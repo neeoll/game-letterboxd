@@ -13,7 +13,7 @@ const GameSearch = () => {
   const year = parseInt(searchParams.get('year') || '0')
   const currentGenre = parseInt(searchParams.get('genre') || '0')
   const currentPlatform = parseInt(searchParams.get('platform') || '0')
-  const sortBy = searchParams.get('sortBy') || "release_date"
+  const sortBy = searchParams.get('sortBy') || "releaseDate"
   const sortOrder = parseInt(searchParams.get('sortOrder') || '-1')
   const page = parseInt(searchParams.get('page') || '1', 10)
 
@@ -27,6 +27,7 @@ const GameSearch = () => {
         return
       }
       const json = await response.json()
+      console.log(json.results)
       setCount(json.count[0].count)
       setResults(json.results)
       setLoading(false)
@@ -70,7 +71,7 @@ const GameSearch = () => {
             Array.apply(null, Array(35)).map((item, index) => (
               <div key={index} className={`flex flex-col items-center gap-2 animate-[pulse_1.5s_linear_infinite]`}>
                 <div className="relative h-52 aspect-[45/64] bg-neutral-800 rounded" />
-                {sortBy == "release_date" || sortBy == "avg_rating" ? 
+                {sortBy == "releaseDate" || sortBy == "avgRating" ? 
                   <div className="w-20 h-6 rounded bg-neutral-800" /> : <></>
                 }
               </div>

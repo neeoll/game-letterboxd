@@ -17,16 +17,16 @@ const gamesRouter = Router()
       let game
       switch (req.body.status) {
         case "played":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {played: user._id} }, { returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { returnDocument: "after" })
           break
         case "playing":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {playing: user._id} }, { returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { returnDocument: "after" })
           break
         case "backlog":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {backlog: user._id} }, { returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { returnDocument: "after" })
           break
         case "wishlist":
-          game = await Game.findOneAndUpdate({ game_id: req.body.id }, { $addToSet: {wishlist: user._id} }, { returnDocument: "after" })
+          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { returnDocument: "after" })
           break
         default:
           res.status(500).json({ error: 'Internal server error' })
@@ -45,12 +45,12 @@ const gamesRouter = Router()
   .post('/rateGame', verifyToken, async (req, res) => {
     try {
       await Game.updateOne(
-        { game_id: req.body.game_id },
+        { gameId: req.body.gameId },
         { $pull: { ratings: { userRef: req.user.id } } }
       )
 
       const updatedGame = await Game.findOneAndUpdate(
-        { game_id: req.body.game_id },
+        { gameId: req.body.gameId },
         { $addToSet: { ratings: { value: req.body.rating, userRef: req.user.id } } },
         { returnDocument: 'after' }
       )
@@ -107,7 +107,7 @@ const gamesRouter = Router()
           }
         },
         {
-          $project: { name: 1, cover_id: 1, game_id: 1, lastUpdated: 1, release_date: 1, genres: 1, platforms: 1, _id: 0 }
+          $project: { name: 1, coverId: 1, gameId: 1, lastUpdated: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 }
         },
         {
           $sort: { lastUpdated: -1 }
@@ -128,7 +128,7 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, _id: 0 } },
+              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, _id: 0 } },
               { $limit: 100 }
             ],
             count: [
@@ -149,7 +149,7 @@ const gamesRouter = Router()
       const platform = req.query.platform !== '0' ? req.query.platform : null
       const year = parseInt(req.query.year)
       const page = parseInt(req.query.page) - 1
-      const sortBy = req.query.sortBy || 'release_date'
+      const sortBy = req.query.sortBy || 'releaseDate'
       const sortOrder = parseInt(req.query.sortOrder)
       
       const pipeline = []
@@ -159,23 +159,22 @@ const gamesRouter = Router()
       if (platform) filters.platforms = parseInt(platform)
       if (year != null) {
         const currentTime = Math.floor(new Date() / 1000)
-        if (year == 0) filters.release_date = { $lt: currentTime }
-        else if (year == 1) filters.release_date = { $gt: currentTime }
+        if (year == 0) filters.releaseDate = { $lt: currentTime }
+        else if (year == 1) filters.releaseDate = { $gt: currentTime }
         else {
           const start = Math.floor(new Date(year, 0, 1) / 1000)
           const end = Math.floor(new Date(year, 11, 31, 23, 59, 59, 999) / 1000)
-          filters.release_date = { $gte: start, $lt: end }
+          filters.releaseDate = { $gte: start, $lt: end }
         }
       }
-      filters.release_date = { ...filters.release_date, $ne: "Unknown" }
+      filters.releaseDate = { ...filters.releaseDate, $ne: "Unknown" }
 
       if (Object.keys(filters).length > 0) { pipeline.push({ $match: filters }) }
       pipeline.push({ $sort: { [sortBy]: sortOrder }})
       pipeline.push({ 
         $facet: {
           results: [
-            { $project: { name: 1, cover_id: 1, game_id: 1, release_date: 1, platforms: 1, avg_rating: 1, popularity: 1, _id: 0 } },
-
+            { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, popularity: 1, _id: 0 } },
             { $skip: page * 35 },
             { $limit: 35 }
           ],
@@ -195,7 +194,7 @@ const gamesRouter = Router()
   .get("/:id", [decodeToken, checkViewToken], async (req, res) => {
     try {
       const pipeline = []
-      pipeline.push({$match: { game_id: parseInt(req.params.id) }})
+      pipeline.push({$match: { gameId: parseInt(req.params.id) }})
       pipeline.push({
         $lookup: {
           from: 'companies',
@@ -204,11 +203,11 @@ const gamesRouter = Router()
             {
               $match: { 
                 $expr: {
-                  $in: ['$company_id', '$$companiesArray']
+                  $in: ['$companyId', '$$companiesArray']
                 }
                }
             },
-            { $project: { name: 1, company_id: 1, _id: 0 } }
+            { $project: { name: 1, companyId: 1, _id: 0 } }
           ],
           as: 'companies'
         }
@@ -216,16 +215,16 @@ const gamesRouter = Router()
       pipeline.push({
         $lookup: {
           from: 'games',
-          let: { collection_id: { $arrayElemAt: ['$collections', 0] } },
+          let: { collectionId: { $arrayElemAt: ['$collections', 0] } },
           pipeline: [
             { 
               $match: {
                 $expr: {
-                  $in: ['$$collection_id', '$collections']
+                  $in: ['$$collectionId', '$collections']
                 }
               }
             },
-            { $project: { name: 1, cover_id: 1, game_id: 1, _id: 0 } },
+            { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
             { $limit: 6 }
           ],
           as: 'collection'
@@ -235,7 +234,7 @@ const gamesRouter = Router()
         pipeline.push({
           $lookup: {
             from: 'users',
-            let: { game_ref: '$_id' },
+            let: { gameRef: '$_id' },
             pipeline: [
               {
                 $match: { email: req.user.email }
@@ -246,7 +245,7 @@ const gamesRouter = Router()
                     $filter: {
                       input: '$ratings',
                       as: 'rating',
-                      cond: { $eq: ['$$rating.gameRef', "$$game_ref"] }
+                      cond: { $eq: ['$$rating.gameRef', "$$gameRef"] }
                     }
                   }
                 }
@@ -270,9 +269,9 @@ const gamesRouter = Router()
       
       if (req.token == null) {
         console.log('writing new token')
-        const game = await Game.findOneAndUpdate({ game_id: req.params.id }, { $inc: { views: 1 } }, { new: true })
-        let view_token = jsonwebtoken.sign({ game_id: req.params.id }, 'secret', { expiresIn: "5 seconds" })
-        return res.send({ data: results[0], token: view_token }).status(200)
+        const game = await Game.findOneAndUpdate({ gameId: req.params.id }, { $inc: { views: 1 } }, { new: true })
+        let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, 'secret', { expiresIn: "5 seconds" })
+        return res.send({ data: results[0], token: viewToken }).status(200)
       }
       
       res.send({ data: results[0] }).status(200)
@@ -284,7 +283,7 @@ const gamesRouter = Router()
   .get("/company/:id", async (req, res) => {
     try {
       const results = await Company.aggregate([
-        { $match: { company_id: parseInt(req.params.id) } },
+        { $match: { companyId: parseInt(req.params.id) } },
         { $project: { _id: 0 } },
         {
           $lookup: {
@@ -300,7 +299,7 @@ const gamesRouter = Router()
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1, _id: 0 } },
+                    { $project: { gameId: 1, name: 1, coverId: 1, releaseDate: 1, _id: 0 } },
                     { $limit: 35 }
                   ],
                   count: [
@@ -322,7 +321,7 @@ const gamesRouter = Router()
   .get("/series/:id", async (req, res) => {
     try {
       const results = await Collection.aggregate([
-        { $match: { series_id: parseInt(req.params.id) } },
+        { $match: { seriesId: parseInt(req.params.id) } },
         { $project: { name: 1 } },
         {
           $lookup: {
@@ -338,7 +337,7 @@ const gamesRouter = Router()
               {
                 $facet: {
                   games: [
-                    { $project: { game_id: 1, name: 1, cover_id: 1, release_date: 1, _id: 0 } },
+                    { $project: { gameId: 1, name: 1, coverId: 1, releaseDate: 1, _id: 0 } },
                     { $limit: 35 }
                   ],
                   count: [

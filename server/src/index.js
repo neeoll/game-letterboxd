@@ -26,7 +26,7 @@ const ratingUpdateStream = () => {
       const likeCount = game.ratings.filter(rating => rating.value > 3).length
       const popularity = calculatePopularity(commentCount, likeCount, game.views)
       const average = calculateAvgRating(game.ratings)
-      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avg_rating: average, popularity: popularity } }, { new: true, useFindAndModify: true })
+      await gamesCollection.findOneAndUpdate({ _id: change.documentKey._id }, { $set: { avgRating: average, popularity: popularity } }, { new: true, useFindAndModify: true })
       console.log(`${game.name} updated fields: \nPopularity: ${popularity} \nAverage Rating: ${average}`)
       return
   })

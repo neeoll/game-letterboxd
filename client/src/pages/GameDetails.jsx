@@ -90,7 +90,7 @@ const GameDetails = () => {
     console.log(rating)
     const response = await fetch('http://127.0.0.1:5050/game/rateGame', {
       method: 'POST',
-      body: JSON.stringify({ game_id: gameId, rating: rating}),
+      body: JSON.stringify({ gameId: gameId, rating: rating}),
       headers: {
         'authorization': localStorage.getItem('jwt-token'),
         'content-type': 'application/json'
@@ -111,17 +111,17 @@ const GameDetails = () => {
       {/* Header Portion */}
       <div className="flex items-end w-full">
         <div className="flex w-1/5 justify-center">
-          <img className="max-w-40 rounded z-10" src={details.cover_id ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${details.cover_id}.jpg` : ''} />
+          <img className="max-w-40 rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${details.coverId}.jpg`} />
         </div>
         <div className="flex flex-col w-4/5 gap-1">
           <h1 className="text-5xl font-semibold text-indigo-100">{details.name}</h1>
           <div className="flex gap-2 text-xl text-indigo-100/50">
             <p>Released on</p> 
-            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.release_date).year()}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{moment.unix(details.release_date).format("MMM D, YYYY")}</Link>
+            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.releaseDate).year()}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{moment.unix(details.releaseDate).format("MMM D, YYYY")}</Link>
             {details.companies.length != 0 ? (
               <>
                 <p>by</p> 
-                <Link to={`/games/company/${details.companies[0].company_id}`} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{details.companies[0].name}</Link>
+                <Link to={`/games/company/${details.companies[0].companyId}`} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{details.companies[0].name}</Link>
               </>
             ): <></>}
           </div>
@@ -138,19 +138,19 @@ const GameDetails = () => {
                   <button className="w-full bg-red-500 rounded text-indigo-50 p-1">Log or Review</button>
                   <StyledRating defaultValue={details.userRating || 0} onChange={(event, newValue) => rateGame(newValue)} size="large"/>
                   <div className="flex gap-2">
-                    <button onClick={() => addGame({ status: "played", id: details.game_id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                    <button onClick={() => addGame({ status: "played", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
                       <IoLogoGameControllerB size={"1.25em"}/>
                       <p>Played</p>
                     </button>
-                    <button onClick={() => addGame({ status: "playing", id: details.game_id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                    <button onClick={() => addGame({ status: "playing", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
                       <IoIosPlay size={"1.25em"}/>
                       <p>Playing</p>
                     </button>
-                    <button onClick={() => addGame({ status: "backlog", id: details.game_id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                    <button onClick={() => addGame({ status: "backlog", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
                       <IoIosBookmarks size={"1.25em"}/>
                       <p>Backlog</p>
                     </button>
-                    <button onClick={() => addGame({ status: "wishlist", id: details.game_id })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                    <button onClick={() => addGame({ status: "wishlist", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
                       <IoIosGift size={"1.25em"}/>
                       <p>Wishlist</p>
                     </button>
@@ -162,7 +162,7 @@ const GameDetails = () => {
             )}
             <div className="relative flex flex-col gap-2 text-indigo-50 items-center bg-neutral-800 rounded p-2">
               <p className="font-semibold text-md text-white/50">Avg. Rating</p> 
-              <p className="font-bold text-3xl">{(details.avg_rating || 0).toFixed(1)}</p>
+              <p className="font-bold text-3xl">{(details.avgRating || 0).toFixed(1)}</p>
               <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
                 <div className="w-full flex h-24 gap-1">
                   {ratingDistributions.map(rating => (

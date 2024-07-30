@@ -13,8 +13,8 @@ const ratingSchema = new mongoose.Schema({
 })
 
 const gameSchema = new mongoose.Schema({
-  game_id: Number,
-  avg_rating: {
+  gameId: Number,
+  avgRating: {
     type: Number,
     default: 0
   },

@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 const collectionSchema = new mongoose.Schema({
-  series_id: { 
+  seriesId: { 
     type: Number, 
     required: true 
   },

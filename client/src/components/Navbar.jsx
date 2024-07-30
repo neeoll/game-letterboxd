@@ -83,15 +83,15 @@ export default function Navbar() {
           <ComboboxOptions anchor="bottom start" className="bg-neutral-700 mt-1 rounded" static={true}>
             <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
               {games.length > 0 ? games.map((game) => (
-                <ComboboxOption key={game.game_id} value={game.game_id} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
+                <ComboboxOption key={game.gameId} value={game.gameId} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
                     <Link className="p-1 flex w-full items-center border-b border-amber-100/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
-                        <img className="max-w-full max-h-full rounded" src={game.cover_id ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover_id}.jpg` : ""} />
+                        <img className="max-w-full max-h-full rounded" src={game.coverId ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.coverId}.jpg` : ""} />
                       </div>
                       <h1 className="text-indigo-50 text-xs text-wrap">
                         {`${game.name} `}
                         <span className="text-indigo-50/75">
-                          {` (${new Date(game.release_date * 1000).getFullYear()})`}
+                          {` (${new Date(game.releaseDate * 1000).getFullYear()})`}
                         </span>
                       </h1>
                     </Link>

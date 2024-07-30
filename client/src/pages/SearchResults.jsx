@@ -47,11 +47,11 @@ const SearchResults = () => {
           <div className="flex flex-col pb-[2px] bg-white/75 hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
             <div className="flex items-center gap-2 pb-2 bg-neutral-900">
               <div className="h-36 w-fit rounded">
-                <img loading="lazy" className="max-w-full max-h-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_id}.jpg`} />
+                <img loading="lazy" className="max-w-full max-h-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
               </div>
               <div className="flex flex-col h-32 justify-start">
-                <Link to={`/game/${game.game_id}`} className="flex gap-1 text-indigo-50 text-2xl hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff] hover:bg-clip-text hover:text-transparent group">
-                  <p>{game.name} <span className="text-white/75 group-hover:text-transparent">({new Date(game.release_date * 1000).getFullYear()})</span></p>
+                <Link to={`/game/${game.gameId}`} className="flex gap-1 text-indigo-50 text-2xl hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff] hover:bg-clip-text hover:text-transparent group">
+                  <p>{game.name} <span className="text-white/75 group-hover:text-transparent">({new Date(game.releaseDate * 1000).getFullYear()})</span></p>
                 </Link>
                 <div className="flex text-white gap-1">
                   {game.platforms.map((gamePlatform, index) => (
