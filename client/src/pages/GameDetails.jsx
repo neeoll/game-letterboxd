@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
-import moment from "moment"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 import { completionStatuses, platforms, genres } from "../dict"
 import { GameCard, ReviewDialog } from "../components"
+import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils/timestamp"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -115,7 +115,7 @@ const GameDetails = () => {
           <h1 className="text-5xl font-semibold text-indigo-100">{details.name}</h1>
           <div className="flex gap-2 text-xl text-indigo-100/50">
             <p>Released on</p> 
-            <Link to={{ pathname: "/games", search: `?year=${moment.unix(details.releaseDate).year()}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{moment.unix(details.releaseDate).format("MMM D, YYYY")}</Link>
+            <Link to={{ pathname: "/games", search: `?year=${getYearFromTimestamp(details.releaseDate)}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{gameDetailsTimestamp(details.releaseDate)}</Link>
             {details.companies.length != 0 ? (
               <>
                 <p>by</p> 

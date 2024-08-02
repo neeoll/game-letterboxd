@@ -10,7 +10,7 @@ node_modules
 
 # production
 build
-./client/dist
+/client/dist
 
 # misc
 .DS_Store

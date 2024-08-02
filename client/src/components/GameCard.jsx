@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
-import moment from "moment"
 import { RxStarFilled } from "react-icons/rx"
+import { gameCardTimestamp } from "../utils/timestamp"
 
 export function GameCard(props) {
   return (
@@ -12,7 +12,7 @@ export function GameCard(props) {
       </Link>
       {props.sortBy == "releaseDate" ? 
         <div className="w-fit h-fit flex justify-center items-center text-yellow-50/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-          {moment.unix(props.game.releaseDate).format("MM-D-YYYY")}
+          {gameCardTimestamp(props.game.releaseDate)}
         </div> : <></>
       }
       {props.sortBy == "avgRating" ?
