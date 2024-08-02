@@ -34,7 +34,6 @@ const Profile = () => {
   useEffect(() => {
     async function getUserInfo() {
       const token = localStorage.getItem('jwt-token')
-      if (!token) navigate('/login')
       try {
         let response = await fetch('http://127.0.0.1:5050/auth/getUser', {
           headers: {

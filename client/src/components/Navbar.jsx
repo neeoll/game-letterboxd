@@ -86,7 +86,7 @@ export default function Navbar() {
                 <ComboboxOption key={game.gameId} value={game.gameId} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
                     <Link className="p-1 flex w-full items-center border-b border-amber-100/25">
                       <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
-                        <img className="max-w-full max-h-full rounded" src={game.coverId ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.coverId}.jpg` : ""} />
+                        <img className="max-w-full max-h-full rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.coverId}.jpg`} />
                       </div>
                       <h1 className="text-indigo-50 text-xs text-wrap">
                         {`${game.name} `}
@@ -112,6 +112,11 @@ export default function Navbar() {
                   <MenuItem>
                     <Link onClick={() => setMenuOpen(false)} to={"/"} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
                       Profile
+                    </Link>
+                  </MenuItem>
+                  <MenuItem>
+                    <Link onClick={() => setMenuOpen(false)} to={"/settings"} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
+                      Settings
                     </Link>
                   </MenuItem>
                   <MenuItem>

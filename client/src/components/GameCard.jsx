@@ -17,7 +17,7 @@ export function GameCard(props) {
       }
       {props.sortBy == "avgRating" ?
         <div className="w-fit h-fit flex justify-center items-center text-yellow-50/75 gap-1 text-sm rounded outline outline-1 px-1 py-0.5">
-          <RxStarFilled />{props.game.avgRating ? props.game.avgRating.toFixed(1) : (0.0).toFixed(1)}
+          <RxStarFilled />{props.game.avgRating.toFixed(1)}
         </div> : <></>
       }
     </div>

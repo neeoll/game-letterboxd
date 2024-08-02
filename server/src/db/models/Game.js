@@ -12,6 +12,33 @@ const ratingSchema = new mongoose.Schema({
   }
 })
 
+const reviewSchema = new mongoose.Schema({
+  rating: {
+    type: Number,
+    required: true
+  },
+  body: {
+    type: String
+  },
+  platform: {
+    type: Number,
+    required: true
+  },
+  spoiler: {
+    type: Boolean,
+    required: true,
+  },
+  status: {
+    type: String,
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
+})
+
 const gameSchema = new mongoose.Schema({
   gameId: Number,
   avgRating: {
@@ -31,12 +58,7 @@ const gameSchema = new mongoose.Schema({
   backlog: [mongoose.Schema.Types.ObjectId],
   wishlist: [mongoose.Schema.Types.ObjectId],
   ratings: [ratingSchema],
-  reviews: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Review'
-    }
-  ]
+  reviews: [reviewSchema]
 })
 
 export default mongoose.model('Game', gameSchema)

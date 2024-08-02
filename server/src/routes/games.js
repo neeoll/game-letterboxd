@@ -119,6 +119,23 @@ const gamesRouter = Router()
       res.status(500).json({ error: 'Internal server error' })
     }
   })
+  .post("/review", verifyToken, async (req, res) => {
+    try {
+      const { rating, platform, review, spoiler, status, gameId } = req.body
+      const { email } = req.user
+      
+      const user = await User.findOne({ email: email })
+      const game = await Game.findOne({ gameId: gameId })
+      
+      game.reviews.push({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, user: user._id })
+      await game.save()
+
+      res.status(200).json({ message: "all good"})
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
+    }
+  })
   .get('/search', async (req, res) => {
     try {
       const results = await Game.aggregate([
@@ -195,6 +212,50 @@ const gamesRouter = Router()
     try {
       const pipeline = []
       pipeline.push({$match: { gameId: parseInt(req.params.id) }})
+      // Reviews Lookup
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'users',
+            let: { reviewUsers: '$reviews.user' },
+            pipeline: [
+              { $match: { $expr: { $in: ['$_id', '$$reviewUsers'] } } },
+              { $project: { username: 1, email: 1 } }
+            ],
+            as: 'userDetails'
+          }
+        },
+        {
+          $addFields: {
+            reviews: {
+              $map: {
+                input: '$reviews',
+                as: 'review',
+                in: {
+                  $mergeObjects: [
+                    '$$review',
+                    {
+                      user: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$userDetails',
+                              as: 'userDetail',
+                              cond: { $eq: ['$$userDetail._id', '$$review.user'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      )
+      // Companies Lookup
       pipeline.push({
         $lookup: {
           from: 'companies',
@@ -212,6 +273,7 @@ const gamesRouter = Router()
           as: 'companies'
         }
       })
+      // Series Lookup
       pipeline.push({
         $lookup: {
           from: 'games',
@@ -230,6 +292,7 @@ const gamesRouter = Router()
           as: 'collection'
         }
       })
+      // Active User Lookup
       if (req.user) {
         pipeline.push({
           $lookup: {
@@ -259,12 +322,13 @@ const gamesRouter = Router()
             as: 'userRating'
           }
         })
+        pipeline.push({
+          $addFields: {
+            userRating: { $arrayElemAt: ['$userRating.rating', 0] }
+          }
+        })
       }
-      pipeline.push({
-        $addFields: {
-          userRating: { $arrayElemAt: ['$userRating.rating', 0] }
-        }
-      })
+      
       const results = await Game.aggregate(pipeline)
       
       if (req.token == null) {

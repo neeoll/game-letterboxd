@@ -2,7 +2,6 @@ import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
-import _debounce from 'debounce'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
 
 const Register = () => {
@@ -137,7 +136,6 @@ const Register = () => {
           </div>
         </div>
       </form>
-      
     </div>
   )
 }

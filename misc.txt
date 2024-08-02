@@ -1,9 +1,0 @@
-TODO:
-User creation and authentication
-Review and rating operations
-
-Optional:
-Look into caching certain requests or some other method to reduce quantity of direct calls to database
-
-
- 

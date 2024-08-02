@@ -2,11 +2,10 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import moment from "moment"
-import { reviews } from "../temp/reviewPlaceholder"
 import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 import { completionStatuses, platforms, genres } from "../dict"
-import { GameCard } from "../components"
+import { GameCard, ReviewDialog } from "../components"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -60,8 +59,7 @@ const GameDetails = () => {
         return
       }
       const json = await response.json()
-
-      console.log(json.data)
+      console.log(json)
       
       if (json.token) localStorage.setItem(`${gameId}-view-token`, json.token)
       
@@ -90,7 +88,7 @@ const GameDetails = () => {
     console.log(rating)
     const response = await fetch('http://127.0.0.1:5050/game/rateGame', {
       method: 'POST',
-      body: JSON.stringify({ gameId: gameId, rating: rating}),
+      body: JSON.stringify({ gameId: gameId, rating: rating }),
       headers: {
         'authorization': localStorage.getItem('jwt-token'),
         'content-type': 'application/json'
@@ -135,7 +133,7 @@ const GameDetails = () => {
             {localStorage.getItem('jwt-token') != null ? (
               <div className="relative -mt-12">
                 <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
-                  <button className="w-full bg-red-500 rounded text-indigo-50 p-1">Log or Review</button>
+                  <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                   <StyledRating defaultValue={details.userRating || 0} onChange={(event, newValue) => rateGame(newValue)} size="large"/>
                   <div className="flex gap-2">
                     <button onClick={() => addGame({ status: "played", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
@@ -269,24 +267,20 @@ const GameDetails = () => {
           </div>
           {/* TODO: Implement MongoDB instance to push and pull reviews */}
           <div className="flex flex-col gap-y-4 p-4">
-            {reviews.map(review => (
-              <div key={review.id} className="flex text-indigo-50 gap-x-2 p-4 border-b">
+            {details.reviews.map((review, index) => (
+              <div key={index} className="flex text-indigo-50 gap-x-2 p-4 border-b">
                 <div className="flex flex-col justify-start">
                   {/* Profile picture goes here */}
                   <div className="w-10 h-10 rounded bg-gray-500" />
                 </div>
                 <div className="flex flex-col justify-start">
-                  <div>{review.email}</div>
+                  <div>{review.user.username}</div>
                   <div className="flex gap-2 items-center">
-                    <StyledRating 
-                      readOnly
-                      precision={0.5} 
-                      value={Math.floor(Math.random() * 11) / 2}
-                      size="small"
-                    />
-                    <div className="flex gap-1 text-indigo-50">
-                      {completionStatuses[Math.floor(Math.random() * 4)].element()}
-                      <p className="text-indigo-50/50">on <Link to={{ pathname: "/games", search: `?platform=${details.platforms[0]}`}} className="text-indigo-50">{platforms.find(platform => platform.id == details.platforms[0]).name}</Link></p>
+                    <StyledRating readOnly value={review.rating} size="small" />
+                    <div className="flex gap-1 text-white">
+                      {completionStatuses.find(status => status.value == review.status).element()}
+                      <p className="text-white/50">on</p> 
+                      <Link to={{ pathname: "/games", search: `?platform=${review.platform}`}} className="text-white">{platforms.find(platform => platform.id == review.platform).name}</Link>
                     </div>
                   </div>
                   <div>{review.body}</div>

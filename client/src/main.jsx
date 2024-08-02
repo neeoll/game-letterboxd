@@ -42,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Pages.Login />
+      },
+      {
+        path: "/settings",
+        element: <Pages.Settings />
       }
     ]
   }
