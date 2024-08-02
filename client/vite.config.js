@@ -6,7 +6,6 @@ export default defineConfig({
   plugins: [react()],
   root: '../client',
   build: {
-    outDir: "/dist",
     rollupOptions: {
       // Ensure server code is excluded
       external: ['mongoose'],
