@@ -1,5 +1,5 @@
 {
-  "name": "todo-mern",
+  "name": "arcade-archive",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,8 +7,7 @@
     "install-server": "cd server && npm install",
     "start-server": "cd server && node ./src/index.js",
     "install-client": "cd client && npm install",
-    "build-client": "cd client && npm run build",
-    "start-client": "cd client && npm run start"
+    "build-client": "cd client && npm run build"
   },
   "keywords": [],
   "author": "",
