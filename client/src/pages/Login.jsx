@@ -81,7 +81,7 @@ const Login = () => {
               required 
             />
           </div>
-          <ReCAPTCHA ref={recaptcha} sitekey="6LebzAUqAAAAAL18BZ-p-ZznOWC0DpObYrSwWq6K"/>
+          <ReCAPTCHA ref={recaptcha} sitekey={import.meta.env.VITE_RECAPTCHA_SITEKEY}/>
           <div className="relative w-96 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50">
             <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Login</div>
             <button type="submit" className="relative w-full rounded text-indigo-50 bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Login</button>
