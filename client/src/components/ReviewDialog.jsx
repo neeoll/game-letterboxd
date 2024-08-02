@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Checkbox, Dialog, DialogPanel, Field, Label, Radio, RadioGroup  } from "@headlessui/react";
+import { Checkbox, Dialog, DialogPanel, Field, Radio, RadioGroup  } from "@headlessui/react";
 import 'simplebar-react/dist/simplebar.min.css';
 import Rating from "@mui/material/Rating";
 import { styled } from "@mui/material";

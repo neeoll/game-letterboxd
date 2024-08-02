@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react"
 import { useLocation, Link } from "react-router-dom"
 import { platforms } from "../dict"
-import { DropdownSearch, GameCard, Sort } from "../components"
-import Game from "../../../server/src/db/models/Game"
 
 const SearchResults = () => {
   const location = useLocation()
