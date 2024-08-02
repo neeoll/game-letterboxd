@@ -4,12 +4,12 @@ import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, Menu, MenuBut
 import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
-import _debounce from "debounce"
 import GlowingText from './GlowingText'
+import _ from "lodash"
 
 export default function Navbar() {
 
-  const textDebounce = _debounce((text) => getGames(text), 300)
+  const textDebounce = _.debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
   const [userData, setUserData] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
