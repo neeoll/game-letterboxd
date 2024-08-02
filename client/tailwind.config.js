@@ -21,10 +21,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        rubberBiscuit: ["Rubber Biscuit", 'sans-serif'],
-        daydream: ["Daydream", 'sans-serif'],
-        kiwiSoda: ["Kiwi Soda", 'sans-serif'],
-        crang: ["Crang", 'sans-serif'],
         edunline: ["Edunline", 'sans-serif'],
       }
     },
