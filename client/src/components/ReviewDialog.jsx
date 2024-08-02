@@ -49,7 +49,7 @@ const ReviewDialog = (props) => {
   const submit = async () => {
     try {
       console.log({ rating: rating, platform: platform, review: review, spoiler: spoiler })
-      const response = await fetch(`http://127.0.0.1:5050/game/review`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/review`, {
         method: 'POST',
         body: JSON.stringify({ rating: rating, platform: platform, review: review, spoiler: spoiler, status: status, gameId: props.gameId }),
         headers: {

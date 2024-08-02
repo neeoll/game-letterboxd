@@ -40,7 +40,7 @@ const Register = () => {
       const salt = bcrypt.genSaltSync(10)
       const hash = bcrypt.hashSync(password, salt)
 
-      const response = await fetch('http://127.0.0.1:5050/auth/register', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
         method: 'POST',
         body: JSON.stringify({ username: username, email: email, password: hash }),
         headers: {

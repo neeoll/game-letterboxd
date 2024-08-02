@@ -20,7 +20,8 @@ const GameSearch = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      console.log(import.meta.env)
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         alert(message)
@@ -65,7 +66,7 @@ const GameSearch = () => {
         <div className="flex flex-wrap gap-4 justify-center px-40">
           {loading == false ? (
             results.map(game =>
-              <GameCard size={"h-52"} game={game} sortBy={sortBy} />
+              <GameCard key={game.gameId} size={"h-52"} game={game} sortBy={sortBy} />
             )
           ) : (
             Array.apply(null, Array(35)).map((item, index) => (

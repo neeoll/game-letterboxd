@@ -15,7 +15,7 @@ const SearchResults = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      const response = await fetch(`http://127.0.0.1:5050/game/search?title=${searchText}`)
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${searchText}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         console.error(message)

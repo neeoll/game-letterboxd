@@ -35,7 +35,7 @@ const Profile = () => {
     async function getUserInfo() {
       const token = localStorage.getItem('jwt-token')
       try {
-        let response = await fetch('http://127.0.0.1:5050/auth/getUser', {
+        let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {
             'authorization': token
           }
@@ -43,7 +43,7 @@ const Profile = () => {
         const userData = await response.json()
         setUser(userData)
 
-        response = await fetch('http://127.0.0.1:5050/game/profileGames', {
+        response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/profileGames`, {
           method: 'POST',
           body: JSON.stringify({ games: userData.games }),
           headers: {

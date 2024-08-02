@@ -76,18 +76,11 @@ const authRouter = Router()
       if (Math.floor(Date.now()) < req.user.exp) {
         return res.status(401).json({ error: 'Login expired' })
       }
-      const user = await User.aggregate([
-        {
-          $match: { email: req.user.email }
-        },
-        { 
-          $project: { games: 0, ratings: 0, reviews: 0, password: 0, _id: 0, __v: 0 }
-        }
-      ])
+      const user = await User.findOne({ email: req.user.email })
       if (!user) {
         return res.status(404).json({ error: 'User not found' })
       }
-      res.status(200).json(user[0])
+      res.status(200).json(user)
     } catch (err) {
       res.status(500).json({ error: 'Internal server error'})
     }

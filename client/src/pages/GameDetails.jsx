@@ -73,7 +73,7 @@ const GameDetails = () => {
   }, [gameId])
 
   async function addGame(payload) {
-    const response = await fetch('http://127.0.0.1:5050/game/addGame', {
+    const response = await fetch('${import.meta.env.VITE_BACKEND_URL}/game/addGame', {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {

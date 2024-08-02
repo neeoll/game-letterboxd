@@ -24,7 +24,7 @@ const Settings = () => {
       const token = localStorage.getItem('jwt-token')
       try {
         setLoading(true)
-        let response = await fetch('http://127.0.0.1:5050/auth/getUser', {
+        let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {
             'authorization': token
           }
@@ -43,7 +43,7 @@ const Settings = () => {
   const submitChanges = async () => {
     try {
       console.log(JSON.stringify({ username, email, password, profileIcon }))
-      let response = await fetch('http://127.0.0.1:5050/user/update', {
+      let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/update`, {
         method: 'POST',
         headers: {
           'authorization': localStorage.getItem('jwt-token'),

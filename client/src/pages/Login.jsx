@@ -18,7 +18,7 @@ const Login = () => {
       alert('Please verify the reCAPTCHA')
       return false
     }
-    const response = await fetch('http://127.0.0.1:5050/auth/verifyCaptcha', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyCaptcha`, {
       method: 'POST',
       body: JSON.stringify({ captchaValue }),
       headers: {
@@ -34,7 +34,7 @@ const Login = () => {
     const captchaVerified = veryifyCaptcha()
     if (!captchaVerified) return alert('reCAPTCHA validation failed') 
       
-    const response = await fetch('http://127.0.0.1:5050/auth/login', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
       method: 'POST',
       body: JSON.stringify({ emailOrUsername: emailOrUsername, password: password }),
       headers: {

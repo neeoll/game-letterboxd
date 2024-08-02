@@ -21,7 +21,7 @@ const GamesBySeries = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      const response = await fetch(`http://127.0.0.1:5050/game/series/${seriesId}`)
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/series/${seriesId}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         alert(message)

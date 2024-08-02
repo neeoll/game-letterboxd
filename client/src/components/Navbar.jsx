@@ -22,7 +22,7 @@ export default function Navbar() {
     async function getUserInfo() {
       if (!token) return
       try {
-        const response = await fetch('http://127.0.0.1:5050/auth/getUser', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {
             'authorization': token
           }
