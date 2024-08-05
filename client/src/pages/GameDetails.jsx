@@ -132,24 +132,6 @@ const GameDetails = () => {
                 <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
                   <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                   <StyledRating defaultValue={details.userRating || 0} onChange={(event, newValue) => rateGame(newValue)} size="large"/>
-                  <div className="flex gap-2">
-                    <button onClick={() => addGame({ status: "played", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
-                      <IoLogoGameControllerB size={"1.25em"}/>
-                      <p>Played</p>
-                    </button>
-                    <button onClick={() => addGame({ status: "playing", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
-                      <IoIosPlay size={"1.25em"}/>
-                      <p>Playing</p>
-                    </button>
-                    <button onClick={() => addGame({ status: "backlog", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
-                      <IoIosBookmarks size={"1.25em"}/>
-                      <p>Backlog</p>
-                    </button>
-                    <button onClick={() => addGame({ status: "wishlist", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
-                      <IoIosGift size={"1.25em"}/>
-                      <p>Wishlist</p>
-                    </button>
-                  </div>
                 </div>
               </div> 
               ) : (

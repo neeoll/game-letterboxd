@@ -6,7 +6,7 @@ import { RxCheck, RxCross2 } from 'react-icons/rx'
 
 const Register = () => {
   const navigate = useNavigate()
-  if (localStorage.getItem('jwt-token')) navigate('/profile')
+  if (localStorage.getItem('jwt-token')) navigate('/')
 
   const recaptcha = useRef()
   const [email, setEmail] = useState("")

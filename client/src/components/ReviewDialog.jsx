@@ -70,7 +70,7 @@ const ReviewDialog = (props) => {
 
   return (
     <div className="flex justify-center items-center">
-      <button onClick={() => setDialogOpen(true)} className="w-full bg-gradient-to-r from-[#ff9900] to-[#ff00ff] rounded text-white font-bold rounded p-1 px-2">Log or Review</button>
+      <button onClick={() => setDialogOpen(true)} className="w-full bg-gradient-to-r from-[#ff9900] to-[#ff00ff] rounded text-white font-bold rounded p-1 px-2">Leave a Review!</button>
       <Dialog open={dialogOpen} onClose={() => clear()} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
           <DialogPanel>

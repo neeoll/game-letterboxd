@@ -1,17 +1,5 @@
 import mongoose from "mongoose"
 
-const ratingSchema = new mongoose.Schema({
-  value: {
-    type: Number,
-    required: true
-  },
-  userRef: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
-})
-
 const reviewSchema = new mongoose.Schema({
   rating: {
     type: Number,
@@ -36,15 +24,19 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  timestamp: {
+    type: Number,
+    required: true
   }
 })
 
 const gameSchema = new mongoose.Schema({
-  gameId: Number,
-  avgRating: {
+  gameId: {
     type: Number,
-    default: 0
+    required: true
   },
+  avgRating: Number,
   views: {
     type: Number,
     default: 0
@@ -57,7 +49,6 @@ const gameSchema = new mongoose.Schema({
   played: [mongoose.Schema.Types.ObjectId],
   backlog: [mongoose.Schema.Types.ObjectId],
   wishlist: [mongoose.Schema.Types.ObjectId],
-  ratings: [ratingSchema],
   reviews: [reviewSchema]
 })
 

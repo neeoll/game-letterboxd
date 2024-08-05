@@ -124,11 +124,14 @@ const gamesRouter = Router()
     try {
       const { rating, platform, review, spoiler, status, gameId } = req.body
       const { email } = req.user
+
+      console.log(gameId)
       
       const user = await User.findOne({ email: email })
       const game = await Game.findOne({ gameId: gameId })
       
-      game.reviews.push({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, user: user._id })
+      game.reviews.push({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, timestamp: Math.floor(new Date() / 1000), user: user._id })
+      user.reviews.push({})
       await game.save()
 
       res.status(200).json({ message: "all good"})
@@ -183,7 +186,8 @@ const gamesRouter = Router()
             let: { reviewUsers: '$reviews.user' },
             pipeline: [
               { $match: { $expr: { $in: ['$_id', '$$reviewUsers'] } } },
-              { $project: { username: 1, email: 1 } }
+              { $project: { username: 1, email: 1 } },
+              { $sort: { timestamp: -1 } }
             ],
             as: 'userDetails'
           }

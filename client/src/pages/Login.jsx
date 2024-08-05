@@ -5,7 +5,7 @@ import { IoWarningOutline } from "react-icons/io5"
 
 const Login = () => {
   const navigate = useNavigate()
-  if (localStorage.getItem('jwt-token')) navigate('/profile')
+  if (localStorage.getItem('jwt-token')) navigate('/')
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
