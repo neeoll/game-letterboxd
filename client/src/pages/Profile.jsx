@@ -67,7 +67,6 @@ const Profile = () => {
   }, [])
 
   const updateSort = (params) => {
-    console.log(params)
     params.forEach(item => {
       if (item.params == "sortBy") { return setSortBy(item.value) }
       else { return setSortOrder(item.value) }

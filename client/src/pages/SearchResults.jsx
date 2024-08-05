@@ -20,7 +20,6 @@ const SearchResults = () => {
         return
       }
       const json = await response.json()
-      console.log(json)
       setCount(json.count[0].count)
       setResults(json.results)
       setLoading(false)

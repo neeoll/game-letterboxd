@@ -47,7 +47,6 @@ export default function Navbar() {
         return
       }
       const json = await response.json()
-      console.log(json)
       setGames(json.results)
   }
 

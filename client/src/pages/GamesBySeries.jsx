@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { DisplayButtons, Sort, FilterSidebar, GameCard, Pagination } from "../components"
+import { genres, platforms, sortCriteria } from "../dict"
 
 const GamesBySeries = () => {
   const { seriesId } = useParams()
@@ -21,16 +22,19 @@ const GamesBySeries = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/series/${seriesId}`)
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/series/${seriesId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
         alert(message)
         return
       }
       const json = await response.json()
+
+      console.log(json)
+
       setSeriesDetails({ name: json.name })
-      setCount(json.results[0].count[0].count)
-      setResults(json.results[0].games)
+      setCount(json.games[0].count[0].count)
+      setResults(json.games[0].results)
       setLoading(false)
     }
     gameSearch()
@@ -71,8 +75,8 @@ const GamesBySeries = () => {
           <div className="flex w-full justify-between">
             <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{count.toLocaleString()} Games</div>
             <div className="flex gap-2">
-              <Sort sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
-              <FilterSidebar />
+              <Sort criteria={sortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
+              <FilterSidebar genres={genres} genre={currentGenre} platforms={platforms} platform={currentPlatform} year={year} update={updateQueryParameter} />
             </div>
           </div>
         </div>
@@ -93,7 +97,7 @@ const GamesBySeries = () => {
               ))
             )}
           </div>
-          <Pagination count={count} />
+          <Pagination page={page} count={count} />
         </div>
       </div>
     </div>

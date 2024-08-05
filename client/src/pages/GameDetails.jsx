@@ -16,10 +16,10 @@ const StyledRating = styled(Rating)({
   }
 })
 
-const calculateRatingDistribution = (ratings) => {
+const calculateRatingDistribution = (reviews) => {
   const ratingArray = []
-  ratings.forEach(rating => {
-    ratingArray.push(rating.value)
+  reviews.forEach(review => {
+    ratingArray.push(review.rating)
   })
 
   return [
@@ -59,12 +59,11 @@ const GameDetails = () => {
         return
       }
       const json = await response.json()
-      console.log(json)
       
       if (json.token) localStorage.setItem(`${gameId}-view-token`, json.token)
       
       setDetails(json.data)
-      json.data.ratings ? setRatingDistributions(calculateRatingDistribution(json.data.ratings)) : console.log("no ratings")
+      json.data.ratings ? setRatingDistributions(calculateRatingDistribution(json.data.reviews)) : console.log("no ratings")
       setLoading(false)
     }
     getDetails()
@@ -85,7 +84,6 @@ const GameDetails = () => {
   }
 
   async function rateGame(rating) {
-    console.log(rating)
     const response = await fetch('http://127.0.0.1:5050/game/rateGame', {
       method: 'POST',
       body: JSON.stringify({ gameId: gameId, rating: rating }),
@@ -95,7 +93,6 @@ const GameDetails = () => {
       }
     })
     const data = await response.json()
-    console.log(data)
   }
 
   if (loading) {

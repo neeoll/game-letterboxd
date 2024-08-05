@@ -10,7 +10,7 @@ const authRouter = Router()
   .post('/verifyCaptcha', async (req, res) => {
     const { captchaValue } = req.body
     const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
-    res.send(data)
+    res.status(200).json({ data })
   })
   .post("/checkAvailability", async (req, res) => {
     try {

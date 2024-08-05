@@ -20,7 +20,6 @@ const GameSearch = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      console.log(import.meta.env)
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`
@@ -28,7 +27,6 @@ const GameSearch = () => {
         return
       }
       const json = await response.json()
-      console.log(json.results)
       setCount(json.count[0].count)
       setResults(json.results)
       setLoading(false)

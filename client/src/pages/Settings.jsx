@@ -42,7 +42,6 @@ const Settings = () => {
 
   const submitChanges = async () => {
     try {
-      console.log(JSON.stringify({ username, email, password, profileIcon }))
       let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/update`, {
         method: 'POST',
         headers: {

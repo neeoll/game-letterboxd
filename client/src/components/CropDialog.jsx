@@ -44,7 +44,6 @@ const CropDialog = (props) => {
         croppedAreaPixels,
         rotation
       )
-      console.log({ croppedImage })
       setCroppedImage(croppedImage)
       props.setProfileIcon(croppedImage)
       setDialogOpen(false)
