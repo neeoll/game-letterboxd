@@ -46,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Pages.Settings />
+      },
+      {
+        path: "/verify",
+        element: <Pages.VerifyEmail />
       }
     ]
   }

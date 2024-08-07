@@ -18,7 +18,6 @@ const calculateRatingDistribution = (ratings) => {
 
 const Profile = () => {
   const navigate = useNavigate()
-  if (!localStorage.getItem('jwt-token')) navigate('/login')
 
   const [user, setUser] = useState(null)
   const [games, setGames] = useState([])
@@ -34,6 +33,7 @@ const Profile = () => {
   useEffect(() => {
     async function getUserInfo() {
       const token = localStorage.getItem('jwt-token')
+      if (!token) { return navigate("/login") }
       try {
         let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {

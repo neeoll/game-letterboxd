@@ -16,6 +16,8 @@ const Register = () => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
+  const [registerSuccessful, setRegisterSuccessful] = useState(false)
+
   async function veryifyCaptcha() {
     const captchaValue = recaptcha.current.getValue()
     if (!captchaValue) {
@@ -49,7 +51,7 @@ const Register = () => {
       })
       const data = await response.json()
       if (data.status == "ok") {
-        navigate('/login')
+        setRegisterSuccessful(true)
       } else {
         if (data.error == 'Username already in use') { setUsernameValid(false) }
         if (data.error == 'Email already in use') { setEmailValid(false) }
@@ -57,6 +59,24 @@ const Register = () => {
     } else {
       alert('reCAPTCHA validation failed')
     }
+  }
+
+  const resendLink = () => {
+
+  }
+
+  if (registerSuccessful) {
+    return (
+      <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
+        <div className="flex flex-col gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
+          <p className="text-white/75">A verification link was sent to the email you provided.</p>
+          <div className="flex justify-center gap-1 text-sm">
+            <p className="text-white/50">Didn't receive the link?</p>
+            <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-[#ff9900] to-[#ff00ff] bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return(

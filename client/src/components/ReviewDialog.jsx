@@ -57,6 +57,7 @@ const ReviewDialog = (props) => {
         },
       })
       const data = await response.json()
+      setDialogOpen(false)
     } catch (err) {
       alert(err)
     }

@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
   username: String,
   email: String,
   password: String,
+  verified: {
+    type: Boolean,
+    default: false
+  },
   games: [gameSchema],
   ratings: [ratingSchema],
   reviews: [

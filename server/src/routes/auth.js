@@ -5,28 +5,24 @@ import axios from "axios"
 import 'dotenv/config'
 import User from "../db/models/User.js"
 import { verifyToken } from "../middleware/verifyToken.js"
+import nodemailer from "nodemailer"
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.NODEMAILER_USER,
+    pass: process.env.NODEMAILER_PASS
+  }
+})
 
 const authRouter = Router()
   .post('/verifyCaptcha', async (req, res) => {
     const { captchaValue } = req.body
     const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
     res.status(200).json({ data })
-  })
-  .post("/checkAvailability", async (req, res) => {
-    try {
-      if (req.body.username) {
-        const usernameExists = await User.findOne({ username: req.body.username })
-        if (usernameExists) return res.status(401).json({ username: req.body.username, userValid: false })
-        else return res.status(200).json({ username: req.body.username, userValid: true })
-      }
-      if (req.body.email) {
-        const emailExists = await User.findOne({ email: req.body.email })
-        if (emailExists) return res.status(401).json({ email: req.body.email, emailValid: false })
-        else return res.status(200).json({ email: req.body.email, emailValid: true })
-      }
-    } catch (err) {
-      res.status(500).json({ error: 'Internal server error' })
-    }
   })
   .post("/register", async (req, res) => {
     try {
@@ -44,8 +40,24 @@ const authRouter = Router()
         email: req.body.email,
         password: req.body.password
       })
+      let user = await newUser.save()
 
-      await newUser.save()
+      const token = jsonwebtoken.sign({ id: user._id }, 'secret', { expiresIn: '15 minutes' })
+      const mailOptions = {
+        from: 'noreply@arcadearchive.com',
+        to: user.email,
+        subject: "Hello from Arcade Archive!",
+        text: `Follow the link to verify your account http://localhost:5173/verify?token=${token}`,
+      }
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.status(400).json({ error: error });
+        } else {
+          res.status(200).json({ message: info.response })
+        }
+      })
+
       return res.status(200).json({ message: "User registered successfully", status: "ok" })
     } catch (err) {
       res.status(500).json({ error: 'Internal server error' })
@@ -63,6 +75,9 @@ const authRouter = Router()
       const passwordMatch = bcrypt.compareSync(req.body.password, user.password)
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Invalid credentials' })
+      }
+      if (!user.verified) {
+        return res.status(401).json({ error: 'User not verified' })
       }
 
       const token = jsonwebtoken.sign({ email: user.email, id: user._id }, 'secret', { expiresIn: "30 days" })
@@ -83,6 +98,50 @@ const authRouter = Router()
       res.status(200).json(user)
     } catch (err) {
       res.status(500).json({ error: 'Internal server error'})
+    }
+  })
+  .get('/verifyEmail', async (req, res) => {
+    try {
+      const token = req.query.token
+
+      jsonwebtoken.verify(token, 'secret', async (err, decoded) => {
+        if (err) {
+          if (err.expiredAt) {
+            return res.status(401).json({ error: "Token expired", status: "exp" })
+          }
+        }
+        const user = await User.findOneAndUpdate({ _id: decoded.id }, { $set: {verified: true} }, { returnDocument: 'after' })
+        return res.status(200).json({ message: "Email successfully verified", status: "ok" })
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
+    }
+  })
+  .get('/resendLink', async (req, res) => {
+    try {
+      const decodedToken = jsonwebtoken.decode(req.query.token)
+
+      const user = await User.findOne({ _id: decodedToken.id })
+      const token = jsonwebtoken.sign({ id: user._id }, 'secret', { expiresIn: '15 minutes' })
+      const mailOptions = {
+        from: 'noreply@arcadearchive.com',
+        to: user.email,
+        subject: "Hello from Arcade Archive!",
+        text: `Follow the link to verify your account http://localhost:5173/verify?token=${token}`,
+      }
+  
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.status(400).json({ error: error });
+        } else {
+          res.status(200).json({ message: info.response })
+        }
+      })
+
+      return res.status(200).json({ message: "Verification link sent", status: "ok" })
+    } catch (err) {
+      res.status(500).json({ error: 'Internal server error' })
     }
   })
 
