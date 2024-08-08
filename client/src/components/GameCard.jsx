@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { RxStarFilled } from "react-icons/rx"
-import { gameCardTimestamp } from "../utils/timestamp"
+import { gameCardTimestamp } from "../utils"
 
 export function GameCard(props) {
   return (

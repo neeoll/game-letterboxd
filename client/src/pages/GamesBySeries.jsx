@@ -30,8 +30,6 @@ const GamesBySeries = () => {
       }
       const json = await response.json()
 
-      console.log(json)
-
       setSeriesDetails({ name: json.name })
       setCount(json.games[0].count[0].count)
       setResults(json.games[0].results)

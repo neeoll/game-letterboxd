@@ -50,7 +50,7 @@ const ReviewDialog = (props) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/review`, {
         method: 'POST',
-        body: JSON.stringify({ rating: rating, platform: platform, review: review, spoiler: spoiler, status: status, gameId: props.gameId }),
+        body: JSON.stringify({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }),
         headers: {
           'authorization': localStorage.getItem('jwt-token'),
           'content-type': 'application/json'

@@ -5,7 +5,8 @@ import Rating from '@mui/material/Rating'
 import { styled } from "@mui/material"
 import { completionStatuses, platforms, genres } from "../dict"
 import { GameCard, ReviewDialog } from "../components"
-import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils/timestamp"
+import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
+import { calculateRatingDistribution } from "../utils"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -15,21 +16,6 @@ const StyledRating = styled(Rating)({
     color: '#ffffff55',
   }
 })
-
-const calculateRatingDistribution = (reviews) => {
-  const ratingArray = []
-  reviews.forEach(review => {
-    ratingArray.push(review.rating)
-  })
-
-  return [
-    { value: 1, percent: Math.floor((ratingArray.filter(rating => rating == 1).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 1).length },
-    { value: 2, percent: Math.floor((ratingArray.filter(rating => rating == 2).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 2).length },
-    { value: 3, percent: Math.floor((ratingArray.filter(rating => rating == 3).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 3).length },
-    { value: 4, percent: Math.floor((ratingArray.filter(rating => rating == 4).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 4).length },
-    { value: 5, percent: Math.floor((ratingArray.filter(rating => rating == 5).length / ratingArray.length) * 100), count: ratingArray.filter(rating => rating == 5).length },
-  ]
-}
 
 const GameDetails = () => {
   const { gameId } = useParams()
@@ -63,7 +49,7 @@ const GameDetails = () => {
       if (json.token) localStorage.setItem(`${gameId}-view-token`, json.token)
       
       setDetails(json.data)
-      json.data.ratings ? setRatingDistributions(calculateRatingDistribution(json.data.reviews)) : console.log("no ratings")
+      setRatingDistributions(calculateRatingDistribution(json.data.reviews))
       setLoading(false)
     }
     getDetails()
@@ -72,7 +58,7 @@ const GameDetails = () => {
   }, [gameId])
 
   async function addGame(payload) {
-    const response = await fetch('${import.meta.env.VITE_BACKEND_URL}/game/addGame', {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/addGame`, {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
@@ -80,19 +66,6 @@ const GameDetails = () => {
         'content-type': 'application/json'
       }
     })
-    const data = await response.json()
-  }
-
-  async function rateGame(rating) {
-    const response = await fetch('http://127.0.0.1:5050/game/rateGame', {
-      method: 'POST',
-      body: JSON.stringify({ gameId: gameId, rating: rating }),
-      headers: {
-        'authorization': localStorage.getItem('jwt-token'),
-        'content-type': 'application/json'
-      }
-    })
-    const data = await response.json()
   }
 
   if (loading) {
@@ -131,7 +104,25 @@ const GameDetails = () => {
               <div className="relative -mt-12">
                 <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
                   <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
-                  <StyledRating defaultValue={details.userRating || 0} onChange={(event, newValue) => rateGame(newValue)} size="large"/>
+                  <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
+                  <div className="flex gap-2">
+                    <button onClick={() => addGame({ status: "played", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                      <IoLogoGameControllerB size={"1.25em"}/>
+                      <p>Played</p>
+                    </button>
+                    <button onClick={() => addGame({ status: "playing", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                      <IoIosPlay size={"1.25em"}/>
+                      <p>Playing</p>
+                    </button>
+                    <button onClick={() => addGame({ status: "backlog", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                      <IoIosBookmarks size={"1.25em"}/>
+                      <p>Backlog</p>
+                    </button>
+                    <button onClick={() => addGame({ status: "wishlist", id: details.gameId })} className="flex flex-col gap-1 text-xs text-indigo-50/75 hover:text-amber-300 justify-center items-center">
+                      <IoIosGift size={"1.25em"}/>
+                      <p>Wishlist</p>
+                    </button>
+                  </div>
                 </div>
               </div> 
               ) : (

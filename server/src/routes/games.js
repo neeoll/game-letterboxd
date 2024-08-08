@@ -5,11 +5,12 @@ import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
 import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
+import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 import { checkViewToken } from "../middleware/checkViewToken.js"
 import { decodeToken } from "../middleware/decodeToken.js"
-import mongoose from "mongoose"
 import { queryToPipeline } from "../utils/queryToPipeline.js"
+import mongoose from "mongoose"
 
 const gamesRouter = Router()
   .post('/addGame', verifyToken, async (req, res) => {
@@ -43,98 +44,48 @@ const gamesRouter = Router()
       res.status(500).json({ error: 'Internal server error' })
     }
   })
-  .post('/rateGame', verifyToken, async (req, res) => {
-    try {
-      await Game.updateOne(
-        { gameId: req.body.gameId },
-        { $pull: { ratings: { userRef: req.user.id } } }
-      )
-
-      const updatedGame = await Game.findOneAndUpdate(
-        { gameId: req.body.gameId },
-        { $addToSet: { ratings: { value: req.body.rating, userRef: req.user.id } } },
-        { returnDocument: 'after' }
-      )
-
-      await User.updateOne(
-        { _id: req.user.id },
-        { $pull: { ratings: { gameRef: updatedGame._id } } }
-      )
-      
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: req.user.id },
-        { $addToSet: { ratings: { gameRef: updatedGame._id, rating: req.body.rating } } },
-        { returnDocument: 'after' }
-      )
-
-      res.status(200).json(updatedUser)
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: "Internal server error" })
-    }
-  })
-  .post("/profileGames", async (req, res) => {
-    try {
-      const ids = req.body.games.map(game => new mongoose.Types.ObjectId(game.gameRef))
-      const lastUpdatedMap = req.body.games.reduce((map, game) => {
-        map[game.gameRef] = game.lastUpdated;
-        return map;
-      }, {})
-
-      const results = await Game.aggregate([
-        {
-          $match: { 
-            _id: { $in: ids }
-          }
-        },
-        {
-          $addFields: {
-            lastUpdated: {
-              $reduce: {
-                input: Object.entries(lastUpdatedMap).map(([key, value]) => ({
-                  k: new mongoose.Types.ObjectId(key),
-                  v: value
-                })),
-                initialValue: null,
-                in: {
-                  $cond: [
-                    { $eq: ['$_id', '$$this.k'] },
-                    '$$this.v',
-                    '$$value'
-                  ]
-                }
-              }
-            }
-          }
-        },
-        {
-          $project: { name: 1, coverId: 1, gameId: 1, lastUpdated: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 }
-        },
-        {
-          $sort: { lastUpdated: -1 }
-        }
-      ])
-      res.status(200).json(results)
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  })
   .post("/review", verifyToken, async (req, res) => {
     try {
-      const { rating, platform, review, spoiler, status, gameId } = req.body
-      const { email } = req.user
+      const { rating, platform, body, spoiler, status, gameId } = req.body
+      const { id: userId } = req.user
 
-      console.log(gameId)
-      
-      const user = await User.findOne({ email: email })
       const game = await Game.findOne({ gameId: gameId })
-      
-      game.reviews.push({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, timestamp: Math.floor(new Date() / 1000), user: user._id })
-      user.reviews.push({})
-      await game.save()
 
-      res.status(200).json({ message: "all good"})
+      const existingReview = await Review.findOne({ gameRef: game._id, userRef: userId })
+      const reviewData = {
+        rating: rating,
+        body: body,
+        platform: platform,
+        spoiler: spoiler,
+        status: status,
+        timestamp: Math.floor(new Date() / 1000),
+        gameRef: game._id,
+        userRef: userId
+      }
+
+      if (existingReview) {
+        await Review.updateOne({ _id: existingReview._id }, reviewData);
+      } else {
+        const newReview = new Review(reviewData)
+        const review = await newReview.save()
+
+        await Game.updateOne(
+          { gameId: gameId },
+          { $addToSet: { reviews: review._id } }
+        )
+  
+        await User.updateOne(
+          { _id: userId },
+          { 
+            $addToSet: { 
+              reviews: review._id,
+              games: { gameRef: game._id, lastUpdated: Math.floor(new Date / 1000), status: "played" }
+            } 
+          }
+        )
+      }
+
+      res.status(200).json({ message: "all good" })
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })
@@ -143,18 +94,14 @@ const gamesRouter = Router()
   .get('/search', async (req, res) => {
     try {
       const results = await Game.aggregate([
-        { 
-          $match: { name: { $regex: req.query.title, $options: "i" } }
-        }, 
+        { $match: { name: { $regex: req.query.title, $options: "i" } } }, 
         { 
           $facet: {
             results: [
               { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, _id: 0 } },
               { $limit: 100 }
             ],
-            count: [
-              { $count: "count" }
-            ]
+            count: [ { $count: "count" } ]
           }
         }
       ])
@@ -176,130 +123,132 @@ const gamesRouter = Router()
   })
   .get("/:id", [decodeToken, checkViewToken], async (req, res) => {
     try {
-      const pipeline = []
-      pipeline.push({$match: { gameId: parseInt(req.params.id) }})
-      // Reviews Lookup
-      pipeline.push(
+      const pipeline = [
+        { $match: { gameId: parseInt(req.params.id) } },
+        // Lookup Reviews
         {
           $lookup: {
-            from: 'users',
-            let: { reviewUsers: '$reviews.user' },
-            pipeline: [
-              { $match: { $expr: { $in: ['$_id', '$$reviewUsers'] } } },
-              { $project: { username: 1, email: 1 } },
-              { $sort: { timestamp: -1 } }
-            ],
-            as: 'userDetails'
+            from: 'reviews',
+            localField: '_id',
+            foreignField: 'gameRef',
+            as: 'reviews'
           }
         },
+        // Unwind the reviews array to handle each review separately
+        { $unwind: { path: '$reviews', preserveNullAndEmptyArrays: true } },
+        // Lookup User data for each review
         {
-          $addFields: {
-            reviews: {
-              $map: {
-                input: '$reviews',
-                as: 'review',
-                in: {
-                  $mergeObjects: [
-                    '$$review',
-                    {
-                      user: {
-                        $arrayElemAt: [
-                          {
-                            $filter: {
-                              input: '$userDetails',
-                              as: 'userDetail',
-                              cond: { $eq: ['$$userDetail._id', '$$review.user'] }
-                            }
-                          },
-                          0
-                        ]
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      )
-      // Companies Lookup
-      pipeline.push({
-        $lookup: {
-          from: 'companies',
-          let: { companiesArray: '$companies.company'},
-          pipeline: [
-            {
-              $match: { 
-                $expr: {
-                  $in: ['$companyId', '$$companiesArray']
-                }
-               }
-            },
-            { $project: { name: 1, companyId: 1, _id: 0 } }
-          ],
-          as: 'companies'
-        }
-      })
-      // Series Lookup
-      pipeline.push({
-        $lookup: {
-          from: 'games',
-          let: { collectionId: { $arrayElemAt: ['$collections', 0] } },
-          pipeline: [
-            { 
-              $match: {
-                $expr: {
-                  $in: ['$$collectionId', '$collections']
-                }
-              }
-            },
-            { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
-            { $limit: 6 }
-          ],
-          as: 'collection'
-        }
-      })
-      // Active User Lookup
-      if (req.user) {
-        pipeline.push({
           $lookup: {
             from: 'users',
-            let: { gameRef: '$_id' },
-            pipeline: [
-              {
-                $match: { email: req.user.email }
-              },
-              {
-                $project: {
-                  ratings: {
-                    $filter: {
-                      input: '$ratings',
-                      as: 'rating',
-                      cond: { $eq: ['$$rating.gameRef', "$$gameRef"] }
-                    }
-                  }
-                }
-              },
-              {
-                $project: {
-                  rating: { $arrayElemAt: ['$ratings.rating', 0] }
+            localField: 'reviews.userRef',
+            foreignField: '_id',
+            as: 'reviewUser'
+          }
+        },
+        // Unwind the reviewUser array to get the first matching user
+        { $unwind: { path: '$reviewUser', preserveNullAndEmptyArrays: true } },
+        // Re-structure the reviews array with user data
+        {
+          $group: {
+            _id: '$_id',
+            gameId: { $first: '$gameId' },
+            companies: { $first: '$companies' },
+            collections: { $first: '$collections' },
+            name: { $first: '$name' },
+            coverId: { $first: '$coverId' },
+            platforms: { $first: '$platforms' },
+            releaseDate: { $first: '$releaseDate' },
+            genres: { $first: '$genres' },
+            summary: { $first: '$summary' },
+            avgRating: { $first: '$avgRating' },
+            played: { $first: '$played' },
+            playing: { $first: '$playing' },
+            backlog: { $first: '$backlog' },
+            wishlist: { $first: '$wishlist' },
+            reviews: {
+              $push: {
+                _id: '$reviews._id',
+                rating: '$reviews.rating',
+                body: '$reviews.body',
+                platform: '$reviews.platform',
+                spoiler: '$reviews.spoiler',
+                status: '$reviews.status',
+                timestamp: '$reviews.timestamp',
+                user: {
+                  username: '$reviewUser.username',
+                  profileIcon: '$reviewUser.profileIcon'
                 }
               }
+            },
+          }
+        },
+        // Companies Lookup
+        {
+          $lookup: {
+            from: 'companies',
+            let: { companiesArray: '$companies.company' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ['$companyId', '$$companiesArray'] }
+                }
+              },
+              { $project: { name: 1, companyId: 1, _id: 0 } }
             ],
-            as: 'userRating'
+            as: 'companies'
           }
-        })
-        pipeline.push({
-          $addFields: {
-            userRating: { $arrayElemAt: ['$userRating.rating', 0] }
+        },
+        // Series Lookup (collection)
+        {
+          $lookup: {
+            from: 'games',
+            let: { collectionId: { $arrayElemAt: ['$collections', 0] } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $in: ['$$collectionId', '$collections'] }
+                }
+              },
+              { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
+              { $limit: 6 }
+            ],
+            as: 'collection'
           }
-        })
+        }
+      ]
+
+      if (req.user) {
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'reviews',
+              let: { ref: '$_id' },
+              pipeline: [
+                {
+                  $match: { 
+                    $expr: {
+                      $and: [
+                        { $eq: ['$gameRef', '$$ref'] },
+                        { $eq: ['$userRef', new mongoose.Types.ObjectId(req.user.id) ] }
+                      ]
+                    }
+                  }
+                },
+                { $project: { rating: 1 } }
+              ],
+              as: 'userReview'
+            }
+          },
+          {
+            $unwind: { path: '$userReview', preserveNullAndEmptyArrays: true }
+          }
+        )
       }
       
       const results = await Game.aggregate(pipeline)
+      if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
       
       if (req.token == null) {
-        console.log('writing new token')
         const game = await Game.findOneAndUpdate({ gameId: req.params.id }, { $inc: { views: 1 } }, { new: true })
         let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, 'secret', { expiresIn: "5 seconds" })
         return res.send({ data: results[0], token: viewToken }).status(200)

@@ -17,18 +17,6 @@ const gameSchema = new mongoose.Schema({
   }
 })
 
-const ratingSchema = new mongoose.Schema({
-  gameRef: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Game',
-    required: true
-  },
-  rating: {
-    type: Number,
-    required: true
-  }
-})
-
 const userSchema = new mongoose.Schema({
   username: String,
   email: String,
@@ -38,13 +26,7 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   games: [gameSchema],
-  ratings: [ratingSchema],
-  reviews: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Review'
-    }
-  ]
+  reviews: [mongoose.Schema.Types.ObjectId]
 })
 
 export default mongoose.model('User', userSchema)

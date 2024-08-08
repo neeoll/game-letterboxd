@@ -1,4 +1,4 @@
-export const createImage = (url) =>
+const createImage = (url) =>
   new Promise((resolve, reject) => {
     const image = new Image()
     image.addEventListener('load', () => resolve(image))
@@ -7,14 +7,14 @@ export const createImage = (url) =>
     image.src = url
   })
 
-export function getRadianAngle(degreeValue) {
+function getRadianAngle(degreeValue) {
   return (degreeValue * Math.PI) / 180
 }
 
 /**
  * Returns the new bounding area of a rotated rectangle.
  */
-export function rotateSize(width, height, rotation) {
+function rotateSize(width, height, rotation) {
   const rotRad = getRadianAngle(rotation)
 
   return {

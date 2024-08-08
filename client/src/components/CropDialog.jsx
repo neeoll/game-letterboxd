@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { Dialog, DialogPanel } from "@headlessui/react"
 import Cropper from 'react-easy-crop'
-import getCroppedImg from "../utils/cropImage"
+import { getCroppedImg } from "../utils"
 import ValueSlider from "./ValueSlider"
 
 const CropDialog = (props) => {
