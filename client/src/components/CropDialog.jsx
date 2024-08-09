@@ -3,6 +3,7 @@ import { Dialog, DialogPanel } from "@headlessui/react"
 import Cropper from 'react-easy-crop'
 import { getCroppedImg } from "../utils"
 import ValueSlider from "./ValueSlider"
+import defaultImg from "../assets/default_profile.png"
 
 const CropDialog = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -44,8 +45,8 @@ const CropDialog = (props) => {
         croppedAreaPixels,
         rotation
       )
+      props.setBlob(croppedImage)
       setCroppedImage(croppedImage)
-      props.setProfileIcon(croppedImage)
       setDialogOpen(false)
     } catch (e) {
       console.error(e)
@@ -60,10 +61,7 @@ const CropDialog = (props) => {
 
   return (
     <div className="flex justify-center items-center">
-      {croppedImage ? 
-        <img onClick={() => handleFileUpload()} className="size-40 rounded-full" src={croppedImage} /> : 
-        <button onClick={() => handleFileUpload()} className="size-40 rounded-full bg-neutral-600"></button>
-      }
+      <img onClick={() => handleFileUpload()} className="size-40 rounded-full bg-neutral-600 outline-none " src={croppedImage || defaultImg} />
       <input ref={fileUpload} type="file" accept="image/*" onChange={onFileUpload} className="invisible size-0"/>
       <Dialog open={dialogOpen} onClose={() => clear()} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">

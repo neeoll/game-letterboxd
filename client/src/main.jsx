@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Pages.Profile />
+        element: <Pages.Home />
       },
       {
         path: "/games",
@@ -42,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Pages.Login />
+      },
+      {
+        path: "/profile",
+        element: <Pages.Profile />
       },
       {
         path: "/settings",

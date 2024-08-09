@@ -2,11 +2,25 @@ import { Router } from "express"
 import 'dotenv/config'
 import User from "../db/models/User.js"
 import { verifyToken } from "../middleware/verifyToken.js"
+import { Upload } from '@aws-sdk/lib-storage'
+import { S3Client, S3 } from "@aws-sdk/client-s3"
 
 const userRouter = Router()
   .post("/update", verifyToken, async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.user.email })
+      const { username, email, password, blob } = req.body
+      const profileIcon = new File(blob, "profileIcon.png")
+      
+      const s3Client = new S3Client({
+        region: 'us-east-1',
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+        }
+      })
+
+      
+
       res.status(200).json({ message: "all good" })
     } catch (err) {
       console.error(err)

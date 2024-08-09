@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
@@ -6,7 +6,6 @@ import { RxCheck, RxCross2 } from 'react-icons/rx'
 
 const Register = () => {
   const navigate = useNavigate()
-  if (localStorage.getItem('jwt-token')) navigate('/')
 
   const recaptcha = useRef()
   const [email, setEmail] = useState("")
@@ -17,6 +16,10 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
 
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('jwt-token')) navigate('/')
+  }, [])
 
   async function veryifyCaptcha() {
     const captchaValue = recaptcha.current.getValue()

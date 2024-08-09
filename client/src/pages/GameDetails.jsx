@@ -7,6 +7,7 @@ import { completionStatuses, platforms, genres } from "../dict"
 import { GameCard, ReviewDialog } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
+import defaultImg from "../assets/default_profile.png"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -240,8 +241,7 @@ const GameDetails = () => {
             {details.reviews.map((review, index) => (
               <div key={index} className="flex text-indigo-50 gap-x-2 p-4 border-b">
                 <div className="flex flex-col justify-start">
-                  {/* Profile picture goes here */}
-                  <div className="w-10 h-10 rounded bg-gray-500" />
+                  <img src={review.user.profileIcon || defaultImg} className="size-10 rounded-lg" />
                 </div>
                 <div className="flex flex-col justify-start">
                   <div>{review.user.username}</div>

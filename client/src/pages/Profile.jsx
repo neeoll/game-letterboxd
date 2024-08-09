@@ -23,12 +23,11 @@ const Profile = () => {
 
   useEffect(() => {
     async function getUserInfo() {
-      const token = localStorage.getItem('jwt-token')
-      if (!token) { return navigate("/login") }
+      if (!localStorage.getItem('jwt-token')) { return navigate("/login") }
       try {
         let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/profileData`, {
           headers: {
-            'authorization': token
+            'authorization': localStorage.getItem('jwt-token')
           }
         })
         const userData = await response.json()

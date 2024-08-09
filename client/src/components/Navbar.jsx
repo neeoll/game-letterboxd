@@ -6,6 +6,7 @@ import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import GlowingText from './GlowingText'
 import _ from "lodash"
+import { navbarDestinations } from '../dict'
 
 export default function Navbar() {
 
@@ -13,18 +14,16 @@ export default function Navbar() {
   const [games, setGames] = useState([])
   const [userData, setUserData] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-
-  const token = localStorage.getItem('jwt-token')
   
   let navigate = useNavigate()
 
   useEffect(() => {
     async function getUserInfo() {
-      if (!token) return
+      if (!localStorage.getItem('jwt-token')) return
       try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {
-            'authorization': token
+            'authorization': localStorage.getItem('jwt-token')
           }
         })
         const data = await response.json()
@@ -36,7 +35,7 @@ export default function Navbar() {
     }
     getUserInfo()
     return
-  }, [token])
+  }, [])
 
   const getGames = async (searchText) => {
     if (searchText == "") return
@@ -56,7 +55,7 @@ export default function Navbar() {
 
   function logout() {
     localStorage.removeItem('jwt-token')
-    navigate('/login')
+    window.location.reload()
   }
 
   return (
@@ -108,16 +107,13 @@ export default function Navbar() {
               </MenuButton>
               <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom center">
                 <div className="bg-neutral-800 rounded mt-1">
-                  <MenuItem>
-                    <Link onClick={() => setMenuOpen(false)} to={"/"} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
-                      Profile
-                    </Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link onClick={() => setMenuOpen(false)} to={"/settings"} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
-                      Settings
-                    </Link>
-                  </MenuItem>
+                  {navbarDestinations.map((destination, index) => (
+                    <MenuItem>
+                      <Link onClick={() => setMenuOpen(false)} to={destination.route} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
+                        {destination.name}
+                      </Link>
+                    </MenuItem>
+                  ))}
                   <MenuItem>
                     <button 
                       onClick={() => {

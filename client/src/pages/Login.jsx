@@ -1,16 +1,19 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 
 const Login = () => {
   const navigate = useNavigate()
-  if (localStorage.getItem('jwt-token')) navigate('/')
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
   const [password, setPassword] = useState("")
   const [failedLogin, setFailedLogin] = useState(false)
+
+  useEffect(() => {
+    if (localStorage.getItem('jwt-token')) navigate('/')
+  }, [])
 
   async function veryifyCaptcha() {
     const captchaValue = recaptcha.current.getValue()
@@ -43,10 +46,8 @@ const Login = () => {
     })
     if (response.status == 401) return setFailedLogin(true)
     const data = await response.json()
-    if (data.token) {
-      localStorage.setItem('jwt-token', data.token)
-      navigate('/')
-    }
+    localStorage.setItem('jwt-token', data.token)
+    navigate('/')
   }
 
   return (

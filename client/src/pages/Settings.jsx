@@ -6,12 +6,11 @@ import { RxCheck, RxCross2 } from 'react-icons/rx'
 
 const Settings = () => {
   const navigate = useNavigate()
-  if (!localStorage.getItem('jwt-token')) navigate("/login")
 
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const [profileIcon, setProfileIcon] = useState()
+  const [blob, setBlob] = useState()
   const [email, setEmail] = useState(null)
   const [emailValid, setEmailValid] = useState(true)
   const [username, setUsername] = useState(null)
@@ -21,12 +20,12 @@ const Settings = () => {
 
   useEffect(() => {
     async function getUserData() {
-      const token = localStorage.getItem('jwt-token')
+      if (!localStorage.getItem('jwt-token')) navigate("/login")
       try {
         setLoading(true)
         let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
           headers: {
-            'authorization': token
+            'authorization': localStorage.getItem('jwt-token')
           }
         })
         const userData = await response.json()
@@ -48,7 +47,7 @@ const Settings = () => {
           'authorization': localStorage.getItem('jwt-token'),
           'content-type': 'application/json'
         },
-        body: JSON.stringify({ username, email, password, profileIcon })
+        body: JSON.stringify({ username, email, password, blob })
       })
     } catch (err) {
       console.error(err)
@@ -72,7 +71,7 @@ const Settings = () => {
           <TabPanel className="flex flex-col gap-2 p-4 text-white">
             <div className="flex gap-4">
               <div className="flex flex-col gap-2">
-                <CropDialog setProfileIcon={setProfileIcon} />
+                <CropDialog setBlob={setBlob} />
               </div>
               <div className="flex flex-col w-96 justify-center items-center gap-2">
                 {/* Username */}
@@ -138,7 +137,7 @@ const Settings = () => {
                     </div>
                   )}
                 </div>
-                <div className={`relative w-96 group ${(username || email || password) != null ? "" : "size-0 invisible"}`}>
+                <div className={`relative w-96 group ${(username || email || password || blob) != null ? "" : "size-0 invisible"}`}>
                   <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Save Changes</div>
                   <button onClick={submitChanges} className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Save Changes</button>
                 </div>
