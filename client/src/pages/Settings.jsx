@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import CropDialog from "../components/CropDialog"
 import { RxCheck, RxCross2 } from 'react-icons/rx'
+import axios from "axios"
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -20,39 +21,64 @@ const Settings = () => {
 
   useEffect(() => {
     async function getUserData() {
-      if (!localStorage.getItem('jwt-token')) navigate("/login")
-      try {
-        setLoading(true)
-        let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
-          headers: {
-            'authorization': localStorage.getItem('jwt-token')
-          }
-        })
-        const userData = await response.json()
-        setUser(userData)
+      if (!localStorage.getItem('jwt-token')) { navigate("/login") }
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
+        headers: {
+          'authorization': localStorage.getItem('jwt-token')
+        }
+      })
+      .then(res => {
+        console.log(res.data)
+        setUser(res.data)
         setLoading(false)
-      } catch (err) {
-        console.error(err)
-        return
-      }
+      })
+      .catch(err => console.error(err))
     }
     getUserData()
   }, [])
 
-  const submitChanges = async () => {
-    try {
-      let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/update`, {
-        method: 'POST',
-        headers: {
-          'authorization': localStorage.getItem('jwt-token'),
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({ username, email, password, blob })
-      })
-    } catch (err) {
-      console.error(err)
-      return
+  function srcToFile(src, fileName, mimeType){
+    return (fetch(src)
+      .then(function(res) { return res.arrayBuffer() })
+      .then(function(buf) { return new File([buf], fileName, {type:mimeType}) })
+    )
+  }
+
+  const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => {
+      resolve(reader.result)
+      /* let encoded = reader.result.toString().replace(/^data:(.*,)?/, '')
+      if ((encoded.length % 4) > 0) {
+        encoded += '='.repeat(4 - (encoded.length % 4))
+      }
+      resolve(encoded) */
     }
+    reader.onerror = error => reject(error)
+  })
+
+  const submitChanges = async () => {
+    const file = await srcToFile(blob, `${blob.split("/")[3]}`, 'image/png')
+    const uri = await fileToBase64(file)
+    console.log(uri)
+    const formData = new FormData()
+    formData.append('image', uri)
+    formData.append('username', username)
+    formData.append('email', email)
+    formData.append('password', password)
+    
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/update`, formData, {
+      headers: {
+        "authorization": localStorage.getItem("jwt-token")
+      }
+    })
+    .then(res => {
+      console.log(res.data)
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 
   if (loading) {
@@ -71,7 +97,7 @@ const Settings = () => {
           <TabPanel className="flex flex-col gap-2 p-4 text-white">
             <div className="flex gap-4">
               <div className="flex flex-col gap-2">
-                <CropDialog setBlob={setBlob} />
+                <CropDialog profileIcon={user.profileIcon} setBlob={setBlob} />
               </div>
               <div className="flex flex-col w-96 justify-center items-center gap-2">
                 {/* Username */}
@@ -146,7 +172,6 @@ const Settings = () => {
           </TabPanel>
         </TabPanels>
       </TabGroup>
-      <pre className="text-white">{JSON.stringify(user, null, 2)}</pre>
     </div>
   )
 }

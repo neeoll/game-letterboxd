@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useLocation, Link } from "react-router-dom"
 import { platforms } from "../dict"
+import axios from 'axios'
 
 const SearchResults = () => {
   const location = useLocation()
@@ -13,20 +14,19 @@ const SearchResults = () => {
   useEffect(() => {
     async function gameSearch() {
       setLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${searchText}`)
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`
-        console.error(message)
-        return
-      }
-      const json = await response.json()
-      setCount(json.count[0].count)
-      setResults(json.results)
-      setLoading(false)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${searchText}`)
+      .then(res => {
+        setCount(res.data.count[0].count)
+        setResults(res.data.results)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error(err)
+      })
     }
     gameSearch()
     return
-  }, [])
+  }, [location.search])
 
   if (loading) {
     return (

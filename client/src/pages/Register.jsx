@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
+import axios from 'axios'
+import { verifyCaptcha } from "../utils"
 
 const Register = () => {
   const navigate = useNavigate()
@@ -21,47 +23,27 @@ const Register = () => {
     if (localStorage.getItem('jwt-token')) navigate('/')
   }, [])
 
-  async function veryifyCaptcha() {
-    const captchaValue = recaptcha.current.getValue()
-    if (!captchaValue) {
-      alert('Please verify the reCAPTCHA')
-      return false
-    }
-    const response = await fetch('http://127.0.0.1:5050/auth/verifyCaptcha', {
-      method: 'POST',
-      body: JSON.stringify({ captchaValue }),
-      headers: {
-        'content-type': 'application/json'
-      }
-    })
-    const data = await response.json()
-    return data.success ? true : false
-  }
-
   async function submitRegister(e) {
     e.preventDefault()
-    const captchaVerified = veryifyCaptcha()
-    if (captchaVerified) {
-      const salt = bcrypt.genSaltSync(10)
-      const hash = bcrypt.hashSync(password, salt)
+    const captchaValue = recaptcha.current.getValue()
+    if (!captchaValue) { return alert('Please verify the reCAPTCHA') }
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
-        method: 'POST',
-        body: JSON.stringify({ username: username, email: email, password: hash }),
-        headers: {
-          'content-type': 'application/json'
-        }
-      })
-      const data = await response.json()
-      if (data.status == "ok") {
-        setRegisterSuccessful(true)
-      } else {
-        if (data.error == 'Username already in use') { setUsernameValid(false) }
-        if (data.error == 'Email already in use') { setEmailValid(false) }
-      }
-    } else {
-      alert('reCAPTCHA validation failed')
-    }
+    const captchaVerified = await verifyCaptcha(captchaValue)
+    if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
+
+    const salt = bcrypt.genSaltSync(10)
+    const hash = bcrypt.hashSync(password, salt)
+
+    const data = { username: username, email: email, password: hash }
+
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, data)
+    .then(res => {
+      setRegisterSuccessful(true)
+    })
+    .catch(err => {
+      if (err.response.data.error == 'Username already in use') { setUsernameValid(false) }
+      if (err.response.data.error == 'Email already in use') { setEmailValid(false) }
+    })
   }
 
   const resendLink = () => {

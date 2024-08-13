@@ -8,6 +8,7 @@ import { GameCard, ReviewDialog } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
 import defaultImg from "../assets/default_profile.png"
+import axios from 'axios'
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -27,7 +28,6 @@ const GameDetails = () => {
 
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)
-  const [ratingDistributions, setRatingDistributions]  = useState([])
 
   useEffect(() => {
     async function getDetails() {
@@ -37,21 +37,15 @@ const GameDetails = () => {
         headers['user-token'] = localStorage.getItem('jwt-token')
       }
 
-      const response = await fetch(`http://127.0.0.1:5050/game/${gameId}`, {
+      axios.get(`http://127.0.0.1:5050/game/${gameId}`, {
         headers: headers
       })
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`
-        console.error(message)
-        return
-      }
-      const json = await response.json()
-      
-      if (json.token) localStorage.setItem(`${gameId}-view-token`, json.token)
-      
-      setDetails(json.data)
-      setRatingDistributions(calculateRatingDistribution(json.data.reviews))
-      setLoading(false)
+      .then(res => {
+        if (res.data.token) localStorage.setItem(`${gameId}-view-token`, res.data.token)
+        setDetails(res.data.data)
+        setLoading(false)
+      })
+      .catch(err => console.error(err))
     }
     getDetails()
 
@@ -134,7 +128,7 @@ const GameDetails = () => {
               <p className="font-bold text-3xl">{(details.avgRating || 0).toFixed(1)}</p>
               <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
                 <div className="w-full flex h-24 gap-1">
-                  {ratingDistributions.map(rating => (
+                  {calculateRatingDistribution(details.reviews).map(rating => (
                     <div className="flex flex-col w-1/5 justify-end">
                       <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 10}px)`}} />
                     </div>

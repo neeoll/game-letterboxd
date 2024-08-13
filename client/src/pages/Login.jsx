@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
+import axios from 'axios'
+import { verifyCaptcha } from "../utils"
 
 const Login = () => {
   const navigate = useNavigate()
@@ -15,39 +17,23 @@ const Login = () => {
     if (localStorage.getItem('jwt-token')) navigate('/')
   }, [])
 
-  async function veryifyCaptcha() {
-    const captchaValue = recaptcha.current.getValue()
-    if (!captchaValue) {
-      alert('Please verify the reCAPTCHA')
-      return false
-    }
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyCaptcha`, {
-      method: 'POST',
-      body: JSON.stringify({ captchaValue }),
-      headers: {
-        'content-type': 'application/json'
-      }
-    })
-    const data = await response.json()
-    return data.success ? true : false
-  }
-
   async function submitLogin(e) {
     e.preventDefault()
-    const captchaVerified = veryifyCaptcha()
-    if (!captchaVerified) return alert('reCAPTCHA validation failed') 
-      
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({ emailOrUsername: emailOrUsername, password: password }),
-      headers: {
-        'content-type': 'application/json'
-      }
+    const captchaValue = recaptcha.current.getValue()
+    if (!captchaValue) { return alert('Please verify the reCAPTCHA') }
+
+    const captchaVerified = await verifyCaptcha(captchaValue)
+    if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
+
+    const data = { emailOrUsername: emailOrUsername, password: password }
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data)
+    .then(res => {
+      localStorage.setItem('jwt-token', res.data.token)
+      navigate('/')
     })
-    if (response.status == 401) return setFailedLogin(true)
-    const data = await response.json()
-    localStorage.setItem('jwt-token', data.token)
-    navigate('/')
+    .catch(err => {
+      if (err.response.status == 401) setFailedLogin(true) 
+    })
   }
 
   return (

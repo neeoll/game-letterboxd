@@ -28,11 +28,11 @@ const authRouter = Router()
     try {
       const existingUsername = await User.findOne({ username: req.body.username })
       if (existingUsername) {
-        return res.status(400).json({ error: 'Username already in use' })
+        return res.status(409).json({ error: 'Username already in use' })
       }
       const existingEmail = await User.findOne({ email: req.body.email })
       if (existingEmail) {
-        return res.status(400).json({ error: 'Email already in use' })
+        return res.status(409).json({ error: 'Email already in use' })
       }
 
       const newUser = new User({

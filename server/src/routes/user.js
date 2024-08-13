@@ -2,24 +2,41 @@ import { Router } from "express"
 import 'dotenv/config'
 import User from "../db/models/User.js"
 import { verifyToken } from "../middleware/verifyToken.js"
-import { Upload } from '@aws-sdk/lib-storage'
-import { S3Client, S3 } from "@aws-sdk/client-s3"
+import { v2 as cloudinary } from 'cloudinary'
+import multer from 'multer'
+
+const upload = multer()
 
 const userRouter = Router()
-  .post("/update", verifyToken, async (req, res) => {
+  .post("/update", [verifyToken, upload.any()], async (req, res) => {
     try {
-      const { username, email, password, blob } = req.body
-      const profileIcon = new File(blob, "profileIcon.png")
-      
-      const s3Client = new S3Client({
-        region: 'us-east-1',
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-        }
+      const { username, email, password, image } = req.body
+
+      console.clear()
+
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true
       })
 
-      
+      await cloudinary.uploader.destroy(`${req.user.id}-profileIcon`)
+
+      const uploadResult = await cloudinary.uploader.upload(image, {
+        public_id: `${req.user.id}-profileIcon`
+      })
+
+      console.log(uploadResult)
+
+      const optimizeUrl = cloudinary.url(`${req.user.id}-profileIcon`, {
+        fetch_format: 'auto',
+        quality: 'auto'
+      })
+
+      console.log(optimizeUrl)
+
+      await User.findOneAndUpdate({ email: req.user.email }, { $set: { profileIcon: optimizeUrl }})
 
       res.status(200).json({ message: "all good" })
     } catch (err) {

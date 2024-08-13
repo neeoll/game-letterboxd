@@ -6,7 +6,7 @@ import { DisplayButtons, FilterSidebar, GameCard, Pagination, Sort } from "../co
 const GameSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [count, setCount] = useState(0)
   const [results, setResults] = useState([])
 

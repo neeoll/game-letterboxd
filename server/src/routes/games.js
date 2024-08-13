@@ -46,6 +46,9 @@ const gamesRouter = Router()
   })
   .post("/review", verifyToken, async (req, res) => {
     try {
+      console.log(req.body)
+      console.log(req.user)
+      return res.status(200).json({ message: "all good" })
       const { rating, platform, body, spoiler, status, gameId } = req.body
       const { id: userId } = req.user
 

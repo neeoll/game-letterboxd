@@ -5,6 +5,7 @@ import Rating from "@mui/material/Rating";
 import { styled } from "@mui/material";
 import { RxCheck } from "react-icons/rx";
 import DropdownSearch from "./DropdownSearch";
+import axios from 'axios'
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -47,20 +48,14 @@ const ReviewDialog = (props) => {
   const [spoiler, setSpoiler] = useState(false)
 
   const submit = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/review`, {
-        method: 'POST',
-        body: JSON.stringify({ rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }),
-        headers: {
-          'authorization': localStorage.getItem('jwt-token'),
-          'content-type': 'application/json'
-        },
-      })
-      const data = await response.json()
-      setDialogOpen(false)
-    } catch (err) {
-      alert(err)
-    }
+    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/game/review`, data, {
+      headers: {
+        'authorization': localStorage.getItem('jwt-token')
+      }
+    })
+    .then(res => setDialogOpen(false))
+    .catch(err => console.error(err))
   }
 
   const clear = () => {

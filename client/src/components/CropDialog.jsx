@@ -39,18 +39,10 @@ const CropDialog = (props) => {
   }
 
   const handleCroppedImg = async () => {
-    try {
-      const croppedImage = await getCroppedImg(
-        imgSrc,
-        croppedAreaPixels,
-        rotation
-      )
-      props.setBlob(croppedImage)
-      setCroppedImage(croppedImage)
-      setDialogOpen(false)
-    } catch (e) {
-      console.error(e)
-    }
+    const croppedImage = await getCroppedImg(imgSrc, croppedAreaPixels, rotation)
+    props.setBlob(croppedImage)
+    setCroppedImage(croppedImage)
+    setDialogOpen(false)
   }
 
   const clear = () => {
@@ -61,7 +53,7 @@ const CropDialog = (props) => {
 
   return (
     <div className="flex justify-center items-center">
-      <img onClick={() => handleFileUpload()} className="size-40 rounded-full bg-neutral-600 outline-none " src={croppedImage || defaultImg} />
+      <img onClick={() => handleFileUpload()} className="size-40 rounded-full bg-neutral-600 outline-none " src={croppedImage || props.profileIcon || defaultImg} />
       <input ref={fileUpload} type="file" accept="image/*" onChange={onFileUpload} className="invisible size-0"/>
       <Dialog open={dialogOpen} onClose={() => clear()} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">

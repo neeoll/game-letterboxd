@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { DisplayButtons, Sort, FilterSidebar, GameCard, Pagination } from "../components"
 import { genres, platforms, sortCriteria } from "../dict"
+import axios from 'axios'
 
 const GamesByCompany = () => {
   const { companyId } = useParams()
@@ -22,19 +23,14 @@ const GamesByCompany = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      setLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/company/${companyId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`
-        alert(message)
-        return
-      }
-      const json = await response.json()
-      
-      setCompanyDetails(json)
-      setCount(json.games[0].count[0].count)
-      setResults(json.games[0].results)
-      setLoading(false)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/company/${companyId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      .then(res => {
+        setCompanyDetails(res.data)
+        setCount(res.data.games[0].count[0].count)
+        setResults(res.data.games[0].results)
+        setLoading(false)
+      })
+      .catch(err => console.error(err))
     }
     gameSearch()
   }, [companyId, location.search])

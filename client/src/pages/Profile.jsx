@@ -6,6 +6,7 @@ import { gameStatuses } from "../dict"
 import { DropdownSearch, GameCard, Sort } from "../components"
 import { genres, platforms, profileSortCriteria } from "../dict"
 import { calculateRatingDistribution } from "../utils"
+import axios from 'axios'
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -24,22 +25,18 @@ const Profile = () => {
   useEffect(() => {
     async function getUserInfo() {
       if (!localStorage.getItem('jwt-token')) { return navigate("/login") }
-      try {
-        let response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/profileData`, {
-          headers: {
-            'authorization': localStorage.getItem('jwt-token')
-          }
-        })
-        const userData = await response.json()
-
-        setUser(userData)
-        setPlatforms(Array.from(new Set(userData.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
-        setGenres(Array.from(new Set(userData.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profileData`, {
+        headers: {
+          'authorization': localStorage.getItem('jwt-token')
+        }
+      })
+      .then(res => {
+        setUser(res.data)
+        setPlatforms(Array.from(new Set(res.data.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
+        setGenres(Array.from(new Set(res.data.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
         setLoading(false)
-      } catch (err) {
-        console.error(err)
-        return
-      }
+      })
+      .catch(err => console.error(err))
     }
     getUserInfo()
     return

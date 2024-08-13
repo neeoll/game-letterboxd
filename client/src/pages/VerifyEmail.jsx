@@ -1,5 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useEffect, useState } from "react"
+import axios from 'axios'
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
@@ -13,15 +14,9 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     async function verify() {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyEmail?token=${token}`)
-
-      const data = await response.json()
-      if (data.status == "ok") {
-        setVerificationSuccessful(true)
-      } 
-      else if (data.status == "exp") {
-        setLinkExpired(true)
-      }
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyEmail?token=${token}`)
+      .then(res => setVerificationSuccessful(true))
+      .catch(err => setLinkExpired(true))
     }
     verify()
   }, [location.search])
