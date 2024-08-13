@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from "@headlessui/react"
 import SimpleBar from "simplebar-react"
+import PropTypes from 'prop-types'
 
 const DropdownSearch = (props) => {
   const [query, setQuery] = useState("")
@@ -33,6 +34,13 @@ const DropdownSearch = (props) => {
       </ComboboxOptions>
     </Combobox>
   )
+}
+
+DropdownSearch.propTypes = {
+  array: PropTypes.array,
+  value: PropTypes.number,
+  setValue: PropTypes.func,
+  placeholder: PropTypes.string
 }
 
 export default DropdownSearch

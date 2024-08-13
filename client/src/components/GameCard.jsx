@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { RxStarFilled } from "react-icons/rx"
 import { gameCardTimestamp } from "../utils"
+import PropTypes from 'prop-types'
 
 export function GameCard(props) {
   return (
@@ -22,6 +23,12 @@ export function GameCard(props) {
       }
     </div>
   )
+}
+
+GameCard.propTypes = {
+  game: PropTypes.object,
+  sortBy: PropTypes.string,
+  size: PropTypes.string
 }
 
 export default GameCard

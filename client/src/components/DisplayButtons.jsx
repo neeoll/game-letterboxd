@@ -1,5 +1,6 @@
 import { RxCross2 } from "react-icons/rx"
 import { genres, platforms } from "../dict"
+import PropTypes from 'prop-types'
 
 const DisplayButtons = (props) => {
   return (
@@ -33,6 +34,13 @@ const DisplayButtons = (props) => {
       ) : ""}
     </div>
   )
+}
+
+DisplayButtons.propTypes = {
+  year: PropTypes.number,
+  genre: PropTypes.number,
+  platform: PropTypes.number,
+  remove: PropTypes.func
 }
 
 export default DisplayButtons

@@ -6,6 +6,8 @@ import { styled } from "@mui/material";
 import { RxCheck } from "react-icons/rx";
 import DropdownSearch from "./DropdownSearch";
 import axios from 'axios'
+import { completionStatuses } from "../dict/completionStatuses";
+import PropTypes from 'prop-types'
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -15,29 +17,6 @@ const StyledRating = styled(Rating)({
     color: '#ffffff55',
   }
 })
-
-export const gameStatuses = [
-  {
-    id: 1,
-    name: "Completed",
-    value: "completed"
-  },
-  {
-    id: 2,
-    name: "Played",
-    value: "played"
-  },
-  {
-    id: 3,
-    name: "Shelved",
-    value: "shelved"
-  },
-  {
-    id: 4,
-    name: "Abandoned",
-    value: "abandoned"
-  },
-]
 
 const ReviewDialog = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -54,7 +33,7 @@ const ReviewDialog = (props) => {
         'authorization': localStorage.getItem('jwt-token')
       }
     })
-    .then(res => setDialogOpen(false))
+    .then(setDialogOpen(false))
     .catch(err => console.error(err))
   }
 
@@ -80,8 +59,8 @@ const ReviewDialog = (props) => {
                 <div className="flex flex-col items-center gap-4">
                   <img className="h-44 aspect-[45/64] rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${props.cover}.jpg`} />
                   <RadioGroup value={status} onChange={setStatus} className="flex flex-col gap-1 w-full">
-                    {gameStatuses.map((status) => (
-                      <Field key={status.id} className="flex items-center justify-center text-white hover:cursor-pointer">
+                    {completionStatuses.map((status, index) => (
+                      <Field key={index} className="flex items-center justify-center text-white hover:cursor-pointer">
                         <Radio value={status.value} className="w-full group flex items-center justify-center rounded-md p-1 bg-neutral-800 data-[checked]:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
                           {status.name}
                         </Radio>
@@ -119,6 +98,13 @@ const ReviewDialog = (props) => {
       </Dialog>
     </div>
   )
+}
+
+ReviewDialog.propTypes = {
+  gameId: PropTypes.number,
+  name: PropTypes.string,
+  cover: PropTypes.string,
+  platforms: PropTypes.array
 }
 
 export default ReviewDialog

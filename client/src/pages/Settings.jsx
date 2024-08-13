@@ -35,7 +35,7 @@ const Settings = () => {
       .catch(err => console.error(err))
     }
     getUserData()
-  }, [])
+  })
 
   function srcToFile(src, fileName, mimeType){
     return (fetch(src)
@@ -113,7 +113,7 @@ const Settings = () => {
                     className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none"
                     maxLength={16}
                   />
-                  <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{username}" is already in use.</p>
+                  <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${username}" is already in use.`}</p>
                 </div>
                 {/* Email */}
                 <div className="flex flex-col w-full items-start">
@@ -128,7 +128,7 @@ const Settings = () => {
                     className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none peer"
                   />
                   <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
-                  <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{email}" is already in use.</p>
+                  <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
                 </div>
                 {/* Password */}
                 <div className="flex flex-col w-full items-start">

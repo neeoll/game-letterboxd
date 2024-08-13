@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       {
         path: "/games/search",
         element: <Pages.SearchResults />
-      },,
+      },
       {
         path: "/games/company/:companyId",
         element: <Pages.GamesByCompany />

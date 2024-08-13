@@ -1,7 +1,7 @@
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx"
+import PropTypes from 'prop-types'
 
 const Pagination = ({ page, count, update }) => {
-
   const maxPage = Math.ceil(count / 36)
 
   const incrementPage = () => {
@@ -45,6 +45,12 @@ const Pagination = ({ page, count, update }) => {
       </div>
     </div>
   )
+}
+
+Pagination.propTypes = {
+  page: PropTypes.number,
+  count: PropTypes.number,
+  update: PropTypes.func
 }
 
 export default Pagination

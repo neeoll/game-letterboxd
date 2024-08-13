@@ -1,5 +1,6 @@
 import { RxCaretDown, RxTriangleDown, RxTriangleUp } from "react-icons/rx"
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react"
+import PropTypes from 'prop-types'
 
 const Sort = (props) => {
   return (
@@ -23,6 +24,13 @@ const Sort = (props) => {
       </Listbox>
     </div>
   )
+}
+
+Sort.propTypes = {
+  update: PropTypes.func,
+  sortOrder: PropTypes.number,
+  criteria: PropTypes.array,
+  sortBy: PropTypes.string,
 }
 
 export default Sort

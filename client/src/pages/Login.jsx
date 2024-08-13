@@ -15,7 +15,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem('jwt-token')) navigate('/')
-  }, [])
+  })
 
   async function submitLogin(e) {
     e.preventDefault()

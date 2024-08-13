@@ -32,7 +32,7 @@ const GameSearch = () => {
       setLoading(false)
     }
     gameSearch()
-  }, [location.search])
+  }, [currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (params) => {
     const updatedParams = new URLSearchParams(location.search)

@@ -22,16 +22,16 @@ const StyledRating = styled(Rating)({
 const GameDetails = () => {
   const { gameId } = useParams()
 
-  const headers = {
-    'view-token': localStorage.getItem(`${gameId}-view-token`)
-  }
-
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function getDetails() {
       setLoading(true)
+
+      const headers = {
+        'view-token': localStorage.getItem(`${gameId}-view-token`)
+      }
       
       if (localStorage.getItem('jwt-token')) {
         headers['user-token'] = localStorage.getItem('jwt-token')
@@ -53,12 +53,9 @@ const GameDetails = () => {
   }, [gameId])
 
   async function addGame(payload) {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game/addGame`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/game/addGame`, payload, {
       headers: {
-        'authorization': localStorage.getItem('jwt-token'),
-        'content-type': 'application/json'
+        'authorization': localStorage.getItem('jwt-token')
       }
     })
   }
@@ -128,8 +125,8 @@ const GameDetails = () => {
               <p className="font-bold text-3xl">{(details.avgRating || 0).toFixed(1)}</p>
               <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
                 <div className="w-full flex h-24 gap-1">
-                  {calculateRatingDistribution(details.reviews).map(rating => (
-                    <div className="flex flex-col w-1/5 justify-end">
+                  {calculateRatingDistribution(details.reviews).map((rating, index) => (
+                    <div key={index} className="flex flex-col w-1/5 justify-end">
                       <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 10}px)`}} />
                     </div>
                   ))}
@@ -189,7 +186,7 @@ const GameDetails = () => {
                       </div>
                       <div className="flex w-full h-fit flex-wrap gap-4 justify-center">
                         {details.collection.map(game => (
-                          <GameCard size={"h-36"} game={game} />
+                          <GameCard key={game.gameId} size={"h-36"} game={game} />
                         ))}
                       </div>
                     </div> : <></>
@@ -204,9 +201,9 @@ const GameDetails = () => {
                 <p className="font-bold">Playable on:</p>
                 <div className="flex w-full flex-wrap gap-2">
                   {details.platforms.map(platform => 
-                    <div className="relative group hover:text-white">
+                    <div key={platform} className="relative group hover:text-white">
                       <div className="absolute -inset-0.5 rounded group-hover:bg-gradient-to-t from-[#ff9900] to-[#ff00ff] blur-sm" />
-                      <div key={platform} className="relative flex gap-1 items-center text-sm bg-neutral-800 rounded p-1 px-2">
+                      <div className="relative flex gap-1 items-center text-sm bg-neutral-800 rounded p-1 px-2">
                         <IoLogoGameControllerB />
                         <Link to={{ pathname: "/games", search: `?platform=${platform}`}}>{platforms.find(plat => plat.id == platform).name}</Link>
                       </div>
@@ -219,12 +216,12 @@ const GameDetails = () => {
                 <p className="font-bold">Genres:</p>
                 <div className="flex flex-wrap gap-2">
                   {details.genres.map(genre =>
-                    <div className="relative group hover:text-white">
-                    <div className="absolute -inset-0.5 rounded group-hover:bg-gradient-to-t from-[#ff9900] to-[#ff00ff] blur-sm" />
-                    <div key={genre} className="relative flex gap-1 items-center text-sm bg-neutral-800 rounded p-1 px-2">
-                      <Link to={{ pathname: "/games", search: `?genre=${genre}`}}>{genres.find(gen => gen.id == genre).name}</Link>
+                    <div key={genre} className="relative group hover:text-white">
+                      <div className="absolute -inset-0.5 rounded group-hover:bg-gradient-to-t from-[#ff9900] to-[#ff00ff] blur-sm" />
+                      <div className="relative flex gap-1 items-center text-sm bg-neutral-800 rounded p-1 px-2">
+                        <Link to={{ pathname: "/games", search: `?genre=${genre}`}}>{genres.find(gen => gen.id == genre).name}</Link>
+                      </div>
                     </div>
-                  </div>
                   )}
                 </div>
               </div>

@@ -4,6 +4,7 @@ import Cropper from 'react-easy-crop'
 import { getCroppedImg } from "../utils"
 import ValueSlider from "./ValueSlider"
 import defaultImg from "../assets/default_profile.png"
+import PropTypes from 'prop-types'
 
 const CropDialog = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -94,6 +95,11 @@ const CropDialog = (props) => {
       </Dialog>
     </div>
   )
+}
+
+CropDialog.propTypes = {
+  profileIcon: PropTypes.string,
+  setBlob: PropTypes.func
 }
 
 export default CropDialog

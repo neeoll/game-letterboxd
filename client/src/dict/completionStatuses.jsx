@@ -7,6 +7,7 @@ export const completionStatuses = [
         <div>Completed</div>
       </div>
     ),
+    name: "Completed",
     value: "completed"
   },
   {
@@ -17,6 +18,7 @@ export const completionStatuses = [
         <div>Played</div>
       </div>
     ),
+    name: "Played",
     value: "played"
   },
   {
@@ -27,6 +29,7 @@ export const completionStatuses = [
         <div>Shelved</div>
       </div>
     ),
+    name: "Shelved",
     value: "shelved"
   },
   {
@@ -37,6 +40,7 @@ export const completionStatuses = [
         <div>Abandoned</div>
       </div>
     ),
+    name: "Abandoned",
     value: "abandoned"
   },
 ]

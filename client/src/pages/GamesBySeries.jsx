@@ -33,7 +33,7 @@ const GamesBySeries = () => {
       .catch(err => console.error(err))
     }
     gameSearch()
-  }, [seriesId])
+  }, [seriesId, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (param, value) => {
     const updatedParams = new URLSearchParams(location.search)
@@ -79,7 +79,7 @@ const GamesBySeries = () => {
           <div className="flex flex-wrap gap-4 justify-center px-40">
             {loading == false ? (
               results.map(game =>
-                <GameCard size={"h-52"} game={game} sortBy={sortBy} />
+                <GameCard key={game.gameId} size={"h-52"} game={game} sortBy={sortBy} />
               )
             ) : (
               Array.apply(null, Array(35)).map((item, index) => (

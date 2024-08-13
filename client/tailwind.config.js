@@ -30,6 +30,5 @@ export default {
       visibility: ["group-hover"],
       border: ["group-hover"]
     }
-  },
-  plugins: [],
+  }
 }

@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 const GlowingText = (props) => {
   return (
     <div className="flex font-edunline group">
@@ -11,6 +13,10 @@ const GlowingText = (props) => {
       </h1>
     </div>
   )
+}
+
+GlowingText.propTypes = {
+  children: PropTypes.element
 }
 
 export default GlowingText

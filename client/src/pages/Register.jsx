@@ -21,7 +21,7 @@ const Register = () => {
 
   useEffect(() => {
     if (localStorage.getItem('jwt-token')) navigate('/')
-  }, [])
+  })
 
   async function submitRegister(e) {
     e.preventDefault()
@@ -37,9 +37,7 @@ const Register = () => {
     const data = { username: username, email: email, password: hash }
 
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, data)
-    .then(res => {
-      setRegisterSuccessful(true)
-    })
+    .then(setRegisterSuccessful(true))
     .catch(err => {
       if (err.response.data.error == 'Username already in use') { setUsernameValid(false) }
       if (err.response.data.error == 'Email already in use') { setEmailValid(false) }
@@ -54,9 +52,13 @@ const Register = () => {
     return (
       <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
         <div className="flex flex-col gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
-          <p className="text-white/75">A verification link was sent to the email you provided.</p>
+          <p className="text-white/75">
+            {"A verification link was sent to the email you provided."}
+          </p>
           <div className="flex justify-center gap-1 text-sm">
-            <p className="text-white/50">Didn't receive the link?</p>
+            <p className="text-white/50">
+              {"Didn't receive the link?"}
+            </p>
             <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-[#ff9900] to-[#ff00ff] bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
           </div>
         </div>
@@ -82,7 +84,7 @@ const Register = () => {
               maxLength={16}
               required 
             />
-            <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{username}" is already in use.</p>
+            <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${username}" is already in use.`}</p>
           </div>
           {/* Email */}
           <div className="flex flex-col w-full items-start">
@@ -97,7 +99,7 @@ const Register = () => {
               required 
             />
             <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
-            <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>"{email}" is already in use.</p>
+            <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
           </div>
           {/* Password */}
           <div className="flex flex-col w-full items-start">

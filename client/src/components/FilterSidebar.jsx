@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import 'simplebar-react/dist/simplebar.min.css';
 import DropdownSearch from "./DropdownSearch";
+import PropTypes from 'prop-types'
 
 const FilterSidebar = (props) => {
   const [currentGenre, setGenre] = useState(props.genre || 0)
@@ -69,6 +70,15 @@ const FilterSidebar = (props) => {
       </Dialog>
     </div>
   )
+}
+
+FilterSidebar.propTypes = {
+  year: PropTypes.number,
+  genre: PropTypes.number,
+  platform: PropTypes.number,
+  update: PropTypes.func,
+  genres: PropTypes.array,
+  platforms: PropTypes.array
 }
 
 export default FilterSidebar

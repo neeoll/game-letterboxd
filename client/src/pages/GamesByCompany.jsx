@@ -33,7 +33,7 @@ const GamesByCompany = () => {
       .catch(err => console.error(err))
     }
     gameSearch()
-  }, [companyId, location.search])
+  }, [companyId, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (params) => {
     const updatedParams = new URLSearchParams(location.search)
@@ -65,8 +65,8 @@ const GamesByCompany = () => {
             <div className="w-20 h-6 bg-neutral-800 rounded" />
             <div className="w-96 h-10 bg-neutral-800 rounded" />
             <div className="flex w-full flex-col gap-2">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map((item, index) => (
-                <div className={`h-6 bg-neutral-800 rounded`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}}/>
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map((index) => (
+                <div key={index} className={`h-6 bg-neutral-800 rounded`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}}/>
               ))}
             </div>
           </div>
@@ -87,7 +87,7 @@ const GamesByCompany = () => {
           <div className="flex flex-wrap gap-4 justify-center px-40">
             {loading == false ? (
               results.map(game =>
-                <GameCard size={"h-52"} game={game} sortBy={sortBy} />
+                <GameCard key={game.gameId} size={"h-52"} game={game} sortBy={sortBy} />
               )
             ) : (
               Array.apply(null, Array(35)).map((item, index) => (

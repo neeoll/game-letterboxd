@@ -9,7 +9,7 @@ import _ from "lodash"
 import { navbarDestinations } from '../dict'
 import axios from 'axios'
 
-export default function Navbar() {
+export function Navbar() {
 
   const textDebounce = _.debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
@@ -92,7 +92,7 @@ export default function Navbar() {
               <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom center">
                 <div className="bg-neutral-800 rounded mt-1">
                   {navbarDestinations.map((destination, index) => (
-                    <MenuItem>
+                    <MenuItem key={index}>
                       <Link onClick={() => setMenuOpen(false)} to={destination.route} className="flex w-full first:rounded-t justify-start text-indigo-50/75 py-1.5 px-4 text-sm block hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
                         {destination.name}
                       </Link>
@@ -124,3 +124,5 @@ export default function Navbar() {
     </nav>
   )
 }
+
+export default Navbar

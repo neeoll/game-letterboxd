@@ -1,12 +1,10 @@
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import axios from 'axios'
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
-
-  const [searchParams, setSearchParams] = useSearchParams()
-  const token = searchParams.get('token')
+  const token = new URLSearchParams(location.search).get("token")
 
   const [verificationSuccessful, setVerificationSuccessful] = useState(false)
   const [linkExpired, setLinkExpired] = useState(false)
@@ -15,11 +13,11 @@ const VerifyEmail = () => {
   useEffect(() => {
     async function verify() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyEmail?token=${token}`)
-      .then(res => setVerificationSuccessful(true))
-      .catch(err => setLinkExpired(true))
+      .then(setVerificationSuccessful(true))
+      .catch(setLinkExpired(true))
     }
     verify()
-  }, [location.search])
+  }, [token])
 
   const resendLink = async () => {
     setLinkResend(true)

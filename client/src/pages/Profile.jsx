@@ -12,7 +12,6 @@ const Profile = () => {
   const navigate = useNavigate()
 
   const [user, setUser] = useState(null)
-  const [games, setGames] = useState([])
   const [profileGenres, setGenres] = useState([])
   const [profilePlatforms, setPlatforms] = useState([])
   const [loading, setLoading] = useState(true)
@@ -40,7 +39,7 @@ const Profile = () => {
     }
     getUserInfo()
     return
-  }, [])
+  })
 
   const updateSort = (params) => {
     params.forEach(item => {
@@ -93,7 +92,9 @@ const Profile = () => {
         {/* Games */}
         {user.games.length == 0 ? (
           <div className="col-start-2 col-end-6 flex flex-col gap-4 h-fit gap-2 flex-wrap justify-center items-center px-10">
-            <p className="text-white">You haven't added any games yet, try searching for some to add to your profile!</p>
+            <p className="text-white">
+              {"You haven't added any games yet, try searching for some to add to your profile!"}
+            </p>
           </div>
         ) : (
           <div className="col-start-2 col-end-6 flex flex-col gap-4 h-fit gap-2 flex-wrap justify-center items-center px-10">

@@ -1,4 +1,5 @@
 import Slider from "@mui/material/Slider"
+import PropTypes from 'prop-types'
 
 const ValueSlider = (props) => {
   return (
@@ -32,6 +33,14 @@ const ValueSlider = (props) => {
       }}
     />
   )
+}
+
+ValueSlider.propTypes = {
+  value: PropTypes.number,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  step: PropTypes.number,
+  onChange: PropTypes.func
 }
 
 export default ValueSlider
