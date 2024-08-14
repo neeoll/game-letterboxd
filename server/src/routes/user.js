@@ -48,13 +48,14 @@ const userRouter = Router()
     try {
       const user = await User.aggregate([
         { $match: { email: req.user.email } },
+        { $unwind: { path: '$games', preserveNullAndEmptyArrays: true } },
         {
           $lookup: {
             from: 'games',
             localField: 'games.gameRef',
             foreignField: '_id',
             pipeline: [
-              { $project: { name: 1, coverId: 1, gameId: 1, lastUpdated: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 } }
+              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 } }
             ],
             as: 'profileGames'
           }
@@ -64,9 +65,6 @@ const userRouter = Router()
           $group: {
             _id: '$_id',
             username: { $first: '$username' },
-            email: { $first: '$email' },
-            password: { $first: '$password' },
-            verified: { $first: '$verified' },
             games: { 
               $push: {
                 name: '$profileGames.name', 
@@ -93,6 +91,8 @@ const userRouter = Router()
           }
         }
       ])
+      
+      if (Object.keys(user[0].games[0]).length == 0) { user[0].games = [] }
       res.status(200).json(user[0])
     } catch (err) {
       console.error(err)

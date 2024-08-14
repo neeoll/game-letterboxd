@@ -18,8 +18,8 @@ const Profile = () => {
   
   const [sortBy, setSortBy] = useState("lastUpdated")
   const [sortOrder, setSortOrder] = useState(-1)
-  const [filterPlatform, setFilterPlatform] = useState(0)
-  const [filterGenre, setFilterGenre] = useState(0)
+  const [filterPlatform, setFilterPlatform] = useState(-1)
+  const [filterGenre, setFilterGenre] = useState(-1)
 
   useEffect(() => {
     async function getUserInfo() {
@@ -39,7 +39,7 @@ const Profile = () => {
     }
     getUserInfo()
     return
-  })
+  }, [])
 
   const updateSort = (params) => {
     params.forEach(item => {
@@ -56,10 +56,10 @@ const Profile = () => {
 
   const handleFilter = (game) => {
     let isMatch = true;
-    if (filterPlatform !== 0) {
+    if (filterPlatform !== -1) {
       isMatch = isMatch && game.platforms.includes(filterPlatform);
     }
-    if (filterGenre !== 0) {
+    if (filterGenre !== -1) {
       isMatch = isMatch && game.genres.includes(filterGenre);
     }
     return isMatch;
@@ -101,8 +101,8 @@ const Profile = () => {
             <div className="flex w-full justify-between gap-4">
               {/* <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{(games.length).toLocaleString()} Games</div> */}
               <div className="flex gap-4 w-[26rem]">
-                <DropdownSearch array={profileGenres} value={filterGenre} setValue={setFilterGenre} placeholder={"Genre"}/>
-                <DropdownSearch array={profilePlatforms} value={filterPlatform} setValue={setFilterPlatform} placeholder={"Platform"}/>
+                <DropdownSearch array={profileGenres} value={filterGenre} setValue={setFilterGenre} placeholder={"All Genres"} />
+                <DropdownSearch array={profilePlatforms} value={filterPlatform} setValue={setFilterPlatform} placeholder={"All Platforms"} />
               </div>
               <div className="flex gap-2">
                 <Sort criteria={profileSortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateSort} />

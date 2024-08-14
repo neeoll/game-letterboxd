@@ -80,7 +80,7 @@ const gamesRouter = Router()
             $addToSet: { 
               reviews: review._id,
               games: { gameRef: game._id, lastUpdated: Math.floor(new Date / 1000), status: "played" }
-            } 
+            }
           }
         )
       }
