@@ -13,6 +13,67 @@ import { queryToPipeline } from "../utils/queryToPipeline.js"
 import mongoose from "mongoose"
 
 const gamesRouter = Router()
+  .get('/home', async (req, res) => {
+    try {
+      const games = await Game.aggregate([
+        { $project: { gameId: 1, coverId: 1, popularity: 1, name: 1 } },
+        { $sort: { popularity: -1 } },
+        { $limit: 6 },
+      ])
+      const reviews = await Review.aggregate([
+        { $match: { spoiler: false } },
+        { $sort: { timestamp: -1 } },
+        { $limit: 6 },
+        {
+          $lookup: {
+            from: 'games',
+            localField: 'gameRef',
+            foreignField: '_id',
+            as: 'game'
+          }
+        },
+        { $unwind: { path: '$game', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userRef',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
+        {
+          $group: {
+            _id: '$_id',
+            rating: { $first: '$rating' },
+            body: { $first: '$body' },
+            platform: { $first: '$platform' },
+            spoiler: { $first: '$spoiler' },
+            status: { $first: '$status' },
+            timestamp: { $first: '$timestamp' },
+            gameRef: { $first: '$gameRef' },
+            userRef: { $first: '$userRef' },
+            game: { 
+              $push: {
+                name: '$game.name',
+                coverId: '$game.coverId',
+                gameId: '$game.gameId'
+              } 
+            },
+            user: { 
+              $push: {
+                username: '$user.username',
+                profileIcon: '$user.profileIcon'
+              } 
+            }
+          }
+        }
+      ])
+      res.status(200).json({games, reviews})
+    } catch (err) {
+      console.error(err)
+    }
+  })
   .post('/addGame', verifyToken, async (req, res) => {
     try {
       const user = await User.findOne({ email: req.user.email })

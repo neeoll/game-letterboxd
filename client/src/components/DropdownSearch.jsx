@@ -6,7 +6,6 @@ import { RxCross2 } from "react-icons/rx"
 
 const DropdownSearch = (props) => {
   const [query, setQuery] = useState("")
-  console.log(props.array)
 
   const filteredArray = query === '' ?
     props.array : 

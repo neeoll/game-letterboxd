@@ -7,12 +7,14 @@ import { DropdownSearch, GameCard, Sort } from "../components"
 import { genres, platforms, profileSortCriteria } from "../dict"
 import { calculateRatingDistribution } from "../utils"
 import axios from 'axios'
+import { countOccurrences } from "../utils/countOccurrences"
 
 const Profile = () => {
   const navigate = useNavigate()
 
   const [user, setUser] = useState(null)
   const [profileGenres, setGenres] = useState([])
+  const [genreCounts, setGenreCounts] = useState([])
   const [profilePlatforms, setPlatforms] = useState([])
   const [loading, setLoading] = useState(true)
   
@@ -30,6 +32,7 @@ const Profile = () => {
         }
       })
       .then(res => {
+        setGenreCounts(countOccurrences(res.data.games.map(game => game.genres).flat().map(item => genres.find(genre => genre.id == item))))
         setUser(res.data)
         setPlatforms(Array.from(new Set(res.data.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
         setGenres(Array.from(new Set(res.data.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
@@ -72,32 +75,50 @@ const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col w-full gap-4 justify-center items-center px-12 pt-6">
-      <div className="grid grid-cols-6 grid-rows-1 justify-between w-full gap-4 pb-4">
-        {/* Game Counts */}
-        <div className="relative col-start-1 col-end-2 h-fit">
-          <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-[#ff9900] to-[#ff00ff] opacity-75 blur-sm`} />
-          <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-indigo-50/75 py-2 px-10">
-            <p className="text-lg">User Stats</p>
-            <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-2">
-              {gameStatuses.map((status, index) => (
-                <Link key={index} className="flex flex-col justify-center items-center align-middle group">
-                  <p className="group-hover:text-indigo-50">{status.name}</p>
-                  <div className="text-xl font-bold group-hover:text-indigo-50">{user.games.filter(game => game.status == status.value).length}</div>
-                </Link>
-              ))}
-            </div>
+    <div className="w-full justify-center items-center pt-6 pb-10">
+      {user.games.length == 0 ? (
+        <div className="flex flex-col w-full justify-center items-center text-white">
+          <div className="flex flex-col gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
+            <p className="text-white/75">{"You haven't added any games yet, try searching for some to add to your profile!"}</p>
           </div>
         </div>
-        {/* Games */}
-        {user.games.length == 0 ? (
-          <div className="col-start-2 col-end-6 flex flex-col gap-4 h-fit gap-2 flex-wrap justify-center items-center px-10">
-            <p className="text-white">
-              {"You haven't added any games yet, try searching for some to add to your profile!"}
-            </p>
+      ) : (
+        <div className="flex gap-6">
+          {/* Stats */}
+          <div className="flex flex-col gap-4 basis-1/6">
+            {/* Game Counts */}
+            <div className="relative h-fit">
+              <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-[#ff9900] to-[#ff00ff] opacity-75 blur-sm`} />
+              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-indigo-50/75 py-2 px-10">
+                <p>User Stats</p>
+                <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-4">
+                  {gameStatuses.map((status, index) => (
+                    <Link key={index} className="flex flex-col justify-center items-center align-middle group">
+                      <p className="text-sm group-hover:text-indigo-50">{status.name}</p>
+                      <div className="text-lg font-bold group-hover:text-indigo-50">{user.games.filter(game => game.status == status.value).length}</div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Top Genres */}
+            <div className="relative h-fit">
+              <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-[#ff9900] to-[#ff00ff] opacity-75 blur-sm`} />
+              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-indigo-50/75 py-2 px-4">
+                <p className="text-md">Your Top Genres</p>
+                <div className="flex flex-col w-full aspect-square gap-2">
+                  {genreCounts.map((genre, index) => (
+                    <div key={index} className="flex justify-between items-center align-middle group">
+                      <p className="text-xs group-hover:text-indigo-50">{genre[0]}</p>
+                      <div className="text-lg font-bold group-hover:text-indigo-50">{genre[1]}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="col-start-2 col-end-6 flex flex-col gap-4 h-fit gap-2 flex-wrap justify-center items-center px-10">
+          {/* Games */}
+          <div className="basis-4/6 flex flex-col gap-4 h-fit flex-wrap justify-center items-center">
             <div className="flex w-full justify-between gap-4">
               {/* <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{(games.length).toLocaleString()} Games</div> */}
               <div className="flex gap-4 w-[26rem]">
@@ -110,28 +131,27 @@ const Profile = () => {
             </div>
             <div className="flex gap-2 flex-wrap justify-center">
               {user.games.filter(handleFilter).sort(handleSort).map((game, index) => (
-                <GameCard key={index} size={"h-36"} game={game} />
+                <GameCard key={index} size={"h-32"} game={game} />
               ))}
             </div>
           </div>
-        )}
-        {/* Ratings */}
-        <div className="col-start-6 col-end-7 flex flex-col justify-start">
-          <div className="flex flex-col">
-            <div className="flex h-32 gap-1 border-b">
-              {calculateRatingDistribution(user.reviews).map((rating, index) => (
-                <div key={index} className="flex flex-col w-1/5 justify-end">
-                  <div className={`bg-gradient-to-t from-[#ff9900] to-[#ff00ff] rounded-t hover:brightness-150`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
-                </div>
-              ))}
+          
+            {/* Review Distribution */}
+            <div className="flex flex-col basis-1/6">
+              <div className="flex h-32 gap-1 border-b">
+                {calculateRatingDistribution(user.reviews).map((rating, index) => (
+                  <div key={index} className="flex flex-col w-1/5 justify-end">
+                    <div className={`bg-gradient-to-t from-[#ff9900] to-[#ff00ff] rounded-t hover:brightness-150`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between px-2">
+                <div className="flex text-indigo-50/75 text-sm justify-center items-center">1 <RxStarFilled /></div>
+                <div className="flex text-indigo-50/75 text-sm justify-center items-center">5 <RxStarFilled /></div>
+              </div>
             </div>
-            <div className="flex justify-between px-2">
-              <div className="flex text-indigo-50/75 text-sm justify-center items-center">1 <RxStarFilled /></div>
-              <div className="flex text-indigo-50/75 text-sm justify-center items-center">5 <RxStarFilled /></div>
-            </div>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

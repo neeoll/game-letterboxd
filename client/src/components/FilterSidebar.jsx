@@ -5,8 +5,8 @@ import DropdownSearch from "./DropdownSearch";
 import PropTypes from 'prop-types'
 
 const FilterSidebar = (props) => {
-  const [currentGenre, setGenre] = useState(props.genre || 0)
-  const [currentPlatform, setPlatform] = useState(props.platform || 0)
+  const [currentGenre, setGenre] = useState(props.genre || -1)
+  const [currentPlatform, setPlatform] = useState(props.platform || -1)
   const [year, setYear] = useState(props.year || 0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 

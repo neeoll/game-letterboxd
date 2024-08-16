@@ -67,7 +67,7 @@ const GameDetails = () => {
   }
 
   return ( 
-    <div className="flex flex-col mt-10 px-40 pb-8">
+    <div className="flex flex-col mt-10 pb-8">
       {/* Header Portion */}
       <div className="flex items-end w-full">
         <div className="flex w-1/5 justify-center">
@@ -186,7 +186,7 @@ const GameDetails = () => {
                       </div>
                       <div className="flex w-full h-fit flex-wrap gap-4 justify-center">
                         {details.collection.map(game => (
-                          <GameCard key={game.gameId} size={"h-36"} game={game} />
+                          <GameCard key={game.gameId} size={"h-32"} game={game} />
                         ))}
                       </div>
                     </div> : <></>

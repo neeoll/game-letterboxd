@@ -88,7 +88,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="flex flex-col items-center px-96 gap-6">
+    <div className="flex flex-col items-center px-52 gap-6">
       <TabGroup vertical defaultIndex={0} className="flex w-full min-h-96">
         <TabList className="flex flex-col rounded bg-neutral-900 text-white">
           <Tab className="p-3 data-[selected]:bg-neutral-800 data-[selected]:rounded-l">Profile</Tab>

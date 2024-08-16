@@ -22,7 +22,7 @@ const ReviewDialog = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [status, setStatus] = useState()
   const [rating, setRating] = useState(0)
-  const [platform, setPlatform] = useState(0)
+  const [platform, setPlatform] = useState(-1)
   const [review, setReview] = useState("")
   const [spoiler, setSpoiler] = useState(false)
 

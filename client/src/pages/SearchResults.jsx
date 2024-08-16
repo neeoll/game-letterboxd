@@ -39,7 +39,7 @@ const SearchResults = () => {
       <div className="flex justify-center text-indigo-50 text-3xl">
         <p>{count} results for <span className="text-4xl font-semibold">{`"${searchText}"`}</span></p>
       </div>
-      <div className="flex flex-col px-52 gap-2">
+      <div className="flex flex-col gap-2">
         {results.map((game) => (
           <div key={game.gameId} className="flex flex-col pb-[2px] bg-white/75 hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
             <div className="flex items-center gap-2 pb-2 bg-neutral-900">

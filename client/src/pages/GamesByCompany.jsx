@@ -52,7 +52,7 @@ const GamesByCompany = () => {
   return(
     <div className="flex flex-col gap-4">
       {loading == false ? (
-        <div className="flex flex-col mx-52 pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
+        <div className="flex flex-col pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
           <div className="bg-neutral-900 pb-2">
             <p className="text-sm font-light text-indigo-50/50">Company</p>
             <p className="text-3xl mb-2 font-semibold">{companyDetails.name}</p>
@@ -60,7 +60,7 @@ const GamesByCompany = () => {
           </div>
         </div>
       ): (
-        <div className="flex flex-col mx-52 pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
+        <div className="flex flex-col pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
           <div className="flex flex-col gap-2 pb-2 bg-neutral-900">
             <div className="w-20 h-6 bg-neutral-800 rounded" />
             <div className="w-96 h-10 bg-neutral-800 rounded" />
@@ -73,7 +73,7 @@ const GamesByCompany = () => {
         </div>
       )}
       <div className="flex flex-col gap-2 pb-4">
-        <div className="px-52">
+        <div>
           <DisplayButtons year={year} genre={currentGenre} platform={currentPlatform} remove={removeQueryParameter} />
           <div className="flex w-full justify-between">
             <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{count.toLocaleString()} Games</div>
@@ -84,15 +84,15 @@ const GamesByCompany = () => {
           </div>
         </div>
         <div className="flex flex-col justify-center gap-2"> 
-          <div className="flex flex-wrap gap-4 justify-center px-40">
+          <div className="flex flex-wrap gap-4 justify-center">
             {loading == false ? (
               results.map(game =>
-                <GameCard key={game.gameId} size={"h-52"} game={game} sortBy={sortBy} />
+                <GameCard key={game.gameId} size={"h-48"} game={game} sortBy={sortBy} />
               )
             ) : (
               Array.apply(null, Array(35)).map((item, index) => (
                 <div key={index} className={`flex flex-col items-center gap-2 animate-[pulse_1.5s_linear_infinite]`}>
-                  <div className="relative h-52 aspect-[45/64] bg-neutral-800 rounded" />
+                  <div className="relative h-48 aspect-[45/64] bg-neutral-800 rounded" />
                   {sortBy == "releaseDate" || sortBy == "avgRating" ? 
                     <div className="w-20 h-6 rounded bg-neutral-800" /> : <></>
                   }
