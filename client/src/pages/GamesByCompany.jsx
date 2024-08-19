@@ -25,7 +25,7 @@ const GamesByCompany = () => {
     async function gameSearch() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/company/${companyId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
-        setCompanyDetails(res.data)
+        setCompanyDetails({ name: res.data.name, description: res.data.description })
         setCount(res.data.games[0].count[0].count)
         setResults(res.data.games[0].results)
         setLoading(false)
@@ -52,16 +52,17 @@ const GamesByCompany = () => {
   return(
     <div className="flex flex-col gap-4">
       {loading == false ? (
-        <div className="flex flex-col pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
-          <div className="bg-neutral-900 pb-2">
+        <div className="flex flex-col gap-2 text-indigo-50">
+          <div>
             <p className="text-sm font-light text-indigo-50/50">Company</p>
             <p className="text-3xl mb-2 font-semibold">{companyDetails.name}</p>
             <p className="font-light text-indigo-50/75">{companyDetails.description != "N/A" ? companyDetails.description : ""}</p>
           </div>
+          <div className="h-0.5 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
         </div>
       ): (
-        <div className="flex flex-col pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
-          <div className="flex flex-col gap-2 pb-2 bg-neutral-900">
+        <div className="flex flex-col gap-2 text-indigo-50">
+          <div className="flex flex-col gap-2 pb-2 animate-[pulse_1.5s_linear_infinite]">
             <div className="w-20 h-6 bg-neutral-800 rounded" />
             <div className="w-96 h-10 bg-neutral-800 rounded" />
             <div className="flex w-full flex-col gap-2">
@@ -70,6 +71,7 @@ const GamesByCompany = () => {
               ))}
             </div>
           </div>
+          <div className="h-0.5 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
         </div>
       )}
       <div className="flex flex-col gap-2 pb-4">

@@ -14,7 +14,7 @@ const Login = () => {
   const [failedLogin, setFailedLogin] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('jwt-token')) navigate('/')
+    if (localStorage.getItem('jwt-token')) { return navigate('/profile') }
   })
 
   async function submitLogin(e) {
@@ -29,7 +29,7 @@ const Login = () => {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data)
     .then(res => {
       localStorage.setItem('jwt-token', res.data.token)
-      navigate('/')
+      navigate('/profile')
     })
     .catch(err => {
       if (err.response.status == 401) setFailedLogin(true) 

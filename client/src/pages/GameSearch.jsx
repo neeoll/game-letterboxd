@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { genres, platforms, sortCriteria } from "../dict"
 import { DisplayButtons, FilterSidebar, GameCard, Pagination, Sort } from "../components"
+import axios from "axios"
 
 const GameSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -19,17 +20,13 @@ const GameSearch = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      setLoading(true)
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`
-        alert(message)
-        return
-      }
-      const json = await response.json()
-      setCount(json.count[0].count)
-      setResults(json.results)
-      setLoading(false)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      .then(res => {
+        setCount(res.data.count[0].count)
+        setResults(res.data.results)
+        setLoading(false)
+      })
+      .catch(err => console.error(err))
     }
     gameSearch()
   }, [currentGenre, currentPlatform, page, sortBy, sortOrder, year])

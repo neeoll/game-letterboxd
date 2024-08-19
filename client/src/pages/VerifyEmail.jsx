@@ -21,7 +21,7 @@ const VerifyEmail = () => {
 
   const resendLink = async () => {
     setLinkResend(true)
-    await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/resendLink?token=${token}`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/resendLink?token=${token}`)
   }
 
   if (linkResend) {

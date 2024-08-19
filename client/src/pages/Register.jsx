@@ -20,7 +20,7 @@ const Register = () => {
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('jwt-token')) navigate('/')
+    if (localStorage.getItem('jwt-token')) { return navigate('/profile') }
   })
 
   async function submitRegister(e) {

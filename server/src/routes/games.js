@@ -176,7 +176,7 @@ const gamesRouter = Router()
     try {
       const pipeline = queryToPipeline(req.query)
       const results = await Game.aggregate(pipeline)
-      res.send(results[0]).status(200)
+      res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
       res.send("An error occurred").status(500)
@@ -312,13 +312,15 @@ const gamesRouter = Router()
       if (req.token == null) {
         const game = await Game.findOneAndUpdate({ gameId: req.params.id }, { $inc: { views: 1 } }, { new: true })
         let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, 'secret', { expiresIn: "5 seconds" })
-        return res.send({ data: results[0], token: viewToken }).status(200)
+        return res.status(200).json({ data: results[0], token: viewToken })
       }
+
+      console.log()
       
-      res.send({ data: results[0] }).status(200)
+      res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
-      res.send("An error occurred").status(500)
+      res.status(500).json({ error: "Internal server error" })
     }
   })
   .get("/company/:id", async (req, res) => {
@@ -332,10 +334,10 @@ const gamesRouter = Router()
         { $project: { _id: 0 } },
         { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }
       ])
-      res.send(results[0]).status(200)
+      res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
-      res.send("An error occurred").status(500)
+      res.status(500).json({ error: "Internal server error" })
     }
   })
   .get("/series/:id", async (req, res) => {

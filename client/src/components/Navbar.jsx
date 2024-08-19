@@ -48,7 +48,7 @@ export function Navbar() {
   }
 
   return (
-    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52">
+    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52 bg-gradient-to-b from-neutral-900 from-10% to-transparent">
       <div className="flex gap-4">
         <GlowingText><Link to={"/"}>Arcade Archives</Link></GlowingText>
       </div>
