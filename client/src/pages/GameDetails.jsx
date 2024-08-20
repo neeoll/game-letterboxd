@@ -9,7 +9,6 @@ import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
 import defaultImg from "../assets/default_profile.png"
 import axios from 'axios'
-import { testImages } from "../dict/testImages"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -24,7 +23,6 @@ const GameDetails = () => {
   const { gameId } = useParams()
 
   const [details, setDetails] = useState()
-  const [currentImage, setCurrentImg] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -40,7 +38,6 @@ const GameDetails = () => {
         } else {
           setDetails(res.data)
         }
-        if (gameId == 418) { setCurrentImg(testImages[Math.floor(Math.random() * (testImages.length - 1))].image_id) }
         setLoading(false)
       })
       .catch(err => console.error(err))
@@ -86,7 +83,7 @@ const GameDetails = () => {
         </div>
       </div>
       <div className="absolute -z-20 inset-0 w-screen h-screen bg-neutral-700">
-        <img className="w-full h-full object-cover object-center" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${currentImage}.jpg`}/>
+        <img className="w-full h-full object-cover object-center" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${details.artworks[Math.floor(Math.random() * (details.artworks.length - 1))]}.jpg`}/>
         <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
       </div>
       <div className="flex w-full">

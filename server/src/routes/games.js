@@ -13,6 +13,21 @@ import { queryToPipeline } from "../utils/queryToPipeline.js"
 import mongoose from "mongoose"
 
 const gamesRouter = Router()
+  .get("/artworks", async (req, res) => {
+    try {
+      const results = await Game.aggregate([
+        { $match: { artworks: { $exists: true } } },
+        { 
+          $facet: {
+            count: [ { $count: "count" } ]
+          }
+        }
+      ])
+      res.status(200).json(results)
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" })
+    }
+  })
   .get('/home', async (req, res) => {
     try {
       const games = await Game.aggregate([
@@ -226,6 +241,7 @@ const gamesRouter = Router()
             playing: { $first: '$playing' },
             backlog: { $first: '$backlog' },
             wishlist: { $first: '$wishlist' },
+            artworks: { $first: '$artworks' },
             reviews: {
               $push: {
                 _id: '$reviews._id',
