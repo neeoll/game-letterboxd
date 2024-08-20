@@ -311,7 +311,7 @@ const gamesRouter = Router()
       
       if (req.token == null) {
         const game = await Game.findOneAndUpdate({ gameId: req.params.id }, { $inc: { views: 1 } }, { new: true })
-        let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, 'secret', { expiresIn: "5 seconds" })
+        let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, process.env.JWT_SECRET, { expiresIn: "5 seconds" })
         return res.status(200).json({ data: results[0], token: viewToken })
       }
 

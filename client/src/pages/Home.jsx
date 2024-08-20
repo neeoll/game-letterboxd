@@ -1,9 +1,57 @@
+import axios from "axios"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { GameCard } from "../components"
+import Review from "../components/Review"
+
 const Home = () => {
+  const navigate = useNavigate()
+
+  const [homeData, setHomeData] = useState()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (localStorage.getItem('jwt-token')) { return navigate("/profile") }
+    async function getHomeData() {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/home`)
+      .then(res => {
+        console.log(res.data)
+        setHomeData(res.data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+    }
+    getHomeData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div></div>
+    )
+  }
+
   return (
-    <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
-      <div className="flex flex-col gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
-        <p className="text-white/75">Home page currently in progress, please use the navigation links.</p>
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
+        <div className="flex flex-col gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
+          <p className="text-white/75">Home page currently in progress, please use the navigation links.</p>
+        </div>
       </div>
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex basis-1/2 p-2 gap-4 justify-center items-center">
+          {homeData.games.map(game => (
+            <GameCard key={game.gameId} game={game} size={"h-32"} />
+          ))}
+        </div>
+        <div className="flex flex-wrap px-24">
+          {homeData.reviews.map((review, index) => (
+            <Review key={index} review={review} />
+          ))}
+        </div>
+      </div>
+      
     </div>
   )
 }

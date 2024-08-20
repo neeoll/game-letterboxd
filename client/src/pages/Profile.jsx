@@ -70,7 +70,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div>Loading...</div>
+      <div></div>
     )
   }
 

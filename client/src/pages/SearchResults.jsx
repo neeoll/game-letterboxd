@@ -13,7 +13,6 @@ const SearchResults = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      setLoading(true)
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${searchText}`)
       .then(res => {
         setCount(res.data.count[0].count)
@@ -24,15 +23,32 @@ const SearchResults = () => {
         console.error(err)
       })
     }
+    setTimeout(5000)
     gameSearch()
     return
   }, [searchText])
 
-  /* 131414 */
-
   if (loading) {
     return (
-      <div>Loading...</div>
+      <div className="flex flex-col h-fit gap-4 animate-[pulse_1.5s_linear_infinite]">
+        <div className="flex justify-center">
+          <div className="h-10 w-96 bg-neutral-800" />
+        </div>
+        <div className="flex flex-col gap-2">
+          {Array.apply(null, Array(10)).map((index) => (
+            <div key={index} className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="h-36 aspect-[45/64] bg-neutral-800 rounded" />
+                <div className="flex flex-col h-32 justify-start gap-2">
+                  <div className="h-8 w-72 bg-neutral-800" />
+                  <div className="h-6 w-48 bg-neutral-800" />
+                </div>
+              </div>
+              <div className="h-0.5 bg-neutral-800" />
+            </div>
+          ))}
+        </div>
+      </div>
     )
   }
 

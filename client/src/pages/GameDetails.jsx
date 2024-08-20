@@ -9,6 +9,7 @@ import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
 import defaultImg from "../assets/default_profile.png"
 import axios from 'axios'
+import { testImages } from "../dict/testImages"
 
 const StyledRating = styled(Rating)({
   '& .MuiRating-iconFilled': {
@@ -22,27 +23,24 @@ const StyledRating = styled(Rating)({
 const GameDetails = () => {
   const { gameId } = useParams()
 
-  const [details, setDetails] = useState({})
+  const [details, setDetails] = useState()
+  const [currentImage, setCurrentImg] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function getDetails() {
-      setLoading(true)
+      const headers = { 'view-token': localStorage.getItem(`${gameId}-view-token`) }
+      if (localStorage.getItem('jwt-token')) { headers['user-token'] = localStorage.getItem('jwt-token') }
 
-      const headers = {
-        'view-token': localStorage.getItem(`${gameId}-view-token`)
-      }
-      
-      if (localStorage.getItem('jwt-token')) {
-        headers['user-token'] = localStorage.getItem('jwt-token')
-      }
-
-      axios.get(`http://127.0.0.1:5050/game/${gameId}`, {
-        headers: headers
-      })
+      axios.get(`http://127.0.0.1:5050/game/${gameId}`, { headers: headers })
       .then(res => {
-        if (res.data.token) localStorage.setItem(`${gameId}-view-token`, res.data.token)
-        setDetails(res.data.data)
+        if (res.data.token) { 
+          localStorage.setItem(`${gameId}-view-token`, res.data.token) 
+          setDetails(res.data.data)
+        } else {
+          setDetails(res.data)
+        }
+        if (gameId == 418) { setCurrentImg(testImages[Math.floor(Math.random() * (testImages.length - 1))].image_id) }
         setLoading(false)
       })
       .catch(err => console.error(err))
@@ -62,7 +60,7 @@ const GameDetails = () => {
 
   if (loading) {
     return (
-      <div>Loading...</div>
+      <div></div>
     )
   }
 
@@ -86,6 +84,10 @@ const GameDetails = () => {
             ): <></>}
           </div>
         </div>
+      </div>
+      <div className="absolute -z-20 inset-0 w-screen h-screen bg-neutral-700">
+        <img className="w-full h-full object-cover object-center" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${currentImage}.jpg`}/>
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
       </div>
       <div className="flex w-full">
         {/* Review and Score Content */}
@@ -172,10 +174,9 @@ const GameDetails = () => {
               <div className="flex flex-col h-fit p-2 gap-4">
                 <div className="flex flex-col gap-2">
                   {/* Summary */}
-                  <div className="flex flex-col pb-[2px] text-indigo-50 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]">
-                    <div className="bg-neutral-900 pb-2">
-                      <p className="text-indigo-100/75">{details.summary}</p>
-                    </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-indigo-100/75">{details.summary}</p>
+                    <div className="h-0.5 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
                   </div>
                   {/* Series */}
                   {details.collection.length != 0 ?

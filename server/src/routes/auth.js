@@ -42,7 +42,7 @@ const authRouter = Router()
       })
       let user = await newUser.save()
 
-      const token = jsonwebtoken.sign({ id: user._id }, 'secret', { expiresIn: '15 minutes' })
+      const token = jsonwebtoken.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15 minutes' })
       const mailOptions = {
         from: 'noreply@arcadearchive.com',
         to: user.email,
@@ -80,7 +80,7 @@ const authRouter = Router()
         return res.status(401).json({ error: 'User not verified' })
       }
 
-      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, 'secret', { expiresIn: "30 days" })
+      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: "30 days" })
       res.status(200).json({ token })
     } catch (err) {
       res.status(500).json({ error: 'Internal server error' })
@@ -104,7 +104,7 @@ const authRouter = Router()
     try {
       const token = req.query.token
 
-      jsonwebtoken.verify(token, 'secret', async (err, decoded) => {
+      jsonwebtoken.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
           if (err.expiredAt) {
             return res.status(401).json({ error: "Token expired", status: "exp" })
@@ -123,7 +123,7 @@ const authRouter = Router()
       const decodedToken = jsonwebtoken.decode(req.query.token)
 
       const user = await User.findOne({ _id: decodedToken.id })
-      const token = jsonwebtoken.sign({ id: user._id }, 'secret', { expiresIn: '15 minutes' })
+      const token = jsonwebtoken.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15 minutes' })
       const mailOptions = {
         from: 'noreply@arcadearchive.com',
         to: user.email,

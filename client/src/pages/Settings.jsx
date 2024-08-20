@@ -83,7 +83,7 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div>Loading...</div>
+      <div></div>
     )
   }
 
