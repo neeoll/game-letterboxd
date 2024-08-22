@@ -1,8 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { GameCard } from "../components"
-import Review from "../components/Review"
+import { GameCard, HomeReview } from "../components"
 
 const Home = () => {
   const navigate = useNavigate()
@@ -47,7 +46,7 @@ const Home = () => {
         </div>
         <div className="flex flex-wrap px-24">
           {homeData.reviews.map((review, index) => (
-            <Review key={index} review={review} />
+            <HomeReview key={index} review={review} />
           ))}
         </div>
       </div>

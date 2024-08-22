@@ -1,7 +1,7 @@
 export const queryToPipeline = (query, match = null) => {
   try {
-    const genre = query.genre !== '0' ? query.genre : null
-    const platform = query.platform !== '0' ? query.platform : null
+    const genre = query.genre !== '-1' ? query.genre : null
+    const platform = query.platform !== '-1' ? query.platform : null
     const year = parseInt(query.year)
     const page = parseInt(query.page) - 1
     const sortBy = query.sortBy || 'releaseDate'

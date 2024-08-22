@@ -92,8 +92,8 @@ const Profile = () => {
               <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-indigo-50/75 py-2 px-10">
                 <p>User Stats</p>
                 <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-4">
-                  {gameStatuses.map((status, index) => (
-                    <Link key={index} className="flex flex-col justify-center items-center align-middle group">
+                  {gameStatuses.map(status => (
+                    <Link key={status.id} className="flex flex-col justify-center items-center align-middle group">
                       <p className="text-sm group-hover:text-indigo-50">{status.name}</p>
                       <div className="text-lg font-bold group-hover:text-indigo-50">{user.games.filter(game => game.status == status.value).length}</div>
                     </Link>
@@ -130,8 +130,8 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex gap-2 flex-wrap justify-center">
-              {user.games.filter(handleFilter).sort(handleSort).map((game, index) => (
-                <GameCard key={index} size={"h-32"} game={game} />
+              {user.games.filter(handleFilter).sort(handleSort).map(game => (
+                <GameCard key={game.gameId} size={"h-32"} game={game} />
               ))}
             </div>
           </div>
@@ -139,8 +139,8 @@ const Profile = () => {
             {/* Review Distribution */}
             <div className="flex flex-col basis-1/6">
               <div className="flex h-32 gap-1 border-b">
-                {calculateRatingDistribution(user.reviews).map((rating, index) => (
-                  <div key={index} className="flex flex-col w-1/5 justify-end">
+                {calculateRatingDistribution(user.reviews).map(rating => (
+                  <div key={rating.rating} className="flex flex-col w-1/5 justify-end">
                     <div className={`bg-gradient-to-t from-[#ff9900] to-[#ff00ff] rounded-t hover:brightness-150`} style={{ height: `calc(${rating.percent}% + ${rating.percent}px)`}} />
                   </div>
                 ))}

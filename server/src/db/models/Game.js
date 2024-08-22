@@ -5,6 +5,16 @@ const gameSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  companies: [Number],
+  collections: [Number],
+  name: String,
+  coverId: String,
+  platforms: [Number],
+  releaseDate: Number,
+  genres: [Number],
+  summary: String,
+  artworks: [String],
+  popularity: Number,
   avgRating: Number,
   views: {
     type: Number,

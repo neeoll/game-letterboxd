@@ -4,10 +4,12 @@ import GamesBySeries from "./GamesBySeries"
 import GameSearch from "./GameSearch"
 import Home from "./Home"
 import Login from "./Login"
+import PasswordReset from "./PasswordReset"
 import Profile from "./Profile"
 import Register from "./Register"
 import SearchResults from "./SearchResults"
+import SendResetLink from "./SendResetLink"
 import Settings from "./Settings"
 import VerifyEmail from "./VerifyEmail"
 
-export { GameDetails, GamesByCompany, GamesBySeries, GameSearch, Home, Login, Profile, Register, SearchResults, Settings, VerifyEmail }
+export { GameDetails, GamesByCompany, GamesBySeries, GameSearch, Home, Login, PasswordReset, Profile, Register, SearchResults, SendResetLink, Settings, VerifyEmail }

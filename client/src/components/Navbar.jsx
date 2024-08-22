@@ -9,8 +9,7 @@ import _ from "lodash"
 import { navbarDestinations } from '../dict'
 import axios from 'axios'
 
-export function Navbar() {
-
+const Navbar = () => {
   const textDebounce = _.debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
   const [userData, setUserData] = useState(false)
@@ -35,7 +34,7 @@ export function Navbar() {
 
   const getGames = async (searchText) => {
     if (searchText == "") return
-    axios.get(`http://127.0.0.1:5050/game/search?title=${encodeURIComponent(searchText)}`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${encodeURIComponent(searchText)}`)
     .then(res => setGames(res.data.results))
     .catch(err => console.error(err))
   }
@@ -59,16 +58,16 @@ export function Navbar() {
             className="h-8 rounded min-w-72 h-10 p-2 border-indigo-950 text-sm text-indigo-50/75 bg-neutral-700 focus:outline-none data-[focus]"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
-            onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${e.target.value}`}) }}
+            onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${encodeURIComponent(e.target.value)}`}) }}
             autoComplete="new-password"
           />
           <ComboboxOptions anchor="bottom start" className="bg-neutral-700 mt-1 rounded">
             <SimpleBar style={{ maxHeight: 300, width: '18rem' }}>
-              {games.length > 0 ? games.map((game) => (
+              {games.length > 0 ? games.map(game => (
                 <ComboboxOption autoFocus={false} disabled={true} key={game.gameId} value={game.gameId} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
-                  <div className="p-1 flex w-full items-center border-b border-amber-100/25">
-                    <div className="w-8 min-w-8 h-8 min-h-8 flex justify-center items-center">
-                      <img className="max-w-full max-h-full rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.coverId}.jpg`} />
+                  <div className="p-1 flex w-full gap-2 items-center border-b border-amber-100/25">
+                    <div className="h-8 flex justify-center items-center">
+                      <img className="max-w-full max-h-full aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.coverId}.jpg`} />
                     </div>
                     <h1 className="text-indigo-50 text-xs text-wrap">
                       {`${game.name} `}

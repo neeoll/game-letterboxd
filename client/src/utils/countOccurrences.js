@@ -7,5 +7,5 @@ export const countOccurrences = (array) => {
   })
 
   const sortedArray = Object.entries(countMap).sort((a, b) => b[1] - a[1])
-  return sortedArray.slice(1, 6)
+  return sortedArray.slice(0, 5)
 }

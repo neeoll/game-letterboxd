@@ -14,7 +14,7 @@ const DisplayButtons = (props) => {
           </button>
         </div>
       ) : ""}
-      {props.genre != 0 ? (
+      {props.genre != -1 ? (
         <div className="relative group hover:text-white">
           <div className="absolute -inset-0.5 rounded-xl group-hover:bg-gradient-to-t from-[#ff9900] to-[#ff00ff] blur-sm" />
           <button onClick={() => props.remove('genre')} className="relative flex bg-neutral-700 rounded-full p-1 px-2 gap-2 items-center">
@@ -23,7 +23,7 @@ const DisplayButtons = (props) => {
           </button>
         </div>
       ) : ""}
-      {props.platform != 0 ? (
+      {props.platform != -1 ? (
         <div className="relative group hover:text-white">
           <div className="absolute -inset-0.5 rounded-xl group-hover:bg-gradient-to-t from-[#ff9900] to-[#ff00ff] blur-sm" />
           <button onClick={() => props.remove('platform')} className="relative flex bg-neutral-700 rounded-full p-1 px-2 gap-2 items-center">

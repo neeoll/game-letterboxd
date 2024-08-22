@@ -3,7 +3,7 @@ import { RxStarFilled } from "react-icons/rx"
 import { gameCardTimestamp } from "../utils"
 import PropTypes from 'prop-types'
 
-export function GameCard(props) {
+const GameCard = (props) => {
   return (
     <div key={props.game.gameId} className="flex flex-col items-center gap-2">
       <Link key={props.game.gameId} to={`/game/${props.game.gameId}`} className={`relative ${props.size} group rounded hover:outline hover:outline-3 hover:outline-[#ff9900]`}>

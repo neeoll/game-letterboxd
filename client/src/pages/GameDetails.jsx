@@ -1,23 +1,11 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
-import Rating from '@mui/material/Rating'
-import { styled } from "@mui/material"
-import { completionStatuses, platforms, genres } from "../dict"
-import { GameCard, ReviewDialog } from "../components"
+import { platforms, genres } from "../dict"
+import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
-import defaultImg from "../assets/default_profile.png"
 import axios from 'axios'
-
-const StyledRating = styled(Rating)({
-  '& .MuiRating-iconFilled': {
-    color: '',
-  },
-  '& .MuiRating-iconEmpty': {
-    color: '#ffffff55',
-  }
-})
 
 const GameDetails = () => {
   const { gameId } = useParams()
@@ -27,17 +15,11 @@ const GameDetails = () => {
 
   useEffect(() => {
     async function getDetails() {
-      const headers = { 'view-token': localStorage.getItem(`${gameId}-view-token`) }
-      if (localStorage.getItem('jwt-token')) { headers['user-token'] = localStorage.getItem('jwt-token') }
-
-      axios.get(`http://127.0.0.1:5050/game/${gameId}`, { headers: headers })
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { 
+        headers: { 'user-token': localStorage.getItem('jwt-token') }
+      })
       .then(res => {
-        if (res.data.token) { 
-          localStorage.setItem(`${gameId}-view-token`, res.data.token) 
-          setDetails(res.data.data)
-        } else {
-          setDetails(res.data)
-        }
+        setDetails(res.data)
         setLoading(false)
       })
       .catch(err => console.error(err))
@@ -71,7 +53,7 @@ const GameDetails = () => {
         <div className="flex flex-col w-4/5 gap-1">
           <h1 className="text-5xl font-semibold text-indigo-100">{details.name}</h1>
           <div className="flex gap-2 text-xl text-indigo-100/50">
-            <p>Released on</p> 
+            <p>{details.releaseDate > Date.now() / 1000 ? "Releases" : "Released"} on</p> 
             <Link to={{ pathname: "/games", search: `?year=${getYearFromTimestamp(details.releaseDate)}`}} className="text-indigo-100/75 font-semibold hover:text-indigo-50">{gameDetailsTimestamp(details.releaseDate)}</Link>
             {details.companies.length != 0 ? (
               <>
@@ -82,6 +64,7 @@ const GameDetails = () => {
           </div>
         </div>
       </div>
+      {/* Background Image */}
       <div className="absolute -z-20 inset-0 w-screen h-screen bg-neutral-700">
         <img className="w-full h-full object-cover object-center" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${details.artworks[Math.floor(Math.random() * (details.artworks.length - 1))]}.jpg`}/>
         <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
@@ -124,8 +107,8 @@ const GameDetails = () => {
               <p className="font-bold text-3xl">{(details.avgRating || 0).toFixed(1)}</p>
               <div className="flex flex-wrap w-full text-indigo-50/25 justify-center items-center text-center">
                 <div className="w-full flex h-24 gap-1">
-                  {calculateRatingDistribution(details.reviews).map((rating, index) => (
-                    <div key={index} className="flex flex-col w-1/5 justify-end">
+                  {calculateRatingDistribution(details.reviews).map(rating => (
+                    <div key={rating.value} className="flex flex-col w-1/5 justify-end">
                       <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 10}px)`}} />
                     </div>
                   ))}
@@ -228,23 +211,7 @@ const GameDetails = () => {
           {/* TODO: Implement MongoDB instance to push and pull reviews */}
           <div className="flex flex-col gap-y-4 p-4">
             {details.reviews.map((review, index) => (
-              <div key={index} className="flex text-indigo-50 gap-x-2 p-4 border-b">
-                <div className="flex flex-col justify-start">
-                  <img src={review.user.profileIcon || defaultImg} className="size-10 rounded-lg" />
-                </div>
-                <div className="flex flex-col justify-start">
-                  <div>{review.user.username}</div>
-                  <div className="flex gap-2 items-center">
-                    <StyledRating readOnly value={review.rating} size="small" />
-                    <div className="flex gap-1 text-white">
-                      {completionStatuses.find(status => status.value == review.status).element()}
-                      <p className="text-white/50">on</p> 
-                      <Link to={{ pathname: "/games", search: `?platform=${review.platform}`}} className="text-white">{platforms.find(platform => platform.id == review.platform).name}</Link>
-                    </div>
-                  </div>
-                  <div>{review.body}</div>
-                </div>
-              </div>
+              <GameReview key={index} review={review} />
             ))}
           </div>
         </div>

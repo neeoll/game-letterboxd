@@ -32,7 +32,7 @@ const DropdownSearch = (props) => {
       <ComboboxOptions anchor="bottom" className="w-52 rounded bg-neutral-700 mt-2">
         <SimpleBar autoHide={false} style={{ maxHeight: 200 }}>
           {
-            filteredArray.map((genre) => (
+            filteredArray.map(genre => (
               <ComboboxOption key={genre.id} value={genre} className="w-full p-1 hover:bg-neutral-600">
                 <p className="text-white">{genre.name}</p>
               </ComboboxOption>

@@ -13,7 +13,7 @@ const SearchResults = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${searchText}`)
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${encodeURIComponent(searchText)}`)
       .then(res => {
         setCount(res.data.count[0].count)
         setResults(res.data.results)
@@ -30,12 +30,12 @@ const SearchResults = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-fit gap-4 animate-[pulse_1.5s_linear_infinite]">
+      <div className="flex flex-col h-fit gap-4 animate-[pulse_1s_linear_infinite]">
         <div className="flex justify-center">
           <div className="h-10 w-96 bg-neutral-800" />
         </div>
         <div className="flex flex-col gap-2">
-          {Array.apply(null, Array(10)).map((index) => (
+          {Array.apply(null, Array(10)).map(index => (
             <div key={index} className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="h-36 aspect-[45/64] bg-neutral-800 rounded" />
@@ -58,7 +58,7 @@ const SearchResults = () => {
         <p>{count} results for <span className="text-4xl font-semibold">{`"${searchText}"`}</span></p>
       </div>
       <div className="flex flex-col gap-2">
-        {results.map((game) => (
+        {results.map(game => (
           <div key={game.gameId} className="flex flex-col gap-2 group">
             <div className="flex items-center gap-2">
               <div className="h-36 w-fit rounded">

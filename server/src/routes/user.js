@@ -22,19 +22,12 @@ const userRouter = Router()
       })
 
       await cloudinary.uploader.destroy(`${req.user.id}-profileIcon`)
-
-      const uploadResult = await cloudinary.uploader.upload(image, {
-        public_id: `${req.user.id}-profileIcon`
-      })
-
-      console.log(uploadResult)
+      await cloudinary.uploader.upload(image, { public_id: `${req.user.id}-profileIcon` })
 
       const optimizeUrl = cloudinary.url(`${req.user.id}-profileIcon`, {
         fetch_format: 'auto',
         quality: 'auto'
       })
-
-      console.log(optimizeUrl)
 
       await User.findOneAndUpdate({ email: req.user.email }, { $set: { profileIcon: optimizeUrl }})
 

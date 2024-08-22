@@ -5,8 +5,12 @@ const tokenSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
-  token: {
-    type: String,
+  game: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
+  expiresAfter: {
+    type: mongoose.Schema.Types.Date,
     required: true
   }
 })

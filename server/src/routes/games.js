@@ -1,33 +1,17 @@
 import { Router } from "express"
 import 'dotenv/config'
-import jsonwebtoken from 'jsonwebtoken'
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
 import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
 import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
-import { checkViewToken } from "../middleware/checkViewToken.js"
 import { decodeToken } from "../middleware/decodeToken.js"
 import { queryToPipeline } from "../utils/queryToPipeline.js"
 import mongoose from "mongoose"
+import Token from "../db/models/Token.js"
 
 const gamesRouter = Router()
-  .get("/artworks", async (req, res) => {
-    try {
-      const results = await Game.aggregate([
-        { $match: { artworks: { $exists: true } } },
-        { 
-          $facet: {
-            count: [ { $count: "count" } ]
-          }
-        }
-      ])
-      res.status(200).json(results)
-    } catch (err) {
-      res.status(500).json({ error: "Internal server error" })
-    }
-  })
   .get('/home', async (req, res) => {
     try {
       const games = await Game.aggregate([
@@ -197,7 +181,7 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", [decodeToken, checkViewToken], async (req, res) => {
+  .get("/:id", decodeToken, async (req, res) => {
     try {
       const pipeline = [
         { $match: { gameId: parseInt(req.params.id) } },
@@ -216,7 +200,7 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'users',
-            localField: 'reviews.userRef',
+            localField: 'reviews.userfRef',
             foreignField: '_id',
             as: 'reviewUser'
           }
@@ -263,7 +247,7 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'companies',
-            let: { companiesArray: '$companies.company' },
+            let: { companiesArray: '$companies' },
             pipeline: [
               {
                 $match: {
@@ -324,14 +308,13 @@ const gamesRouter = Router()
       
       const results = await Game.aggregate(pipeline)
       if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
-      
-      if (req.token == null) {
-        const game = await Game.findOneAndUpdate({ gameId: req.params.id }, { $inc: { views: 1 } }, { new: true })
-        let viewToken = jsonwebtoken.sign({ gameId: req.params.id }, process.env.JWT_SECRET, { expiresIn: "5 seconds" })
-        return res.status(200).json({ data: results[0], token: viewToken })
-      }
 
-      console.log()
+      const token = await Token.findOne({ user: new mongoose.Types.ObjectId(req.user.id), game: new mongoose.Types.ObjectId(results[0]._id) })
+      if (!token) {
+        const timestamp = new Date()
+        timestamp.setMinutes(timestamp.getMinutes() + 1)
+        await Token.create({ user: new mongoose.Types.ObjectId(req.user.id), game: new mongoose.Types.ObjectId(results[0]._id), expiresAfter: timestamp.toISOString() })
+      }
       
       res.status(200).json(results[0])
     } catch (err) {

@@ -20,10 +20,6 @@ const router = createBrowserRouter([
         element: <Pages.GameSearch />
       },
       {
-        path: "/games/search",
-        element: <Pages.SearchResults />
-      },
-      {
         path: "/games/company/:companyId",
         element: <Pages.GamesByCompany />
       },
@@ -36,23 +32,35 @@ const router = createBrowserRouter([
         element: <Pages.GameDetails />
       },
       {
-        path: "/register",
-        element: <Pages.Register />
-      },
-      {
         path: "/login",
         element: <Pages.Login />
+      },
+      {
+        path: "/reset-password",
+        element: <Pages.PasswordReset />
       },
       {
         path: "/profile",
         element: <Pages.Profile />
       },
       {
+        path: "/register",
+        element: <Pages.Register />
+      },
+      {
+        path: "/games/search",
+        element: <Pages.SearchResults />
+      },
+      {
+        path: '/password-reset-form',
+        element: <Pages.SendResetLink />
+      },
+      {
         path: "/settings",
         element: <Pages.Settings />
       },
       {
-        path: "/verify",
+        path: "/verify-email",
         element: <Pages.VerifyEmail />
       }
     ]

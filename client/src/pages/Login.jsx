@@ -37,7 +37,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex flex-col gap-10 w-full justify-center items-center pb-2">
+    <div className="flex flex-col gap-2 w-full justify-center items-center pb-2">
       <form className="group/form" onSubmit={submitLogin}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">
           {/* Email or Username */}
@@ -75,8 +75,11 @@ const Login = () => {
           </div>
         </div>
       </form>
+      <div className="bg-gradient-to-r from-[#ff9900] to-[#ff00ff] bg-clip-text text-transparent">
+        <button onClick={() => navigate('/password-reset-form')}>Forgot your password?</button>
+      </div>
       {failedLogin ? (
-        <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-indigo-50">
+        <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-white">
           <IoWarningOutline size={"1.25em"}/>
           <p>Error: Incorrect username or password, please try again.</p>
         </div>
