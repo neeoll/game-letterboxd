@@ -185,5 +185,25 @@ const authRouter = Router()
       res.status(500).json({ error: "Internal server error" })
     }
   })
+  .post('/resetPassword', async (req, res) => {
+    try {
+      const { userEmail, currentPassword, hash } = req.body
+      const user = await User.findOne({ email: userEmail }, { games: 0, reviews: 0, __v: 0 })
+      console.log(user)
+
+      const passwordMatch = bcrypt.compareSync(currentPassword, user.password)
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Invalid credentials' })
+      }
+
+      user.password = hash
+      await user.save()
+
+      res.status(200).json({ message: "Password successfully changed" })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
+    }
+  })
 
 export default authRouter

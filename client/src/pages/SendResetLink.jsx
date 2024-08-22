@@ -20,6 +20,10 @@ const SendResetLink = () => {
     .catch(err => console.error(err))
   }
 
+  const resendLink = () => {
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/sendPasswordResetLink`, { email })
+  }
+
   if (resetLinkSent) {
     return (
       <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
@@ -55,8 +59,8 @@ const SendResetLink = () => {
             <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
           </div>
           <div className={`relative w-96 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
-            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Register</div>
-            <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Register</button>
+            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Send Link</div>
+            <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Send Link</button>
           </div>
         </div>
       </form>
