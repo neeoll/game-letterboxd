@@ -1,21 +1,16 @@
-import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useRef } from "react"
+import { Link, Navigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 import axios from 'axios'
 import { verifyCaptcha } from "../utils"
 
-const Login = () => {
-  const navigate = useNavigate()
+const Login = ({ isAuthenticated }) => {
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
   const [password, setPassword] = useState("")
   const [failedLogin, setFailedLogin] = useState(false)
-
-  useEffect(() => {
-    if (localStorage.getItem('jwt-token')) { return navigate('/profile') }
-  })
 
   async function submitLogin(e) {
     e.preventDefault()
@@ -26,10 +21,11 @@ const Login = () => {
     if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
 
     const data = { emailOrUsername: emailOrUsername, password: password }
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data)
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data, {
+      withCredentials: true
+    })
     .then(res => {
-      localStorage.setItem('jwt-token', res.data.token)
-      navigate('/profile')
+      window.location.reload()
     })
     .catch(err => {
       if (err.response.status == 401) setFailedLogin(true) 
@@ -76,7 +72,7 @@ const Login = () => {
         </div>
       </form>
       <div className="bg-gradient-to-r from-[#ff9900] to-[#ff00ff] bg-clip-text text-transparent">
-        <button onClick={() => navigate('/password-reset-form')}>Forgot your password?</button>
+        <Link to={'/password-reset-form'}>Forgot your password?</Link>
       </div>
       {failedLogin ? (
         <div className="flex justify-center items-center gap-2 p-4 rounded border border-red-500 bg-red-500/25 text-white">

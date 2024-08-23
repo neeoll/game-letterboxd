@@ -1,13 +1,15 @@
-import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useRef } from "react"
+import { Navigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
 import axios from 'axios'
 import { verifyCaptcha } from "../utils"
 
-const Register = () => {
-  const navigate = useNavigate()
+const Register = ({ isAuthenticated }) => {
+  if (isAuthenticated) { 
+    return <Navigate to='/profile' replace /> 
+  }
 
   const recaptcha = useRef()
   const [email, setEmail] = useState("")
@@ -18,10 +20,6 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
 
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
-
-  useEffect(() => {
-    if (localStorage.getItem('jwt-token')) { return navigate('/profile') }
-  })
 
   async function submitRegister(e) {
     e.preventDefault()

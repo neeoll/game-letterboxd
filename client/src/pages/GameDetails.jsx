@@ -16,7 +16,7 @@ const GameDetails = () => {
   useEffect(() => {
     async function getDetails() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { 
-        headers: { 'user-token': localStorage.getItem('jwt-token') }
+        withCredentials: true
       })
       .then(res => {
         setDetails(res.data)
@@ -31,9 +31,7 @@ const GameDetails = () => {
 
   async function addGame(payload) {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/game/addGame`, payload, {
-      headers: {
-        'authorization': localStorage.getItem('jwt-token')
-      }
+      withCredentials: true
     })
   }
 
@@ -73,8 +71,8 @@ const GameDetails = () => {
         {/* Review and Score Content */}
         <div className="flex flex-col w-1/5 p-4 gap-2">
           <div className="relative flex flex-col gap-1">
-            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-[#ff9900] to-[#ff00ff] opacity-75 blur-sm ${localStorage.getItem('jwt-token') ? "-mt-12" : ""}`} />
-            {localStorage.getItem('jwt-token') != null ? (
+            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-[#ff9900] to-[#ff00ff] opacity-75 blur-sm ${details.userReview ? "-mt-12" : ""}`} />
+            {details.userReview != null ? (
               <div className="relative -mt-12">
                 <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
                   <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />

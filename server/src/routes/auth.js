@@ -19,6 +19,13 @@ const transporter = nodemailer.createTransport({
 })
 
 const authRouter = Router()
+  .get('/checkAuthentication', async (req, res) => {
+    if (req.cookies.accessToken) {
+      return res.status(200).json(true)
+    } else {
+      return res.status(401).json(false)
+    }
+  })
   .post('/verifyCaptcha', async (req, res) => {
     const { captchaValue } = req.body
     const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
@@ -81,10 +88,16 @@ const authRouter = Router()
       }
 
       const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: "30 days" })
+      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true })
       res.status(200).json({ token })
     } catch (err) {
       res.status(500).json({ error: 'Internal server error' })
     }
+  })
+  .get('/logout', async (req, res) => {
+    console.log("clearing authentication cookie")
+    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'none', secure: true })
+    res.status(200).json({ message: "Authentication cookie cleared" })
   })
   .get("/getUser", verifyToken, async (req, res) => {
     try {

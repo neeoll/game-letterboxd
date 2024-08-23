@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import CropDialog from "../components/CropDialog"
 import axios from "axios"
 
 const Settings = () => {
-  const navigate = useNavigate()
-
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -18,11 +15,8 @@ const Settings = () => {
 
   useEffect(() => {
     async function getUserData() {
-      if (!localStorage.getItem('jwt-token')) { navigate("/login") }
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
-        headers: {
-          'authorization': localStorage.getItem('jwt-token')
-        }
+        withCredentials: true
       })
       .then(res => {
         setUser(res.data)
@@ -57,9 +51,7 @@ const Settings = () => {
     formData.append('email', email)
     
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/update`, formData, {
-      headers: {
-        "authorization": localStorage.getItem("jwt-token")
-      }
+      withCredentials: true
     })
     .then(res => {
       console.log(res.data)

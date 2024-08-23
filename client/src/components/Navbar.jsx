@@ -19,14 +19,15 @@ const Navbar = () => {
 
   useEffect(() => {
     async function getUserInfo() {
-      if (!localStorage.getItem('jwt-token')) return
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
-        headers: { 
-          'authorization': localStorage.getItem('jwt-token') 
+        withCredentials: true
+      })
+      .then(res => setUserData(res.data) )
+      .catch(err => {
+        if (err.response.status == 401) {
+          return
         }
       })
-      .then(res => setUserData(res.data))
-      .catch(err => console.error(err))
     }
     getUserInfo()
     return
@@ -42,8 +43,11 @@ const Navbar = () => {
   const resetNavbar = () => { setGames([]) }
 
   function logout() {
-    localStorage.removeItem('jwt-token')
-    window.location.reload()
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
+      withCredentials: true
+    })
+    .then(window.location.reload())
+    .catch(err => console.error(err))
   }
 
   return (

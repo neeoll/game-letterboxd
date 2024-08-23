@@ -1,16 +1,38 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import 'simplebar-react/dist/simplebar.min.css'
 import "./index.css"
 import App from "./App"
 import * as Pages from './pages'
+import ProtectedRoute from "./ProtectedRoute"
+import axios from "axios"
+
+const isAuthenticated = async () => {
+  return axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
+    withCredentials: true
+  })
+  .then(res => { return res.data })
+  .catch(err => { return res.data })
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        element: <ProtectedRoute isAuthenticated={isAuthenticated()} />,
+        children: [
+          {
+            path: '/profile',
+            element: <Pages.Profile />
+          },
+          {
+            path: "/settings",
+            element: <Pages.Settings />
+          },
+        ]
+      },
       {
         path: "/",
         element: <Pages.Home />
@@ -33,19 +55,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Pages.Login />
+        element: <Pages.Login isAuthenticated={isAuthenticated()} />
       },
       {
         path: "/reset-password",
         element: <Pages.PasswordReset />
       },
       {
-        path: "/profile",
-        element: <Pages.Profile />
-      },
-      {
         path: "/register",
-        element: <Pages.Register />
+        element: <Pages.Register isAuthenticated={isAuthenticated()} />
       },
       {
         path: "/games/search",
@@ -54,10 +72,6 @@ const router = createBrowserRouter([
       {
         path: '/password-reset-form',
         element: <Pages.SendResetLink />
-      },
-      {
-        path: "/settings",
-        element: <Pages.Settings />
       },
       {
         path: "/verify-email",

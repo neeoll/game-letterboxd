@@ -1,16 +1,12 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { GameCard, HomeReview } from "../components"
 
 const Home = () => {
-  const navigate = useNavigate()
-
   const [homeData, setHomeData] = useState()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (localStorage.getItem('jwt-token')) { return navigate("/profile") }
     async function getHomeData() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/home`)
       .then(res => {

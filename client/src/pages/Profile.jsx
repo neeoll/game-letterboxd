@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { RxStarFilled } from "react-icons/rx"
-import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { gameStatuses } from "../dict"
 import { DropdownSearch, GameCard, Sort } from "../components"
 import { genres, platforms, profileSortCriteria } from "../dict"
@@ -25,11 +24,8 @@ const Profile = () => {
 
   useEffect(() => {
     async function getUserInfo() {
-      if (!localStorage.getItem('jwt-token')) { return navigate("/login") }
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profileData`, {
-        headers: {
-          'authorization': localStorage.getItem('jwt-token')
-        }
+        withCredentials: true
       })
       .then(res => {
         setGenreCounts(countOccurrences(res.data.games.map(game => game.genres).flat().map(item => genres.find(genre => genre.id == item))))
@@ -38,7 +34,11 @@ const Profile = () => {
         setGenres(Array.from(new Set(res.data.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
         setLoading(false)
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        if (err.response.status == 401) {
+          navigate('/')
+        }
+      })
     }
     getUserInfo()
     return

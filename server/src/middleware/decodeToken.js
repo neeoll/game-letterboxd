@@ -1,7 +1,7 @@
 import jsonwebtoken from 'jsonwebtoken'
 
 export const decodeToken = (req, res, next) => {
-  const token = req.headers['user-token']
+  const token = req.cookies.accessToken
   
   if (!token) {
     req.user = null
