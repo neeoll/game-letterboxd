@@ -6,10 +6,10 @@ import Collection from "../db/models/Collection.js"
 import Company from "../db/models/Company.js"
 import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
-import { decodeToken } from "../middleware/decodeToken.js"
 import { queryToPipeline } from "../utils/queryToPipeline.js"
 import mongoose from "mongoose"
 import Token from "../db/models/Token.js"
+import jsonwebtoken from 'jsonwebtoken'
 
 const gamesRouter = Router()
   .get('/home', async (req, res) => {
@@ -181,8 +181,10 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", decodeToken, async (req, res) => {
+  .get("/:id", async (req, res) => {
     try {
+      let user = jsonwebtoken.decode(req.cookies.accessToken) || null
+
       const pipeline = [
         { $match: { gameId: parseInt(req.params.id) } },
         // Lookup Reviews
@@ -200,7 +202,7 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'users',
-            localField: 'reviews.userfRef',
+            localField: 'reviews.userRef',
             foreignField: '_id',
             as: 'reviewUser'
           }
@@ -278,7 +280,7 @@ const gamesRouter = Router()
         }
       ]
 
-      if (req.user) {
+      if (user) {
         pipeline.push(
           {
             $lookup: {
@@ -290,7 +292,7 @@ const gamesRouter = Router()
                     $expr: {
                       $and: [
                         { $eq: ['$gameRef', '$$ref'] },
-                        { $eq: ['$userRef', new mongoose.Types.ObjectId(req.user.id) ] }
+                        { $eq: ['$userRef', new mongoose.Types.ObjectId(user.id) ] }
                       ]
                     }
                   }
@@ -309,13 +311,15 @@ const gamesRouter = Router()
       const results = await Game.aggregate(pipeline)
       if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
 
-      const token = await Token.findOne({ user: new mongoose.Types.ObjectId(req.user.id), game: new mongoose.Types.ObjectId(results[0]._id) })
-      if (!token) {
-        const timestamp = new Date()
-        timestamp.setMinutes(timestamp.getMinutes() + 1)
-        await Token.create({ user: new mongoose.Types.ObjectId(req.user.id), game: new mongoose.Types.ObjectId(results[0]._id), expiresAfter: timestamp.toISOString() })
+      if (user) {
+        const token = await Token.findOne({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id) })
+        if (!token) {
+          const timestamp = new Date()
+          timestamp.setMinutes(timestamp.getMinutes() + 1)
+          await Token.create({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id), expiresAfter: timestamp.toISOString() })
+        }
       }
-      
+
       res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
