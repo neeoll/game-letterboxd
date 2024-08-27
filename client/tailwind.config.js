@@ -22,6 +22,10 @@ export default {
     extend: {
       fontFamily: {
         edunline: ["Edunline", 'sans-serif'],
+      },
+      colors: {
+        accentPrimary: '#ff9900',
+        accentSecondary: '#ff00ff'
       }
     },
   },

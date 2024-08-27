@@ -63,9 +63,7 @@ const Settings = () => {
 
   const sendResetLink = () => {
     axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/sendPasswordResetLink`, {
-      headers: {
-        'authorization': localStorage.getItem("jwt-token")
-      }
+      withCredentials: true
     })
     .then(res =>  console.log(res.data))
     .catch(err => console.error(err))
@@ -94,7 +92,7 @@ const Settings = () => {
               <div className="flex flex-col w-96 justify-center items-center gap-2">
                 {/* Username */}
                 <div className="flex flex-col w-full items-start">
-                  <p className="text-sm text-indigo-50/50 font-extralight">Username</p>
+                  <p className="text-sm text-white/50 font-extralight">Username</p>
                   <input 
                     onChange={(e) => {
                       setUsernameValid(true)
@@ -102,14 +100,14 @@ const Settings = () => {
                     }}
                     type="text"
                     placeholder={user.username}
-                    className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none"
+                    className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
                     maxLength={16}
                   />
                   <p className={`${usernameValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${username}" is already in use.`}</p>
                 </div>
                 {/* Email */}
                 <div className="flex flex-col w-full items-start">
-                  <p className="text-sm text-indigo-50/50 font-extralight">Email</p>
+                  <p className="text-sm text-white/50 font-extralight">Email</p>
                   <input 
                     onChange={(e) => {
                       setEmailValid(true)
@@ -117,14 +115,14 @@ const Settings = () => {
                     }}
                     type="email"
                     placeholder={user.email}
-                    className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none peer"
+                    className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none peer"
                   />
                   <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
                   <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
                 </div>
                 <div className={`relative w-96 group ${(username || email || blob) != null ? "" : "size-0 invisible"}`}>
-                  <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Save Changes</div>
-                  <button onClick={submitChanges} className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Save Changes</button>
+                  <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</div>
+                  <button onClick={submitChanges} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</button>
                 </div>
               </div>
             </div>

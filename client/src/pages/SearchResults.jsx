@@ -54,7 +54,7 @@ const SearchResults = () => {
 
   return (
     <div className="flex flex-col h-fit gap-y-2">
-      <div className="flex justify-center text-indigo-50 text-3xl">
+      <div className="flex justify-center text-white text-3xl">
         <p>{count} results for <span className="text-4xl font-semibold">{`"${searchText}"`}</span></p>
       </div>
       <div className="flex flex-col gap-2">
@@ -65,7 +65,7 @@ const SearchResults = () => {
                 <img loading="lazy" className="max-w-full max-h-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
               </div>
               <div className="flex flex-col h-32 justify-start">
-                <Link to={`/game/${game.gameId}`} className="flex gap-1 text-indigo-50 text-2xl hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff] hover:bg-clip-text hover:text-transparent group/link">
+                <Link to={`/game/${game.gameId}`} className="flex gap-1 text-white text-2xl hover:bg-gradient-to-r from-accentPrimary to-accentSecondary hover:bg-clip-text hover:text-transparent group/link">
                   <p>{game.name} <span className="text-white/75 group-hover/link:text-transparent">({new Date(game.releaseDate * 1000).getFullYear()})</span></p>
                 </Link>
                 <div className="flex text-white gap-1">
@@ -77,7 +77,7 @@ const SearchResults = () => {
                 </div>
               </div>
             </div>
-            <div className="h-0.5 bg-white/75 group-hover:bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
+            <div className="h-0.5 bg-white/75 group-hover:bg-gradient-to-r from-accentPrimary to-accentSecondary" />
           </div>
         ))}
       </div>

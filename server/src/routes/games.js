@@ -245,20 +245,24 @@ const gamesRouter = Router()
             },
           }
         },
-        // Companies Lookup
+        // Company Lookup
         {
           $lookup: {
             from: 'companies',
-            let: { companiesArray: '$companies' },
+            let: { firstCompanyId: { $arrayElemAt: ['$companies', 0] } },
             pipeline: [
               {
                 $match: {
-                  $expr: { $in: ['$companyId', '$$companiesArray'] }
+                  $expr: {
+                    $eq: ['$companyId', '$$firstCompanyId']
+                  }
                 }
               },
-              { $project: { name: 1, companyId: 1, _id: 0 } }
+              {
+                $project: { name: 1, companyId: 1, _id: 0 }
+              }
             ],
-            as: 'companies'
+            as: 'company'
           }
         },
         // Series Lookup (collection)
@@ -273,7 +277,7 @@ const gamesRouter = Router()
                 }
               },
               { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
-              { $limit: 6 }
+              { $limit: 10 }
             ],
             as: 'collection'
           }
@@ -309,6 +313,8 @@ const gamesRouter = Router()
       }
       
       const results = await Game.aggregate(pipeline)
+      results[0].company.length != 0 ? results[0].company = results[0].company[0] : delete results[0].company
+
       if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
 
       if (user) {
@@ -329,7 +335,7 @@ const gamesRouter = Router()
   .get("/company/:id", async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query, {
-        companies: { $elemMatch: { 'company': parseInt(req.params.id) } }
+        companies: parseInt(req.params.id)
       })
 
       const results = await Company.aggregate([
@@ -346,7 +352,7 @@ const gamesRouter = Router()
   .get("/series/:id", async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query, {
-        $expr: { $in: [parseInt(req.params.id), '$collections'] }
+        collections: parseInt(req.params.id)
       })
 
       const results = await Collection.aggregate([

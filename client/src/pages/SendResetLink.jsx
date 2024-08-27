@@ -2,14 +2,14 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from 'axios'
 
-const SendResetLink = () => {
+const SendResetLink = ({ isAuthenticated }) => {
   const navigate = useNavigate()
   
   const [email, setEmail] = useState("")
   const [resetLinkSent, setResetLinkSent] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('jwt-token')) { return navigate('/profile') }
+    if (isAuthenticated) { return navigate('/profile') }
   })
 
   async function submit(e) {
@@ -35,7 +35,7 @@ const SendResetLink = () => {
             <p className="text-white/50">
               {"Didn't receive the link?"}
             </p>
-            <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-[#ff9900] to-[#ff00ff] bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
+            <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
           </div>
         </div>
       </div>
@@ -49,18 +49,18 @@ const SendResetLink = () => {
         <div className="flex flex-col w-96 justify-center items-center gap-2">
           {/* Email */}
           <div className="flex flex-col w-full items-start">
-            <p className="text-sm text-indigo-50/50 font-extralight">Email</p>
+            <p className="text-sm text-white/50 font-extralight">Email</p>
             <input 
               onChange={(e) => setEmail(e.target.value)}
               type="email"
-              className="w-full p-1 rounded bg-neutral-700 text-indigo-50/75 outline-none peer"
+              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none peer"
               required 
             />
             <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
           </div>
           <div className={`relative w-96 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
-            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Send Link</div>
-            <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-[#ff9900] to-[#ff00ff] p-1">Send Link</button>
+            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Send Link</div>
+            <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Send Link</button>
           </div>
         </div>
       </form>

@@ -15,9 +15,9 @@ const Pagination = ({ page, count, update }) => {
   }
 
   return (
-    <div className="flex justify-center items-center overflow-x-hidden gap-4 text-indigo-50 py-2">
-      <div className={`${page == 1 ? "pointer-events-none text-indigo-50/50" : ""} relative size-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
-        <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-l hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1"><RxCaretLeft /></div>
+    <div className="flex justify-center items-center gap-4 text-white">
+      <div className={`${page == 1 ? "pointer-events-none text-white/50" : ""} relative size-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+        <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-l from-accentPrimary to-accentSecondary" />
         <button onClick={() => decrementPage()} className="flex justify-center items-center relative w-full h-full rounded-md bg-neutral-900">
           <RxCaretLeft />
         </button>
@@ -30,12 +30,12 @@ const Pagination = ({ page, count, update }) => {
           placeholder={page}
           max={maxPage}
           onKeyDown={e => { if (e.key === 'Enter') update([{ params: 'page', value: e.target.value }]) }}
-          className="w-10 text-center align-middle bg-transparent rounded border border-white/50"
+          className="w-10 text-center bg-transparent"
         />
         <p>of {maxPage}</p>
       </div>
-      <div className={`${page == maxPage ? "pointer-events-none text-indigo-50/50" : ""} relative size-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
-        <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-[#ff9900] to-[#ff00ff] p-1"><RxCaretLeft /></div>
+      <div className={`${page == maxPage ? "pointer-events-none text-white/50" : ""} relative size-8 group group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+        <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r from-accentPrimary to-accentSecondary" />
         <button onClick={() => incrementPage()} className="flex justify-center items-center relative w-full h-full rounded-md bg-neutral-900">
           <RxCaretRight />
         </button>

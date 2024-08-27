@@ -84,26 +84,26 @@ const GameSearch = () => {
   }
 
   return(
-    <div className="flex flex-col gap-2 pb-4">
-      <div>
+    <div className="grid grid-flow-row auto-rows-max gap-2 pb-8 text-white">
+      {/* Filtering and Other Details */}
+      <div className="flex flex-col px-2">
         <DisplayButtons year={year} genre={currentGenre} platform={currentPlatform} remove={removeQueryParameter} />
         <div className="flex w-full justify-between">
-          <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{count.toLocaleString()} Games</div>
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
-              <Sort criteria={sortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
-              <FilterSidebar genres={genres} genre={currentGenre} platforms={platforms} platform={currentPlatform} year={year} update={updateQueryParameter} />
-            </div>
+          <div className="flex justify-center items-end text-white/50 font-light text-sm">{count.toLocaleString()} Games</div>
+          <div className="flex gap-2">
+            <Sort criteria={sortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
+            <FilterSidebar genres={genres} genre={currentGenre} platforms={platforms} platform={currentPlatform} year={year} update={updateQueryParameter} />
           </div>
         </div>
       </div>
+      {/* Games Display */}
       <div className="flex flex-col justify-center gap-2"> 
-        <div className="flex flex-wrap gap-6 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center">
           {results.map(game =>
-            <GameCard key={game.gameId} size={"h-36"} game={game} sortBy={sortBy} />
+            <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
           )}
         </div>
-        <Pagination page={page} count={count} update={updateQueryParameter}/>
+        <Pagination page={page} count={count} />
       </div>
     </div>
   )

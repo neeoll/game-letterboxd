@@ -46,7 +46,7 @@ const VerifyEmail = () => {
           {linkResend ? (
             <p className="text-white/50 text-sm">Link resent, this tab will close automatically in 5 seconds...</p>
           ) : (
-            <button onClick={() => resendLink()} className="w-48 rounded p-1 bg-gradient-to-r from-[#ff9900] to-[#ff00ff] font-medium">Resend</button>
+            <button onClick={() => resendLink()} className="w-48 rounded p-1 bg-gradient-to-r from-accentPrimary to-accentSecondary font-medium">Resend</button>
           )}
         </div>
       </div>
@@ -67,7 +67,7 @@ const VerifyEmail = () => {
             {linkResend ? (
               <p className="text-white/50 text-sm">Link resent, this tab will close automatically in 5 seconds...</p>
             ) : (
-              <button onClick={() => resendLink()} className="w-48 rounded p-1 bg-gradient-to-r from-[#ff9900] to-[#ff00ff] font-medium">Resend</button>
+              <button onClick={() => resendLink()} className="w-48 rounded p-1 bg-gradient-to-r from-accentPrimary to-accentSecondary font-medium">Resend</button>
             )}
           </>
         )}

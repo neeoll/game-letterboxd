@@ -50,12 +50,12 @@ const GamesBySeries = () => {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 animate-[pulse_1s_linear_infinite]">
-        <div className="flex flex-col gap-2 text-indigo-50">
+        <div className="flex flex-col gap-2 text-white">
           <div className="flex flex-col pb-2 gap-2">
             <div className="w-20 h-6 bg-neutral-800 rounded" />
             <div className="w-96 h-10 bg-neutral-800 rounded" />
           </div>
-          <div className="h-0.5 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
+          <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
         </div>
         <div className="flex flex-col gap-2 pb-4">
           <div className="flex flex-col gap-2">
@@ -93,21 +93,20 @@ const GamesBySeries = () => {
       </div>
     )
   }
-
-  return(
+  /*
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2 text-indigo-50">
+      <div className="flex flex-col gap-2 text-white">
         <div className="pb-2">
-          <p className="text-sm font-light text-indigo-50/50">Series</p>
+          <p className="text-sm font-light text-white/50">Series</p>
           <p className="text-3xl font-semibold">{seriesDetails.name}</p>
         </div>
-        <div className="h-0.5 bg-gradient-to-r from-[#ff9900] to-[#ff00ff]" />
+        <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
       </div>
       <div className="flex flex-col gap-2 pb-4">
         <div>
           <DisplayButtons year={year} genre={currentGenre} platform={currentPlatform} remove={removeQueryParameter} />
           <div className="flex w-full justify-between">
-            <div className="flex justify-center items-end text-indigo-50/50 font-light text-sm">{count.toLocaleString()} Games</div>
+            <div className="flex justify-center items-end text-white/50 font-light text-sm">{count.toLocaleString()} Games</div>
             <div className="flex gap-2">
               <Sort criteria={sortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
               <FilterSidebar genres={genres} genre={currentGenre} platforms={platforms} platform={currentPlatform} year={year} update={updateQueryParameter} />
@@ -117,11 +116,44 @@ const GamesBySeries = () => {
         <div className="flex flex-col justify-center gap-2"> 
           <div className="flex flex-wrap gap-4 justify-center">
             {results.map(game =>
-              <GameCard key={game.gameId} size={"h-48"} game={game} sortBy={sortBy} />
+              <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
             )}
           </div>
           <Pagination page={page} count={count} />
         </div>
+      </div>
+    </div>
+  */
+
+  return (
+    <div className="grid grid-flow-row auto-rows-max gap-2 pb-8 text-white">
+      {/* Name */}
+      <div className="flex flex-col gap-2 text-white">
+        <div className="pb-2">
+          <p className="text-sm font-light text-white/50">Series</p>
+          <p className="text-3xl font-semibold">{seriesDetails.name}</p>
+        </div>
+        <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
+      </div>
+      {/* Filtering and Other Details */}
+      <div className="flex flex-col px-2">
+        <DisplayButtons year={year} genre={currentGenre} platform={currentPlatform} remove={removeQueryParameter} />
+        <div className="flex w-full justify-between">
+          <div className="flex justify-center items-end text-white/50 font-light text-sm">{count.toLocaleString()} Games</div>
+          <div className="flex gap-2">
+            <Sort criteria={sortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateQueryParameter} />
+            <FilterSidebar genres={genres} genre={currentGenre} platforms={platforms} platform={currentPlatform} year={year} update={updateQueryParameter} />
+          </div>
+        </div>
+      </div>
+      {/* Games Display */}
+      <div className="flex flex-col justify-center gap-2"> 
+        <div className="flex flex-wrap gap-4 justify-center">
+          {results.map(game =>
+            <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
+          )}
+        </div>
+        <Pagination page={page} count={count} />
       </div>
     </div>
   )

@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/game/:gameId",
-        element: <Pages.GameDetails />
+        element: <Pages.GameDetails isAuthenticated={isAuthenticated()} />
       },
       {
         path: "/login",
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/password-reset-form',
-        element: <Pages.SendResetLink />
+        element: <Pages.SendResetLink isAuthenticated={isAuthenticated()}/>
       },
       {
         path: "/verify-email",
