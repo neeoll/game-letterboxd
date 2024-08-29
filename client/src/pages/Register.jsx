@@ -1,15 +1,13 @@
 import { useState, useRef } from "react"
-import { Navigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
 import axios from 'axios'
 import { verifyCaptcha } from "../utils"
 
-const Register = ({ isAuthenticated }) => {
-  if (isAuthenticated) { 
-    return <Navigate to='/profile' replace /> 
-  }
+const Register = () => {
+  const navigate = useNavigate()
 
   const recaptcha = useRef()
   const [email, setEmail] = useState("")
@@ -20,6 +18,20 @@ const Register = ({ isAuthenticated }) => {
   const [confirmPassword, setConfirmPassword] = useState("")
 
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data == true) {
+        return navigate('/profile')
+      }
+    })
+    .catch(err => {
+      window.location.reload()
+    })
+  }, [])
 
   async function submitRegister(e) {
     e.preventDefault()

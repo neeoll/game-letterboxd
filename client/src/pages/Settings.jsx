@@ -22,7 +22,11 @@ const Settings = () => {
         setUser(res.data)
         setLoading(false)
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        if (err.response.status == 401) {
+          navigate('/')
+        }
+      })
     }
     getUserData()
   }, [])

@@ -1,19 +1,31 @@
-import { useState, useRef } from "react"
-import { Link, Navigate } from "react-router-dom"
+import { useState, useRef, useEffect } from "react"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 import axios from 'axios'
 import { verifyCaptcha } from "../utils"
 
-const Login = ({ isAuthenticated }) => {
-  if (isAuthenticated) {
-    return <Navigate to='/profile' replace />
-  }
+const Login = () => {
+  const navigate = useNavigate()
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
   const [password, setPassword] = useState("")
   const [failedLogin, setFailedLogin] = useState(false)
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data == true) {
+        return navigate('/profile')
+      }
+    })
+    .catch(err => {
+      window.location.reload()
+    })
+  }, [])
 
   async function submitLogin(e) {
     e.preventDefault()
@@ -27,7 +39,9 @@ const Login = ({ isAuthenticated }) => {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data, {
       withCredentials: true
     })
-    .then(window.location.reload())
+    .then(res => {
+      window.location.reload()
+    })
     .catch(err => {
       if (err.response.status == 401) setFailedLogin(true) 
     })

@@ -2,15 +2,25 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from 'axios'
 
-const SendResetLink = ({ isAuthenticated }) => {
+const SendResetLink = () => {
   const navigate = useNavigate()
   
   const [email, setEmail] = useState("")
   const [resetLinkSent, setResetLinkSent] = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated) { return navigate('/profile') }
-  })
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data == true) {
+        return navigate('/profile')
+      }
+    })
+    .catch(err => {
+      window.location.reload()
+    })
+  }, [])
 
   async function submit(e) {
     e.preventDefault()

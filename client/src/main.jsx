@@ -1,19 +1,10 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import Cookies from 'js-cookie'
 import "./index.css"
 import App from "./App"
 import * as Pages from './pages'
-import ProtectedRoute from "./ProtectedRoute"
-import axios from "axios"
-
-const isAuthenticated = async () => {
-  return axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
-    withCredentials: true
-  })
-  .then(res => { return res.data })
-  .catch(err => console.error(err))
-}
 
 const router = createBrowserRouter([
   {
@@ -21,17 +12,12 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        element: <ProtectedRoute isAuthenticated={await isAuthenticated()} />,
-        children: [
-          {
-            path: '/profile',
-            element: <Pages.Profile />
-          },
-          {
-            path: "/settings",
-            element: <Pages.Settings />
-          },
-        ]
+        path: '/profile',
+        element: <Pages.Profile />
+      },
+      {
+        path: "/settings",
+        element: <Pages.Settings />
       },
       {
         path: "/",
@@ -51,11 +37,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/game/:gameId",
-        element: <Pages.GameDetails isAuthenticated={await isAuthenticated()} />
+        element: <Pages.GameDetails />
       },
       {
         path: "/login",
-        element: <Pages.Login isAuthenticated={await isAuthenticated()} />
+        element: <Pages.Login />
       },
       {
         path: "/reset-password",
@@ -63,7 +49,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/register",
-        element: <Pages.Register isAuthenticated={await isAuthenticated()} />
+        element: <Pages.Register />
       },
       {
         path: "/games/search",
@@ -71,7 +57,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/password-reset-form',
-        element: <Pages.SendResetLink isAuthenticated={await isAuthenticated()}/>
+        element: <Pages.SendResetLink />
       },
       {
         path: "/verify-email",

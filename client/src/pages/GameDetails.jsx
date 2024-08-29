@@ -7,17 +7,19 @@ import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
 import { calculateRatingDistribution } from "../utils"
 import axios from 'axios'
 
-const GameDetails = ({ isAuthenticated }) => {
+const GameDetails = () => {
   const { gameId } = useParams()
 
   const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(false)
   const [details, setDetails] = useState()
   
   useEffect(() => {
     async function getDetails() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { withCredentials: isAuthenticated })
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { withCredentials: true })
       .then(res => {
-        setDetails(res.data)
+        setDetails(res.data.data)
+        setUser(res.data.user)
         setLoading(false)
       })
       .catch(err => console.error(err))
@@ -69,8 +71,8 @@ const GameDetails = ({ isAuthenticated }) => {
         {/* Review Dialog and Score Content */}
         <div className="row-span-2 col-span-1 flex flex-col p-4 gap-2">
           <div className="relative flex flex-col gap-1">
-            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm ${isAuthenticated ? "-mt-12" : ""}`} />
-            {isAuthenticated ? (
+            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm ${user ? "-mt-12" : ""}`} />
+            {user ? (
               <div className="relative -mt-12">
                 <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
                   <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />

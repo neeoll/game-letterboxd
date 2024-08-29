@@ -23,9 +23,9 @@ const authRouter = Router()
     try {
       res.status(200).json(!!req.cookies.accessToken)
     } catch (err) {
+      console.error(err)
       res.status(500).json({ error: "Internal server error" })
     }
-    
   })
   .post('/verifyCaptcha', async (req, res) => {
     const { captchaValue } = req.body
@@ -90,9 +90,8 @@ const authRouter = Router()
 
       const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET)
       const cookieExpiry = new Date().getTime() + 1000 * 60 * 60 * 24 * 30
-      console.log(cookieExpiry)
-      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(cookieExpiry) })
-      res.status(200).json({ token })
+      res.cookie('accessToken', token, { httpOnly: false, sameSite: 'none', secure: true, expires: new Date(cookieExpiry) })
+      res.status(200).json(token)
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Internal server error' })
@@ -100,7 +99,7 @@ const authRouter = Router()
   })
   .get('/logout', async (req, res) => {
     console.log("clearing authentication cookie")
-    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'none', secure: true })
+    res.clearCookie('accessToken', { httpOnly: false, sameSite: 'none', secure: true })
     res.status(200).json({ message: "Authentication cookie cleared" })
   })
   .get("/getUser", verifyToken, async (req, res) => {

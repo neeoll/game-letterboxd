@@ -326,7 +326,7 @@ const gamesRouter = Router()
         }
       }
 
-      res.status(200).json(results[0])
+      res.status(200).json({ data: results[0], user: !!user })
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })
