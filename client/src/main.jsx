@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        element: <ProtectedRoute isAuthenticated={isAuthenticated()} />,
+        element: <ProtectedRoute isAuthenticated={await isAuthenticated()} />,
         children: [
           {
             path: '/profile',
@@ -51,11 +51,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/game/:gameId",
-        element: <Pages.GameDetails isAuthenticated={isAuthenticated()} />
+        element: <Pages.GameDetails isAuthenticated={await isAuthenticated()} />
       },
       {
         path: "/login",
-        element: <Pages.Login isAuthenticated={isAuthenticated()} />
+        element: <Pages.Login isAuthenticated={await isAuthenticated()} />
       },
       {
         path: "/reset-password",
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/register",
-        element: <Pages.Register isAuthenticated={isAuthenticated()} />
+        element: <Pages.Register isAuthenticated={await isAuthenticated()} />
       },
       {
         path: "/games/search",
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/password-reset-form',
-        element: <Pages.SendResetLink isAuthenticated={isAuthenticated()}/>
+        element: <Pages.SendResetLink isAuthenticated={await isAuthenticated()}/>
       },
       {
         path: "/verify-email",

@@ -21,11 +21,7 @@ const transporter = nodemailer.createTransport({
 const authRouter = Router()
   .get('/checkAuthentication', async (req, res) => {
     try {
-      if (req.cookies.accessToken) {
-        return res.status(200).json(true)
-      } else {
-        return res.status(200).json(false)
-      }
+      res.status(200).json(!!req.cookies.accessToken)
     } catch (err) {
       res.status(500).json({ error: "Internal server error" })
     }
@@ -92,10 +88,13 @@ const authRouter = Router()
         return res.status(401).json({ error: 'User not verified' })
       }
 
-      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: "30 days" })
-      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true })
+      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET)
+      const cookieExpiry = new Date().getTime() + 1000 * 60 * 60 * 24 * 30
+      console.log(cookieExpiry)
+      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(cookieExpiry) })
       res.status(200).json({ token })
     } catch (err) {
+      console.error(err)
       res.status(500).json({ error: 'Internal server error' })
     }
   })
@@ -106,15 +105,10 @@ const authRouter = Router()
   })
   .get("/getUser", verifyToken, async (req, res) => {
     try {
-      if (Math.floor(Date.now()) < req.user.exp) {
-        return res.status(401).json({ error: 'Login expired' })
-      }
       const user = await User.findOne({ email: req.user.email }, { username: 1, password: 1, email: 1, profileIcon: 1 })
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' })
-      }
       res.status(200).json(user)
     } catch (err) {
+      console.error(err)
       res.status(500).json({ error: 'Internal server error'})
     }
   })

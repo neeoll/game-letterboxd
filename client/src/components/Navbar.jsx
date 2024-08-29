@@ -21,7 +21,7 @@ const Navbar = () => {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
         withCredentials: true
       })
-      .then(res => setUserData(res.data) )
+      .then(res => setUserData(res.data))
       .catch(err => {
         if (err.response.status == 401) {
           return
