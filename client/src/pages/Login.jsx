@@ -6,6 +6,9 @@ import axios from 'axios'
 import { verifyCaptcha } from "../utils"
 
 const Login = ({ isAuthenticated }) => {
+  if (isAuthenticated) {
+    return <Navigate to='/profile' replace />
+  }
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
@@ -24,9 +27,7 @@ const Login = ({ isAuthenticated }) => {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data, {
       withCredentials: true
     })
-    .then(res => {
-      window.location.reload()
-    })
+    .then(window.location.reload())
     .catch(err => {
       if (err.response.status == 401) setFailedLogin(true) 
     })

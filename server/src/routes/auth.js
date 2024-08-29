@@ -20,11 +20,16 @@ const transporter = nodemailer.createTransport({
 
 const authRouter = Router()
   .get('/checkAuthentication', async (req, res) => {
-    if (req.cookies.accessToken) {
-      return res.status(200).json(true)
-    } else {
-      return res.status(401).json(false)
+    try {
+      if (req.cookies.accessToken) {
+        return res.status(200).json(true)
+      } else {
+        return res.status(200).json(false)
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" })
     }
+    
   })
   .post('/verifyCaptcha', async (req, res) => {
     const { captchaValue } = req.body

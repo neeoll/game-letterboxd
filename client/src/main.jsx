@@ -12,7 +12,7 @@ const isAuthenticated = async () => {
     withCredentials: true
   })
   .then(res => { return res.data })
-  .catch(err => { return res.data })
+  .catch(err => console.error(err))
 }
 
 const router = createBrowserRouter([

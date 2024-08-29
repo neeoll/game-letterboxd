@@ -10,7 +10,6 @@ const Home = () => {
     async function getHomeData() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/home`)
       .then(res => {
-        console.log(res.data)
         setHomeData(res.data)
         setLoading(false)
       })
