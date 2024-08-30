@@ -103,7 +103,7 @@ const GameSearch = () => {
             <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
           )}
         </div>
-        <Pagination page={page} count={count} />
+        <Pagination page={page} count={count} update={updateQueryParameter}/>
       </div>
     </div>
   )

@@ -53,14 +53,18 @@ const Navbar = () => {
   return (
     <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52 bg-gradient-to-b from-neutral-900 from-10% to-transparent">
       {/* Title */}
-      <div className="flex font-edunline group text-4xl text-transparent">
-        <span className="absolute bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text group-hover:blur-sm">
-          <p>Arcade Archives</p>
-        </span>
-        <h1 className="relative bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text">
-          <Link to={"/"}>Arcade Archives</Link>
-        </h1>
-      </div>
+      {window.location.pathname != "/" ? (
+        <div className="flex font-edunline group text-4xl text-transparent">
+          <span className="absolute bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text group-hover:blur-sm">
+            <p>Arcade Archives</p>
+          </span>
+          <h1 className="relative bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text">
+            <Link to={"/"}>Arcade Archives</Link>
+          </h1>
+        </div>
+      ) : (
+        <div />
+      )}
       <div className="flex gap-4 items-center">
         {userData ? 
           (

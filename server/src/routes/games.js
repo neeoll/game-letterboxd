@@ -14,61 +14,24 @@ import jsonwebtoken from 'jsonwebtoken'
 const gamesRouter = Router()
   .get('/home', async (req, res) => {
     try {
+      const gamesNum = await Game.countDocuments({})
+      const reviewsNum = await Review.countDocuments({})
+      const usersNum = await User.countDocuments({})
+      
       const games = await Game.aggregate([
         { $project: { gameId: 1, coverId: 1, popularity: 1, name: 1 } },
         { $sort: { popularity: -1 } },
-        { $limit: 6 },
+        { $limit: 10 },
       ])
-      const reviews = await Review.aggregate([
-        { $match: { spoiler: false } },
-        { $sort: { timestamp: -1 } },
-        { $limit: 6 },
-        {
-          $lookup: {
-            from: 'games',
-            localField: 'gameRef',
-            foreignField: '_id',
-            as: 'game'
-          }
-        },
-        { $unwind: { path: '$game', preserveNullAndEmptyArrays: true } },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'userRef',
-            foreignField: '_id',
-            as: 'user'
-          }
-        },
-        { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-        {
-          $group: {
-            _id: '$_id',
-            rating: { $first: '$rating' },
-            body: { $first: '$body' },
-            platform: { $first: '$platform' },
-            spoiler: { $first: '$spoiler' },
-            status: { $first: '$status' },
-            timestamp: { $first: '$timestamp' },
-            gameRef: { $first: '$gameRef' },
-            userRef: { $first: '$userRef' },
-            game: { 
-              $push: {
-                name: '$game.name',
-                coverId: '$game.coverId',
-                gameId: '$game.gameId'
-              } 
-            },
-            user: { 
-              $push: {
-                username: '$user.username',
-                profileIcon: '$user.profileIcon'
-              } 
-            }
-          }
-        }
-      ])
-      res.status(200).json({games, reviews})
+
+      res.status(200).json({ 
+        games: games, 
+        counts: [
+          { name: "Games", num: gamesNum },
+          { name: "Reviews", num: reviewsNum },
+          { name: "Users", num: usersNum } 
+        ]
+      })
     } catch (err) {
       console.error(err)
     }
@@ -176,6 +139,43 @@ const gamesRouter = Router()
       const pipeline = queryToPipeline(req.query)
       const results = await Game.aggregate(pipeline)
       res.status(200).json(results[0])
+    } catch (err) {
+      console.error(err)
+      res.send("An error occurred").status(500)
+    }
+  })
+  .get('/test', async (req, res) => {
+    const results = await Company.aggregate([
+      {
+        $match: { name: { $regex: 'Nintendo' } }
+      },
+      {
+        $project: { companyId: 1, _id: 0 }
+      }
+    ])
+    const array = results.flat()
+    res.status(200).json(array)
+  })
+  .get('/temp', async (req, res) => {
+    try {
+      const results = await Game.aggregate([
+        {
+          $match: {
+            gameId: {
+              $nin: [47,84,83,95,135,409,483,484,453,402,185,390,137,416,486,187,439,415,1015,1016,1092,1114,1117,1135,1137,1127,1094,1097,1116,1146,1203,1188,1191,1222,1171,1190,1211,1189,1205,1207,1206,554,573,1227,1228,1229,1230,1231,1232,1233,1322,1323,1324]
+            },
+            platforms: {
+              $in: [5,8,21,29]
+            },
+            genres: {
+              $nin: [2,4,5,7,9,11,13,14,15,24,26,30,34,35,36]
+            }
+          },
+        },
+        { $project: { name: 1, coverId: 1, companies: 1, gameId: 1, genres: 1, platforms: 1, _id: 0 } },
+        { $limit: 100 }
+      ])
+      res.status(200).json(results)
     } catch (err) {
       console.error(err)
       res.send("An error occurred").status(500)
@@ -321,7 +321,7 @@ const gamesRouter = Router()
         const token = await Token.findOne({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id) })
         if (!token) {
           const timestamp = new Date()
-          timestamp.setMinutes(timestamp.getMinutes() + 1)
+          timestamp.setHours(timestamp.getHours() + 12)
           await Token.create({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id), expiresAfter: timestamp.toISOString() })
         }
       }
