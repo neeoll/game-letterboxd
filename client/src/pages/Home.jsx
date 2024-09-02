@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { homepageStats } from "../dict"
 import background from "../assets/homepage.png"
 
 const Home = () => {
@@ -44,28 +45,26 @@ const Home = () => {
       <div className="flex flex-col gap-8">
         {/* Title */}
         <div>
-          <div className="relative font-edunline text-7xl text-transparent bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text">
-            <p>Arcade Archives</p>
-          </div>
-          <p className="text-white/75 text-4xl font-light">Discover, Compile, and Review your games</p>
+          <div className="font-edunline text-7xl text-transparent bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text">Arcade Archives</div>
+          <p className="text-white/75 text-3xl font-light">Discover, Compile, and Review your games</p>
         </div>
         {/* Website Stats */}
         <div className="flex gap-8">
           {homeData.counts.map((count, index) => (
-            <div key={index}>
-              <div className="flex items-center justify-center gap-2 text-white"> 
-                <div className="size-2 rounded-sm bg-red-500"></div>
-                <p className="font-light text-white/75">{count.name}</p>
+            <div key={index} className="flex flex-col text-white">
+              <div className="flex items-center justify-center gap-2 h-4"> 
+                {homepageStats.find(stat => stat.id == index).element()}
+                <p className="font-light text-white/75 align-middle">{count.name}</p>
               </div>
-              <p className="text-white text-lg font-semibold">{abbreviateNumber(count.num)}</p>
+              <p className="text-lg font-semibold">{abbreviateNumber(count.num)}</p>
             </div>
           ))}
         </div>
         {/* Register or Login */}
         <div className="flex items-center text-white/75 font-light gap-1">
           <div className="relative group">
-            <div className="absolute size-full blur-sm group-hover:bg-gradient-to-r from-accentPrimary to-accentSecondary" />
-            <Link to={'/register'} className="relative rounded text-white font-normal bg-gradient-to-r from-accentPrimary to-accentSecondary py-1 px-2">Create Account</Link>
+            <div className="absolute inset-0 blur group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary px-2 py-1">Create Account</div>
+            <Link to={'/register'} className="relative rounded font-normal text-white bg-gradient-to-r from-accentPrimary to-accentSecondary px-2 py-1">Create Account</Link>
           </div>
           <p>to get started, or</p>
           <Link to={'/login'} className="text-white">log in</Link>
