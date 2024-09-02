@@ -8,7 +8,7 @@ import userRouter from "./routes/user.js"
 
 const corsConfig = {
   credentials: true,
-  origin: true //process.env.FRONTEND_URL
+  origin: true
 }
 
 const app = express()

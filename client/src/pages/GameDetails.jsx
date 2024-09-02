@@ -147,9 +147,9 @@ const GameDetails = () => {
                 <p className="font-semibold">Other Games in Series</p>
                 <Link to={`/games/series/${details.collections[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
-              <div className="flex h-fit gap-2 px-2 justify-start flex-wrap">
+              <div className="flex h-fit justify-start flex-wrap">
                 {details.collection.map(game => (
-                  <GameCard key={game.gameId} size={"h-32"} game={game} />
+                  <GameCard key={game.gameId} size={"basis-[16.66%]"} game={game} />
                 ))}
               </div>
             </div> : <></>

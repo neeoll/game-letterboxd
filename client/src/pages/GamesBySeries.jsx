@@ -35,9 +35,11 @@ const GamesBySeries = () => {
     gameSearch()
   }, [seriesId, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
-  const updateQueryParameter = (param, value) => {
+  const updateQueryParameter = (params) => {
     const updatedParams = new URLSearchParams(location.search)
-    updatedParams.set(param, value)
+    params.forEach(item => {
+      updatedParams.set(item.params, item.value)
+    })
     setSearchParams(updatedParams)
   }
 
@@ -117,12 +119,12 @@ const GamesBySeries = () => {
       </div>
       {/* Games Display */}
       <div className="flex flex-col justify-center gap-2"> 
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap justify-center">
           {results.map(game =>
-            <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
+            <GameCard key={game.gameId} size={"basis-[12.5%]"} game={game} sortBy={sortBy} />
           )}
         </div>
-        <Pagination page={page} count={count} />
+        <Pagination page={page} count={count} update={updateQueryParameter}/>
       </div>
     </div>
   )

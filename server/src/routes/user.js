@@ -10,26 +10,37 @@ const upload = multer()
 const userRouter = Router()
   .post("/update", [verifyToken, upload.any()], async (req, res) => {
     try {
-      const { username, email, password, image } = req.body
+      const { username, email, image } = req.body
 
-      console.clear()
+      const existingUsername = await User.findOne({ username: username })
+      if (existingUsername) {
+        return res.status(409).json({ error: 'Username already in use' })
+      }
+      const existingEmail = await User.findOne({ email: email })
+      if (existingEmail) {
+        return res.status(409).json({ error: 'Email already in use' })
+      }
 
-      cloudinary.config({
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-        api_key: process.env.CLOUDINARY_API_KEY,
-        api_secret: process.env.CLOUDINARY_API_SECRET,
-        secure: true
-      })
+      const updatedFields = {}
+      if (username != 'null') { updatedFields.username = username }
+      if (email != 'null') { updatedFields.email = email }
 
-      await cloudinary.uploader.destroy(`${req.user.id}-profileIcon`)
-      await cloudinary.uploader.upload(image, { public_id: `${req.user.id}-profileIcon` })
+      if (image != 'null') {
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+          secure: true
+        })
+        
+        await cloudinary.uploader.upload(image, { public_id: `${req.user.id}-profileIcon` })
 
-      const optimizeUrl = cloudinary.url(`${req.user.id}-profileIcon`, {
-        fetch_format: 'auto',
-        quality: 'auto'
-      })
+        const url = cloudinary.url(`${req.user.id}-profileIcon`)
+        updatedFields.profileIcon = url
+      }
 
-      await User.findOneAndUpdate({ email: req.user.email }, { $set: { profileIcon: optimizeUrl }})
+      console.log(updatedFields)
+      await User.findOneAndUpdate({ _id: req.user.id }, { $set: updatedFields })
 
       res.status(200).json({ message: "all good" })
     } catch (err) {

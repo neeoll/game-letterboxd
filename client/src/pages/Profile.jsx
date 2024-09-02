@@ -131,7 +131,7 @@ const Profile = () => {
             </div>
             <div className="flex gap-2 flex-wrap justify-center">
               {user.games.filter(handleFilter).sort(handleSort).map(game => (
-                <GameCard key={game.gameId} size={"h-32"} game={game} />
+                <GameCard key={game.gameId} size={"basis-[50%]"} game={game} />
               ))}
             </div>
           </div>

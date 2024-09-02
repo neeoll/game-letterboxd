@@ -36,8 +36,8 @@ export const queryToPipeline = (query, match = null) => {
       $facet: {
         results: [
           { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, popularity: 1, _id: 0 } },
-          { $skip: page * 35 },
-          { $limit: 35 }
+          { $skip: page * 40 },
+          { $limit: 40 }
         ],
         count: [
           { $count: "count" }

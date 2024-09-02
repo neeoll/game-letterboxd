@@ -276,8 +276,13 @@ const gamesRouter = Router()
                   $expr: { $in: ['$$collectionId', '$collections'] }
                 }
               },
+              {
+                $match: {
+                  gameId: { $ne: parseInt(req.params.id) }
+                }
+              },
               { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
-              { $limit: 10 }
+              { $limit: 6 }
             ],
             as: 'collection'
           }

@@ -5,8 +5,8 @@ import PropTypes from 'prop-types'
 
 const GameCard = (props) => {
   return (
-    <div className="flex flex-col items-center gap-2 text-sm">
-      <Link to={`/game/${props.game.gameId}`} className={`relative ${props.size} group rounded hover:outline outline-3 outline-accentPrimary`}>
+    <div className={`flex flex-col ${props.size} p-1 items-center gap-2 text-sm`}>
+      <Link to={`/game/${props.game.gameId}`} className="relative size-full group rounded hover:outline outline-3 outline-accentPrimary">
         <div className="absolute -inset-1 rounded-lg group-hover:bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm" />
         <img loading="lazy" className="size-full object-cover aspect-[45/64] rounded group-hover:brightness-50" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${props.game.coverId}.jpg`} />
         <p className="flex absolute inset-0 p-1 items-center justify-center text-center font-semibold text-white invisible group-hover:visible">{props.game.name}</p>

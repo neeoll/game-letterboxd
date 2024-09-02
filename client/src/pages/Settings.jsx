@@ -46,8 +46,11 @@ const Settings = () => {
   })
 
   const submitChanges = async () => {
-    const file = await srcToFile(blob, `${blob.split("/")[3]}`, 'image/png')
-    const uri = await fileToBase64(file)
+    let uri = null
+    if (blob) {
+      const file = await srcToFile(blob, `${blob.split("/")[3]}`, 'image/png')
+      uri = await fileToBase64(file)
+    }
 
     const formData = new FormData()
     formData.append('image', uri)
@@ -57,9 +60,7 @@ const Settings = () => {
     axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/update`, formData, {
       withCredentials: true
     })
-    .then(res => {
-      console.log(res.data)
-    })
+    .then(window.location.reload())
     .catch(err => {
       console.error(err)
     })

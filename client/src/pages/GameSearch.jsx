@@ -98,9 +98,9 @@ const GameSearch = () => {
       </div>
       {/* Games Display */}
       <div className="flex flex-col justify-center gap-2"> 
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap justify-center">
           {results.map(game =>
-            <GameCard key={game.gameId} size={"h-40"} game={game} sortBy={sortBy} />
+            <GameCard key={game.gameId} size={"basis-[12.5%]"} game={game} sortBy={sortBy} />
           )}
         </div>
         <Pagination page={page} count={count} update={updateQueryParameter}/>
