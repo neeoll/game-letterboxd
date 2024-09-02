@@ -129,9 +129,9 @@ const Profile = () => {
                 <Sort criteria={profileSortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateSort} />
               </div>
             </div>
-            <div className="flex gap-2 flex-wrap justify-center">
+            <div className="flex flex-wrap w-full justify-center">
               {user.games.filter(handleFilter).sort(handleSort).map(game => (
-                <GameCard key={game.gameId} size={"basis-[50%]"} game={game} />
+                <GameCard key={game.gameId} size={"basis-[12.5%]"} game={game} />
               ))}
             </div>
           </div>
