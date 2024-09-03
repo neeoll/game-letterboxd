@@ -101,13 +101,18 @@ const Navbar = () => {
             className="w-72 h-8 rounded p-2 text-sm text-white bg-neutral-700 focus:outline-none data-[focus]"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
-            onKeyDown={e => { if (e.key === 'Enter') navigate({pathname: "/games/search", search: `?title=${encodeURIComponent(e.target.value)}`}) }}
+            onKeyDown={e => { 
+              if (e.key === 'Enter') {
+                textDebounce("")
+                navigate({pathname: "/games/search", search: `?title=${encodeURIComponent(e.target.value)}`})
+              }
+            }}
             autoComplete="new-password"
           />
           <ComboboxOptions anchor="bottom center" className="w-72 bg-neutral-700 mt-1 rounded">
             <SimpleBar style={{ maxHeight: 300 }}>
               {games.map(game => (
-                <ComboboxOption autoFocus={false} disabled={true} key={game.gameId} value={game.gameId} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
+                <ComboboxOption autoFocus={false} key={game.gameId} value={game.gameId} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
                   <div className="p-1 flex w-full gap-2 items-center border-b border-white/50">
                     <div className="h-10 flex justify-center items-center">
                       <img className="w-full h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${game.coverId}.jpg`} />

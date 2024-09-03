@@ -88,7 +88,6 @@ const Settings = () => {
       <TabGroup vertical defaultIndex={0} className="flex w-full min-h-96">
         <TabList className="flex flex-col rounded bg-neutral-900 text-white">
           <Tab className="p-3 data-[selected]:bg-neutral-800 data-[selected]:rounded-l">Profile</Tab>
-          <Tab className="p-3 data-[selected]:bg-neutral-800 data-[selected]:rounded-l">Security</Tab>
         </TabList>
         <TabPanels className="w-full bg-neutral-800 rounded-r-md">
           {/* Profile Tab */}
@@ -134,10 +133,6 @@ const Settings = () => {
                 </div>
               </div>
             </div>
-          </TabPanel>
-          {/* Security and Password Tab */}
-          <TabPanel>
-            <button onClick={() => sendResetLink()}>Reset Password</button>
           </TabPanel>
         </TabPanels>
       </TabGroup>

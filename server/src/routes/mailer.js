@@ -68,7 +68,7 @@ const mailerRouter = Router()
       res.status(500).json({ error: 'Internal server error' })
     }
   })
-  .post('sendPasswordResetLink', async (req, res) => {
+  .post('/sendPasswordResetLink', async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email })
       if (!user) {

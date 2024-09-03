@@ -121,7 +121,8 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, _id: 0 } },
+              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, popularity: 1, _id: 0 } },
+              { $sort: { popularity: -1 } },
               { $limit: 100 }
             ],
             count: [ { $count: "count" } ]
