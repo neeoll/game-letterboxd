@@ -42,7 +42,7 @@ const mailerRouter = Router()
       res.status(500).json({ error: 'Internal server error' })
     }
   })
-  .get('/resendVerification-verify', async (res, res) => {
+  .get('/resendVerification-verify', async (req, res) => {
     try {
       const decodedToken = jsonwebtoken.decode(req.query.token)
 
