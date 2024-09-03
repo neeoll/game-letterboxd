@@ -10,18 +10,22 @@ const PasswordReset = () => {
   
   const [userEmail, setUserEmail] = useState("")
 
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [confirmCurrentPassword, setConfirmCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   const [changeSuccessful, setChangeSuccessful] = useState(false)
   const [linkExpired, setLinkExpired] = useState(false)
-  const [linkResend, setLinkResend] = useState(false)
 
   useEffect(() => {
+    if (!token) { return navigate('/') }
     async function checkLinkValidity() {
      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyToken?token=${token}`)
-     .then(res => setUserEmail(res.data))
+     .then(res => {
+        if (res.data.status == "exp") {
+          return setLinkExpired(true)
+        }
+        setUserEmail(res.data)
+      })
      .catch(err => console.error(err))
     }
     checkLinkValidity()
@@ -33,26 +37,21 @@ const PasswordReset = () => {
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(newPassword, salt)
 
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/resetPassword`, { userEmail, currentPassword, hash })
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/resetPassword`, { userEmail, hash })
     .then(setChangeSuccessful(true))
     .catch(err => console.error(err))
   }
 
-  const resendLink = async () => {
-    setLinkResend(true)
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/resendLink?token=${token}`)
-  }
-
   if (linkExpired) {
+    setTimeout(() => {
+      navigate("/password-reset-form")
+    }, 5000)
+
     return (
       <div className="flex flex-col w-full justify-center items-center pt-10 text-white">
         <div className="flex flex-col items-center gap-6 text-center bg-neutral-800 px-4 py-10 rounded-md">
-          <p className="text-white/75">The link you received has expired, please try again.</p>
-          {linkResend ? (
-            <p className="text-white/50 text-sm">Link resent, this tab will close automatically in 5 seconds...</p>
-          ) : (
-            <button onClick={() => resendLink()} className="w-48 rounded p-1 bg-gradient-to-r from-accentPrimary to-accentSecondary font-medium">Resend</button>
-          )}
+          <p className="text-white/75">The link you received has expired, please request a new link.</p>
+          <p className="text-white/50 text-sm">Redirecting to the request form page in 5 seconds...</p>
         </div>
       </div>
     )
@@ -79,29 +78,29 @@ const PasswordReset = () => {
       {/* Register Form */}
       <form className={`group/form`} onSubmit={submitPasswordChange}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">
-          {/* Current Password */}
+          {/* New Password */}
           <div className="flex flex-col w-full items-start">
-            <p className="text-sm text-white/50 font-extralight">Current Password</p>
+            <p className="text-sm text-white/50 font-extralight">New Password</p>
             <input 
-              onChange={(e) => setCurrentPassword(e.target.value)}
+              onChange={(e) => setNewPassword(e.target.value)}
               type="password"
               className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
               maxLength={16}
               required 
             />
           </div>
-          {/* Current Password Confirmation */}
+          {/* Confirm Password */}
           <div className="flex flex-col w-full items-start">
-            <p className="text-sm text-white/50 font-extralight">Confirm Current Password</p>
+            <p className="text-sm text-white/50 font-extralight">Confirm Password</p>
             <input 
-              onChange={(e) =>  setConfirmCurrentPassword(e.target.value)}
+              onChange={(e) =>  setConfirmPassword(e.target.value)}
               type="password"
               className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none peer"
               required 
             />
           </div>
-          <div className={`flex flex-col ${currentPassword == "" || confirmCurrentPassword == "" ? "invisible h-0" : "visible h-fit"}`}>
-            {confirmCurrentPassword != currentPassword ? (
+          <div className={`flex flex-col ${newPassword == "" || confirmPassword == "" ? "invisible h-0" : "visible h-fit"}`}>
+            {newPassword != confirmPassword ? (
               <div className="flex gap-2 text-pink-500 items-center">
                 <RxCross2 className="text-lg" />
                 <p>Passwords do not match</p>
@@ -113,19 +112,8 @@ const PasswordReset = () => {
               </div>
             )}
           </div>
-          {/* Password */}
-          <div className="flex flex-col w-full items-start">
-            <p className="text-sm text-white/50 font-extralight">New Password</p>
-            <input 
-              onChange={(e) => setNewPassword(e.target.value)}
-              type="password"
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
-              minLength={6}
-              required 
-            />
-          </div>
-          <div className={`relative w-96 group ${currentPassword == confirmCurrentPassword ? "" : "pointer-events-none brightness-50"} group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
-            <div type="submit" className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Register</div>
+          <div className={`relative w-96 group ${newPassword == confirmPassword ? "" : "pointer-events-none brightness-50"} group-invalid/form:pointer-events-none group-invalid/form:brightness-50`}>
+            <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Change Password</div>
             <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Change Password</button>
           </div>
         </div>

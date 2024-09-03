@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
-import { gameActions, platforms, genres } from "../dict"
+import { platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
-import { gameDetailsTimestamp, getYearFromTimestamp } from "../utils"
-import { calculateRatingDistribution } from "../utils"
+import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution } from "../utils"
 import axios from 'axios'
 
 const GameDetails = () => {
@@ -78,8 +77,8 @@ const GameDetails = () => {
                   <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                   <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
                   <div className="flex gap-2">
-                    {gameActions.map(action => (
-                      <button onClick={() => addGame(action.status, details.gameId)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
+                    {gameActions.map((action, index) => (
+                      <button key={index} onClick={() => addGame(action.status, details.gameId)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
                         {action.icon()}
                         <p>{action.name}</p>
                       </button>
@@ -200,5 +199,28 @@ const GameDetails = () => {
     </div>
   )
 }
+
+const gameActions = [
+  {
+    status: "playing",
+    name: "Playing",
+    icon: () => <IoLogoGameControllerB size={"1.25em"}/>
+  },
+  {
+    status: "played",
+    name: "Played",
+    icon: () => <IoIosPlay size={"1.25em"}/>
+  },
+  {
+    status: "backlog",
+    name: "Backlog",
+    icon: () => <IoIosBookmarks size={"1.25em"}/>
+  },
+  {
+    status: "wishlist",
+    name: "Wishlist",
+    icon: () => <IoIosGift size={"1.25em"}/>
+  },
+]
 
 export default GameDetails

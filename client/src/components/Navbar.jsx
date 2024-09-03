@@ -5,7 +5,6 @@ import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _ from "lodash"
-import { navbarDestinations } from '../dict'
 import axios from 'axios'
 
 const Navbar = () => {
@@ -129,5 +128,10 @@ const Navbar = () => {
     </nav>
   )
 }
+
+const navbarDestinations = [
+  { route: "/profile", name: "Profile" },
+  { route: "/settings", name: "Settings" }
+]
 
 export default Navbar

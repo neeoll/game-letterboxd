@@ -2,8 +2,11 @@ import { useEffect, useState } from "react"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import CropDialog from "../components/CropDialog"
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 const Settings = () => {
+  const navigate = useNavigate()
+
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 

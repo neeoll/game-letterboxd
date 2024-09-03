@@ -13,15 +13,20 @@ const VerifyEmail = () => {
   useEffect(() => {
     async function verify() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyEmail?token=${token}`)
-      .then(setVerificationSuccessful(true))
-      .catch(setLinkExpired(true))
+      .then(res => {
+        if (res.data.status == "exp") { return setLinkExpired(true) }
+        setVerificationSuccessful(true)
+      })
+      .catch(err => {
+        console.error(err)
+      })
     }
     verify()
   }, [token])
 
   const resendLink = async () => {
     setLinkResend(true)
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/resendLink?token=${token}`)
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/mailer/resendVerification-verify?token=${token}`)
   }
 
   if (linkResend) {

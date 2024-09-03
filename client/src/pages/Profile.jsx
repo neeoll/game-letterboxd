@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import { RxStarFilled } from "react-icons/rx"
 import { Link, useNavigate } from "react-router-dom"
-import { gameStatuses } from "../dict"
 import { DropdownSearch, GameCard, Sort } from "../components"
-import { genres, platforms, profileSortCriteria } from "../dict"
+import { genres, platforms } from "../dict"
 import { calculateRatingDistribution } from "../utils"
 import axios from 'axios'
-import { countOccurrences } from "../utils/countOccurrences"
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -155,5 +153,46 @@ const Profile = () => {
     </div>
   )
 }
+
+const countOccurrences = (array) => {
+  const countMap = {}
+
+  array.forEach(item => {
+    if (countMap[item.name]) { countMap[item.name]++ } 
+    else { countMap[item.name] = 1 }
+  })
+
+  const sortedArray = Object.entries(countMap).sort((a, b) => b[1] - a[1])
+  return sortedArray.slice(0, 5)
+}
+
+const gameStatuses = [
+  {
+    id: 1,
+    name: "Played",
+    value: "played"
+  },
+  {
+    id: 2,
+    name: "Playing",
+    value: "playing"
+  },
+  {
+    id: 3,
+    name: "Backlog",
+    value: "backlog"
+  },
+  {
+    id: 4,
+    name: "Wishlist",
+    value: "wishlist"
+  },
+]
+
+const profileSortCriteria = [
+  { id: 1, name: "Date Added", value: "lastUpdated" },
+  { id: 2, name: "Name", value: "name" },
+  { id: 3, name: "Release Date", value: "releaseDate" }
+]
 
 export default Profile

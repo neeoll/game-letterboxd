@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
@@ -29,7 +29,7 @@ const Register = () => {
       }
     })
     .catch(err => {
-      window.location.reload()
+      if (err.response.status == 500) { window.location.reload() }
     })
   }, [])
 
@@ -55,7 +55,7 @@ const Register = () => {
   }
 
   const resendLink = () => {
-
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/mailer/resendVerification-register`, { email })
   }
 
   if (registerSuccessful) {

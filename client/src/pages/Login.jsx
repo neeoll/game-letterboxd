@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 import axios from 'axios'
@@ -23,7 +23,7 @@ const Login = () => {
       }
     })
     .catch(err => {
-      window.location.reload()
+      if (err.response.status == 500) { window.location.reload() }
     })
   }, [])
 
@@ -40,6 +40,7 @@ const Login = () => {
       withCredentials: true
     })
     .then(res => {
+      console.log(res)
       window.location.reload()
     })
     .catch(err => {

@@ -18,6 +18,7 @@ const SendResetLink = () => {
       }
     })
     .catch(err => {
+      console.error(err)
       window.location.reload()
     })
   }, [])
@@ -25,13 +26,13 @@ const SendResetLink = () => {
   async function submit(e) {
     e.preventDefault()
 
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/sendPasswordResetLink`, { email })
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/mailer/sendPasswordResetLink`, { email })
     .then(setResetLinkSent(true))
     .catch(err => console.error(err))
   }
 
   const resendLink = () => {
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/sendPasswordResetLink`, { email })
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/mailer/sendPasswordResetLink`, { email })
   }
 
   if (resetLinkSent) {

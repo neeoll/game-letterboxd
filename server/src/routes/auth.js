@@ -55,7 +55,7 @@ const authRouter = Router()
         from: 'noreply@arcadearchive.com',
         to: user.email,
         subject: "Hello from Arcade Archive!",
-        text: `Follow the link to verify your account ${process.env.FRONTEND_URL}/verify?token=${token}`,
+        text: `Follow the link to verify your account\n${process.env.FRONTEND_URL}/verify-email?token=${token}`,
       }
   
       transporter.sendMail(mailOptions, (error, info) => {
@@ -118,7 +118,7 @@ const authRouter = Router()
       jsonwebtoken.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
           if (err.expiredAt) {
-            return res.status(401).json({ error: "Token expired", status: "exp" })
+            return res.status(200).json({ message: "Token expired", status: "exp" })
           }
         }
         await User.updateOne({ _id: decoded.id }, { $set: {verified: true} })
@@ -129,87 +129,28 @@ const authRouter = Router()
       res.status(500).json({ error: "Internal server error" })
     }
   })
-  .get('/resendLink', async (req, res) => {
-    try {
-      const decodedToken = jsonwebtoken.decode(req.query.token)
-
-      const user = await User.findOne({ _id: decodedToken.id })
-      const token = jsonwebtoken.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15 minutes' })
-      const mailOptions = {
-        from: 'noreply@arcadearchive.com',
-        to: user.email,
-        subject: "Hello from Arcade Archive!",
-        text: `Follow the link to verify your account ${process.env.FRONTEND_URL}/verify?token=${token}`,
-      }
-  
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          res.status(400).json({ error: error });
-        } else {
-          res.status(200).json({ message: info.response })
-        }
-      })
-
-      res.status(200).json({ message: "Verification link sent", status: "ok" })
-    } catch (err) {
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  })
-  .post('/sendPasswordResetLink', async (req, res) => {
-    try {
-      const user = await User.findOne({ email: req.body.email })
-      if (!user) {
-        return res.status(401).json({ error: "Invalid email" })
-      }
-
-      const token = jsonwebtoken.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15 minutes' })
-
-      const mailOptions = {
-        from: 'noreply@arcadearchive.com',
-        to: user.email,
-        subject: "Arcade Archive Password Reset",
-        text: `Follow the link to reset your password:\n${process.env.FRONTEND_URL}/reset-password?token=${token}`,
-      }
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          res.status(400).json({ error: error });
-        } else {
-          res.status(200).json({ message: info.response })
-        }
-      })
-
-      res.status(200).json({ message: "Password reset link sent", status: "ok" })
-    } catch (err) {
-      res.status(500).json({ error: "Internal server error" })
-    }
-  })
   .get('/verifyToken', async (req, res) => {
     try {
-      const decodedToken = jsonwebtoken.decode(req.query.token)
-      const user = await User.findOne({ _id: decodedToken.id })
-      if (!user) {
-        return res.status(401).json({ error: "User doesn't exist"})
-      }
-      res.status(200).json(user.email)
+      const { token } = req.query
+
+      jsonwebtoken.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+        if (err) {
+          if (err.expiredAt) {
+            return res.status(200).json({ message: "Token expired", status: "exp" })
+          }
+        }
+
+        const user = await User.findOne({ _id: decoded.id })
+        return res.status(200).json({ email: user.email, status: "ok" })
+      })
     } catch (err) {
       res.status(500).json({ error: "Internal server error" })
     }
   })
   .post('/resetPassword', async (req, res) => {
     try {
-      const { userEmail, currentPassword, hash } = req.body
-      const user = await User.findOne({ email: userEmail }, { games: 0, reviews: 0, __v: 0 })
-      console.log(user)
-
-      const passwordMatch = bcrypt.compareSync(currentPassword, user.password)
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Invalid credentials' })
-      }
-
-      user.password = hash
-      await user.save()
-
+      const { userEmail, hash } = req.body
+      await User.findOneAndUpdate({ email: userEmail }, { $set: { password: hash } })
       res.status(200).json({ message: "Password successfully changed" })
     } catch (err) {
       console.error(err)

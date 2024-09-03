@@ -1,7 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { homepageStats } from "../dict"
 import background from "../assets/homepage.png"
 
 const Home = () => {
@@ -75,7 +74,7 @@ const Home = () => {
           <p className="text-white/75 text-2xl font-light">Popular Games</p>
           <div className="flex w-full justify-start items-center">
             {homeData.games.map(game => (
-              <Link to={`/game/${game.gameId}`} className={`relative basis-[10%] m-1 group rounded hover:outline outline-3 outline-accentPrimary`}>
+              <Link key={game.gameId} to={`/game/${game.gameId}`} className={`relative basis-[10%] m-1 group rounded hover:outline outline-3 outline-accentPrimary`}>
                 <div className="absolute -inset-1 rounded-lg group-hover:bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm" />
                 <img loading="lazy" className="size-full object-cover aspect-[45/64] rounded group-hover:brightness-50" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
                 <p className="flex absolute inset-0 p-1 items-center justify-center text-center font-semibold text-white invisible group-hover:visible">{game.name}</p>
@@ -87,5 +86,26 @@ const Home = () => {
     </div>
   )
 }
+
+const homepageStats = [
+  {
+    id: 0,
+    element: () => (
+      <div className="size-2 rounded-sm bg-green-500" />
+    )
+  },
+  {
+    id: 1,
+    element: () => (
+      <div className="size-2 rounded-sm bg-red-500" />
+    )
+  },
+  {
+    id: 2,
+    element: () => (
+      <div className="size-2 rounded-sm bg-sky-500" />
+    )
+  }
+]
 
 export default Home
