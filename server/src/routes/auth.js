@@ -121,7 +121,7 @@ const authRouter = Router()
             return res.status(200).json({ message: "Token expired", status: "exp" })
           }
         }
-        await User.updateOne({ _id: decoded.id }, { $set: {verified: true} })
+        await User.updateOne({ _id: decoded.id }, { $set: { verified: true } })
         res.status(200).json({ message: "Email successfully verified", status: "ok" })
       })
     } catch (err) {
@@ -150,7 +150,7 @@ const authRouter = Router()
   .post('/resetPassword', async (req, res) => {
     try {
       const { userEmail, hash } = req.body
-      await User.findOneAndUpdate({ email: userEmail }, { $set: { password: hash } })
+      await User.updateOne({ email: userEmail }, { $set: { password: hash } })
       res.status(200).json({ message: "Password successfully changed" })
     } catch (err) {
       console.error(err)
