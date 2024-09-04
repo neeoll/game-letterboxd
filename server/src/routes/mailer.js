@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 })
 
 const mailerRouter = Router()
-  .get('resendVerification-register', async (req, res) => {
+  .get('/resendVerification-register', async (req, res) => {
     try {
       const user = await User.findOne({ email: req.body.email })
 

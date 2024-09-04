@@ -24,7 +24,7 @@ const PasswordReset = () => {
         if (res.data.status == "exp") {
           return setLinkExpired(true)
         }
-        setUserEmail(res.data)
+        setUserEmail(res.data.email)
       })
      .catch(err => console.error(err))
     }
