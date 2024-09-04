@@ -77,7 +77,7 @@ const Register = () => {
   }
 
   return(
-    <div className="flex flex-col gap-4 w-full justify-center items-center pb-2">
+    <div className="flex flex-col gap-4 w-full h-full justify-center items-center pb-2">
       {/* Register Form */}
       <form className={`group/form`} onSubmit={submitRegister}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">

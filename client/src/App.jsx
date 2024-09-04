@@ -1,5 +1,5 @@
 import SimpleBar from "simplebar-react"
-import { Navbar } from "./components"
+import { Footer, Navbar } from "./components"
 import { Outlet } from "react-router-dom"
 
 const SimpleBarStyle = {
@@ -9,12 +9,13 @@ const SimpleBarStyle = {
 
 const App = () => {
   return (
-    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-none">
+    <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-hidden">
       <SimpleBar style={SimpleBarStyle}>
         <Navbar />
-        <div className="pt-32 px-52">
+        <div className="mt-32 px-52 min-h-screen">
           <Outlet />
         </div>
+        <Footer />
       </SimpleBar>
     </div>
   )

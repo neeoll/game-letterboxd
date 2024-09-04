@@ -21,17 +21,17 @@ const FilterSidebar = (props) => {
 
   const clearQueryParams = () => {
     setYear(0)
-    setGenre(0)
-    setPlatform(0)
+    setGenre(-1)
+    setPlatform(-1)
   }
 
   return (
     <div className="flex justify-center items-center">
       <button onClick={() => setSidebarOpen(true)} className="hover:bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text hover:text-transparent text-sm text-white/50 font-bold">Filters</button>
       <Dialog open={sidebarOpen} onClose={() => setSidebarOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
+        <div className="fixed inset-0 flex w-screen items-center justify-center bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
           <DialogPanel>
-            <div className={`flex flex-col absolute inset-0 h-screen w-60 py-6 px-4 gap-4 rounded-r-lg bg-neutral-900 text-white/75`}>
+            <div className={`flex flex-col w-96 p-6 gap-4 rounded-lg bg-neutral-900 text-white/75`}>
               {/* Year Filter */}
               <div>
                 <p className="text-xl font-light pb-1">Release Year</p>
@@ -57,12 +57,12 @@ const FilterSidebar = (props) => {
                 <p className="text-xl font-light pb-1">Platform</p>
                 <DropdownSearch array={props.platforms} value={currentPlatform} setValue={setPlatform} />
               </div>
-              <div className="flex flex-col gap-2">
-                <div className={`relative group`}>
+              <div className="flex gap-2">
+                <div className="relative group basis-1/2">
                   <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1"></div>
                   <button onClick={() => applyQueryParams()} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Apply Filters</button>
                 </div>
-                <button onClick={() => clearQueryParams()} className="w-full h-6 rounded bg-neutral-600 text-white hover:bg-red-700">Clear</button>
+                <button onClick={() => clearQueryParams()} className="basis-1/2 rounded bg-neutral-600 text-white hover:bg-red-700">Clear</button>
               </div>
             </div>
           </DialogPanel>

@@ -41,10 +41,10 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
       </div>
       {/* Main Content */}
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 pb-16">
         {/* Title */}
         <div>
-          <div className="font-edunline text-7xl text-transparent bg-gradient-to-t from-accentPrimary to-accentSecondary bg-clip-text">Arcade Archives</div>
+          <div className="font-edunline text-7xl text-transparent bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text">Arcade Archives</div>
           <p className="text-white/75 text-3xl font-light">Discover, Compile, and Review your games</p>
         </div>
         {/* Website Stats */}

@@ -49,7 +49,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full justify-center items-center pb-2">
+    <div className="flex flex-col gap-2 w-full h-full justify-center items-center pb-2">
       <form className="group/form" onSubmit={submitLogin}>
         <div className="flex flex-col w-96 justify-center items-center gap-2">
           {/* Email or Username */}
