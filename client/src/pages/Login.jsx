@@ -18,6 +18,7 @@ const Login = () => {
       withCredentials: true
     })
     .then(res => {
+      document.title = "Login | Arcade Archive"
       if (res.data == true) {
         return navigate('/profile')
       }

@@ -25,6 +25,7 @@ const GamesByCompany = () => {
     async function gameSearch() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/company/${companyId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
+        document.title = `${res.data.name} | Arcade Archive`
         setCompanyDetails({ name: res.data.name, description: res.data.description })
         setCount(res.data.games[0].count[0].count)
         setResults(res.data.games[0].results)

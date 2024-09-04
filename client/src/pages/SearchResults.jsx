@@ -15,6 +15,7 @@ const SearchResults = () => {
     async function gameSearch() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${encodeURIComponent(searchText)}`)
       .then(res => {
+        document.title = `Search - ${searchText}`
         setCount(res.data.count[0].count)
         setResults(res.data.results)
         setLoading(false)

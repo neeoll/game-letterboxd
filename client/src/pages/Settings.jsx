@@ -22,6 +22,7 @@ const Settings = () => {
         withCredentials: true
       })
       .then(res => {
+        document.title = "Settings | Arcade Archive"
         setUser(res.data)
         setLoading(false)
       })

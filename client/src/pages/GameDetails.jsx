@@ -17,6 +17,7 @@ const GameDetails = () => {
     async function getDetails() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { withCredentials: true })
       .then(res => {
+        document.title = `${res.data.data.name}`
         setDetails(res.data.data)
         setUser(res.data.user)
         setLoading(false)
@@ -38,7 +39,7 @@ const GameDetails = () => {
   }
 
   return ( 
-    <div className="mt-10 pb-8 text-white">
+    <div className="pb-8 text-white">
       {/* Background Image */}
       <div className="absolute -z-20 inset-0 bg-neutral-700">
         {details.artworks.length != 0 ?
@@ -48,13 +49,15 @@ const GameDetails = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
       </div>
       {/* Page Content */}
-      <div className="grid grid-cols-5 grid-rows-4 auto-cols-max auto-rows-max">
+      <div className="grid grid-cols-5 grid-auto-rows gap-x-2">
         {/* Cover */}
-        <div className="row-span-1 col-span-1 flex flex-col items-center justify-end">
-          <img className="w-40 aspect-[45/64] rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${details.coverId}.jpg`} />
+        <div className="col-span-1 flex items-end justify-center">
+          <div className="basis-3/4">
+            <img className="size-full aspect-[45/64] rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${details.coverId}.jpg`} />
+          </div>
         </div>
         {/* Title */}
-        <div className="row-span-1 col-span-4 flex flex-col gap-2 px-2 justify-end">
+        <div className="col-span-4 flex flex-col gap-2 px-2 justify-end">
           <h1 className="text-5xl font-semibold">{details.name}</h1>
           <div className="flex gap-2 text-xl text-white/50">
             <p>{details.releaseDate > Date.now() / 1000 ? "Releases" : "Released"} on</p> 
@@ -68,35 +71,35 @@ const GameDetails = () => {
           </div>
         </div>
         {/* Review Dialog and Score Content */}
-        <div className="row-span-2 col-span-1 flex flex-col p-4 gap-2">
+        <div className="col-span-1 flex flex-col p-4 gap-2">
           <div className="relative flex flex-col gap-1">
-            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm ${user ? "-mt-12" : ""}`} />
+            <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
             {user ? (
-              <div className="relative -mt-12">
-                <div className="flex flex-col items-center rounded p-2 gap-2 pt-12 bg-neutral-800">
-                  <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
-                  <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
-                  <div className="flex gap-2">
-                    {gameActions.map((action, index) => (
-                      <button key={index} onClick={() => addGame(action.status, details.gameId)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
-                        {action.icon()}
-                        <p>{action.name}</p>
-                      </button>
-                    ))}
-                  </div>
+              <div className="relative flex flex-col items-center gap-2 bg-neutral-800 rounded p-4">
+                <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
+                <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
+                <div className="flex gap-2">
+                  {gameActions.map((action, index) => (
+                    <button key={index} onClick={() => addGame(action.status, details.gameId)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
+                      {action.icon()}
+                      <p>{action.name}</p>
+                    </button>
+                  ))}
                 </div>
-              </div> 
+              </div>
               ) : (
               <></>
             )}
-            <div className="relative flex flex-col gap-2 text-white items-center bg-neutral-800 rounded p-2">
-              <p className="font-semibold text-md text-white/50">Avg. Rating</p> 
-              <p className="font-bold text-3xl">{(details.avgRating || 0).toFixed(1)}</p>
+            <div className="relative flex flex-col gap-2 text-white bg-neutral-800 rounded p-2">
+              <div className="flex flex-col justify-center items-center">
+                <p className="font-light text-white/50">Avg. Rating:</p> 
+                <p className="font-semibold text-lg">{details.avgRating.toFixed(1)}</p>
+              </div>
               <div className="flex flex-wrap w-full text-white/25 justify-center items-center text-center">
-                <div className="w-full flex h-24 gap-1">
+                <div className="w-full flex h-24 gap-1 justify-center">
                   {calculateRatingDistribution(details.reviews).map(rating => (
-                    <div key={rating.value} className="flex flex-col w-1/5 justify-end">
-                      <div className={`bg-amber-400 rounded-t`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 10}px)`}} />
+                    <div key={rating.value} className="flex flex-col w-6 justify-end">
+                      <div className={`bg-amber-400 rounded`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 5}px)`}} />
                     </div>
                   ))}
                 </div>
@@ -135,7 +138,7 @@ const GameDetails = () => {
           </div>
         </div>
         {/* Summary and Series */}
-        <div className="row-span-2 col-span-3">
+        <div className="col-span-3 h-fit">
           <div className="flex flex-col gap-2 p-2">
             <p className="text-white/75">{details.summary}</p>
             <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
@@ -155,7 +158,7 @@ const GameDetails = () => {
           }
         </div>
         {/* Platforms and Genres */}
-        <div className="row-span-2 col-span-1 flex flex-col gap-4 px-1">
+        <div className="col-span-1 flex flex-col gap-4 px-1">
           {/* Platforms */}
           <div className="flex flex-col gap-2">
             <p className="font-bold">Playable on:</p>
@@ -185,16 +188,16 @@ const GameDetails = () => {
             </div>
           </div>
         </div>
-        <div className="row-span-3 col-span-1" />
+        <div className="col-span-1" />
         {/* Reviews */}
-        <div className="row-span-3 col-span-3">
+        <div className="col-span-3">
           <div className="flex flex-col gap-4">
             {details.reviews.map((review, index) => (
               <GameReview key={index} review={review} />
             ))}
           </div>
         </div>
-        <div className="row-span-3 col-span-1" />
+        <div className="col-span-1" />
       </div>
     </div>
   )

@@ -22,6 +22,7 @@ const GameSearch = () => {
     async function gameSearch() {
       axios.get(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
+        document.title = "Games | Arcade Archive"
         setCount(res.data.count[0].count)
         setResults(res.data.results)
         setLoading(false)

@@ -24,6 +24,7 @@ const Register = () => {
       withCredentials: true
     })
     .then(res => {
+      document.title = "Register | Arcade Archive"
       if (res.data == true) {
         return navigate('/profile')
       }
