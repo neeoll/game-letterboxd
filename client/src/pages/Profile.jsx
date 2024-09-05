@@ -22,9 +22,7 @@ const Profile = () => {
 
   useEffect(() => {
     async function getUserInfo() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profileData`, {
-        withCredentials: true
-      })
+      axios.get('/user/profileData')
       .then(res => {
         document.title = `${res.data.username}'s Profile | Arcade Archive`
         setGenreCounts(countOccurrences(res.data.games.map(game => game.genres).flat().map(item => genres.find(genre => genre.id == item))))

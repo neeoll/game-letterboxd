@@ -14,9 +14,7 @@ const Login = () => {
   const [failedLogin, setFailedLogin] = useState(false)
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
-      withCredentials: true
-    })
+    axios.get('/auth/checkAuthentication')
     .then(res => {
       document.title = "Login | Arcade Archive"
       if (res.data == true) {
@@ -37,9 +35,7 @@ const Login = () => {
     if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
 
     const data = { emailOrUsername: emailOrUsername, password: password }
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, data, {
-      withCredentials: true
-    })
+    axios.post('/auth/login', data)
     .then(res => {
       console.log(res)
       window.location.reload()

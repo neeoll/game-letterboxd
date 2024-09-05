@@ -12,7 +12,7 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     async function verify() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyEmail?token=${token}`)
+      axios.get(`/auth/verifyEmail?token=${token}`)
       .then(res => {
         if (res.data.status == "exp") { return setLinkExpired(true) }
         setVerificationSuccessful(true)
@@ -26,7 +26,7 @@ const VerifyEmail = () => {
 
   const resendLink = async () => {
     setLinkResend(true)
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/mailer/resendVerification-verify?token=${token}`)
+    axios.get(`/mailer/resendVerification-verify?token=${token}`)
   }
 
   if (linkResend) {

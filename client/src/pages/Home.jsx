@@ -9,7 +9,7 @@ const Home = () => {
 
   useEffect(() => {
     async function getHomeData() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/home`)
+      axios.get('/game/home')
       .then(res => {
         document.title = "Arcade Archive"
         setHomeData(res.data)

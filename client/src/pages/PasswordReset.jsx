@@ -19,7 +19,7 @@ const PasswordReset = () => {
   useEffect(() => {
     if (!token) { return navigate('/') }
     async function checkLinkValidity() {
-     axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyToken?token=${token}`)
+     axios.get(`/auth/verifyToken?token=${token}`)
      .then(res => {
         if (res.data.status == "exp") {
           return setLinkExpired(true)
@@ -37,7 +37,7 @@ const PasswordReset = () => {
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(newPassword, salt)
 
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/resetPassword`, { userEmail, hash })
+    axios.post('/auth/resetPassword', { userEmail, hash })
     .then(setChangeSuccessful(true))
     .catch(err => console.error(err))
   }

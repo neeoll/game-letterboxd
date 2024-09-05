@@ -13,7 +13,7 @@ const SearchResults = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${encodeURIComponent(searchText)}`)
+      axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
       .then(res => {
         document.title = `Search - ${searchText}`
         setCount(res.data.count[0].count)

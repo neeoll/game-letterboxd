@@ -1,9 +1,19 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import axios from "axios"
 import "./index.css"
 import App from "./App"
 import * as Pages from './pages'
+
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
+axios.defaults.withCredentials = true
+
+axios.interceptors.response.use(function (response) {
+  return response
+}, function (error) {
+  return Promise.reject(error)
+})
 
 const router = createBrowserRouter([
   {

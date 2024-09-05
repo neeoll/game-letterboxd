@@ -9,9 +9,7 @@ const SendResetLink = () => {
   const [resetLinkSent, setResetLinkSent] = useState(false)
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
-      withCredentials: true
-    })
+    axios.get('/auth/checkAuthentication')
     .then(res => {
       if (res.data == true) {
         return navigate('/profile')
@@ -26,13 +24,13 @@ const SendResetLink = () => {
   async function submit(e) {
     e.preventDefault()
 
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/mailer/sendPasswordResetLink`, { email })
+    axios.post('/mailer/sendPasswordResetLink', { email })
     .then(setResetLinkSent(true))
     .catch(err => console.error(err))
   }
 
   const resendLink = () => {
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/mailer/sendPasswordResetLink`, { email })
+    axios.post('/mailer/sendPasswordResetLink', { email })
   }
 
   if (resetLinkSent) {

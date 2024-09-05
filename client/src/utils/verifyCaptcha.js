@@ -4,7 +4,7 @@ export const verifyCaptcha = async (captchaValue) => {
   if (!captchaValue) {
     return alert('Please verify the reCAPTCHA')
   }
-  const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/verifyCaptcha`, {captchaValue})
+  const response = await axios.post(`/auth/verifyCaptcha`, {captchaValue})
   .then(res => { return res.data.data.success ? true : false })
   .catch(err => console.error(err))
 

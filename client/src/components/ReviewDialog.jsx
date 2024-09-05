@@ -18,9 +18,7 @@ const ReviewDialog = (props) => {
 
   const submit = async () => {
     const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/game/review`, data, {
-      withCredentials: true
-    })
+    axios.post('/game/review', data)
     .then(setDialogOpen(false))
     .catch(err => console.error(err))
   }

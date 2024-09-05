@@ -17,15 +17,8 @@ const Navbar = () => {
 
   useEffect(() => {
     async function getUserInfo() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
-        withCredentials: true
-      })
+      axios.get('/auth/getUser')
       .then(res => setUserData(res.data))
-      .catch(err => {
-        if (err.response.status == 401) {
-          return
-        }
-      })
     }
     getUserInfo()
     return
@@ -33,7 +26,7 @@ const Navbar = () => {
 
   const getGames = async (searchText) => {
     if (searchText == "") return
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/search?title=${encodeURIComponent(searchText)}`)
+    axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
     .then(res => setGames(res.data.results))
     .catch(err => console.error(err))
   }
@@ -42,9 +35,7 @@ const Navbar = () => {
 
   function logout() {
     setMenuOpen(false)
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
-      withCredentials: true
-    })
+    axios.get('/auth/logout')
     .then(window.location.reload())
     .catch(err => console.error(err))
   }

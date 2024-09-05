@@ -15,21 +15,34 @@ const GameDetails = () => {
   
   useEffect(() => {
     async function getDetails() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/${gameId}`, { withCredentials: true })
+      /* 'https://httpstat.us/500', { withCredentials: false } */
+      /* `/game/${gameId}` */
+      axios.get(`/game/${gameId}`)
       .then(res => {
         document.title = `${res.data.data.name}`
         setDetails(res.data.data)
         setUser(res.data.user)
         setLoading(false)
       })
-      .catch(err => console.error(err))
+      .catch(error => {
+        if (error.response) { 
+          // client received an error response (5xx, 4xx)
+          console.error("Server error: ", error.response.status)
+        } else if (error.request) { 
+          // client never received a response, or request never left 
+          console.error("Network error: ", error.request)
+        } else { 
+          // anything else
+          console.error("Error: ", error.message)
+        } 
+      })
     }
     getDetails()
     return
   }, [gameId])
 
   async function addGame(status, id) {
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/game/addGame`, { status, id }, { withCredentials: true })
+    axios.post('/game/addGame', { status, id })
   }
 
   if (loading) {

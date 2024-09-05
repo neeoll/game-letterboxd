@@ -20,7 +20,7 @@ const GameSearch = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      axios.get(`/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
         document.title = "Games | Arcade Archive"
         setCount(res.data.count[0].count)

@@ -23,7 +23,7 @@ const GamesBySeries = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/game/series/${seriesId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      axios.get(`/game/series/${seriesId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
         document.title = `${res.data.name} | Arcade Archive`
         setSeriesDetails({ name: res.data.name })

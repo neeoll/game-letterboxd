@@ -18,9 +18,7 @@ const Settings = () => {
 
   useEffect(() => {
     async function getUserData() {
-      axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/getUser`, {
-        withCredentials: true
-      })
+      axios.get('/auth/getUser')
       .then(res => {
         document.title = "Settings | Arcade Archive"
         setUser(res.data)
@@ -61,21 +59,11 @@ const Settings = () => {
     formData.append('username', username)
     formData.append('email', email)
     
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/update`, formData, {
-      withCredentials: true
-    })
+    axios.post('/user/update', formData)
     .then(window.location.reload())
     .catch(err => {
       console.error(err)
     })
-  }
-
-  const sendResetLink = () => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/sendPasswordResetLink`, {
-      withCredentials: true
-    })
-    .then(res =>  console.log(res.data))
-    .catch(err => console.error(err))
   }
 
   if (loading) {

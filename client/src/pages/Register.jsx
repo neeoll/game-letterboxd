@@ -20,9 +20,7 @@ const Register = () => {
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/auth/checkAuthentication`, {
-      withCredentials: true
-    })
+    axios.get('/auth/checkAuthentication')
     .then(res => {
       document.title = "Register | Arcade Archive"
       if (res.data == true) {
@@ -47,7 +45,7 @@ const Register = () => {
 
     const data = { username: username, email: email, password: hash }
 
-    axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, data)
+    axios.post('/auth/register', data)
     .then(setRegisterSuccessful(true))
     .catch(err => {
       if (err.response.data.error == 'Username already in use') { setUsernameValid(false) }
@@ -56,7 +54,7 @@ const Register = () => {
   }
 
   const resendLink = () => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/mailer/resendVerification-register`, { email })
+    axios.get('/mailer/resendVerification-register', { email })
   }
 
   if (registerSuccessful) {
