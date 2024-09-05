@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const collectionSchema = new mongoose.Schema({
+const seriesSchema = new mongoose.Schema({
   seriesId: { 
     type: Number, 
     required: true 
@@ -12,4 +12,4 @@ const collectionSchema = new mongoose.Schema({
   }
 })
 
-export default mongoose.model('Collection', collectionSchema)
+export default mongoose.model('Series', seriesSchema)

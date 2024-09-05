@@ -2,7 +2,7 @@ import { Router } from "express"
 import 'dotenv/config'
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
-import Collection from "../db/models/Collection.js"
+import Series from "../db/models/Series.js"
 import Company from "../db/models/Company.js"
 import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
@@ -179,7 +179,7 @@ const gamesRouter = Router()
             _id: '$_id',
             gameId: { $first: '$gameId' },
             companies: { $first: '$companies' },
-            collections: { $first: '$collections' },
+            series: { $first: '$series' },
             name: { $first: '$name' },
             coverId: { $first: '$coverId' },
             platforms: { $first: '$platforms' },
@@ -191,7 +191,7 @@ const gamesRouter = Router()
             playing: { $first: '$playing' },
             backlog: { $first: '$backlog' },
             wishlist: { $first: '$wishlist' },
-            artworks: { $first: '$artworks' },
+            images: { $first: '$images' },
             reviews: {
               $push: {
                 _id: '$reviews._id',
@@ -229,15 +229,15 @@ const gamesRouter = Router()
             as: 'company'
           }
         },
-        // Series Lookup (collection)
+        // Series Lookup
         {
           $lookup: {
             from: 'games',
-            let: { collectionId: { $arrayElemAt: ['$collections', 0] } },
+            let: { seriesId: { $arrayElemAt: ['$series', 0] } },
             pipeline: [
               {
                 $match: {
-                  $expr: { $in: ['$$collectionId', '$collections'] }
+                  $expr: { $in: ['$$seriesId', '$series'] }
                 }
               },
               {
@@ -248,7 +248,7 @@ const gamesRouter = Router()
               { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
               { $limit: 6 }
             ],
-            as: 'collection'
+            as: 'series'
           }
         }
       ]
@@ -321,10 +321,10 @@ const gamesRouter = Router()
   .get("/series/:id", async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query, {
-        collections: parseInt(req.params.id)
+        series: parseInt(req.params.id)
       })
 
-      const results = await Collection.aggregate([
+      const results = await Series.aggregate([
         { $match: { seriesId: parseInt(req.params.id) } },
         { $project: { name: 1 } },
         { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }

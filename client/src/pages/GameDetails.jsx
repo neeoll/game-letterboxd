@@ -55,8 +55,8 @@ const GameDetails = () => {
     <div className="pb-8 text-white">
       {/* Background Image */}
       <div className="absolute -z-20 inset-0 bg-neutral-700">
-        {details.artworks.length != 0 ?
-          <img className="size-full object-cover" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${details.artworks[Math.floor(Math.random() * (details.artworks.length - 1))]}.jpg`}/> :
+        {details.images.length != 0 ?
+          <img className="size-full object-cover" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${details.images[Math.floor(Math.random() * (details.images.length - 1))]}.jpg`}/> :
           <></>
         }
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
@@ -156,14 +156,14 @@ const GameDetails = () => {
             <p className="text-white/75">{details.summary}</p>
             <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
           </div>
-          {details.collection.length != 0 ?
+          {details.series.length != 0 ?
             <div className="flex flex-col gap-2">
               <div className="flex justify-between px-2">
                 <p className="font-semibold">Other Games in Series</p>
-                <Link to={`/games/series/${details.collections[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
+                <Link to={`/games/series/${details.series[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
               <div className="flex h-fit justify-start flex-wrap">
-                {details.collection.map(game => (
+                {details.series.map(game => (
                   <GameCard key={game.gameId} size={"basis-[16.66%]"} game={game} />
                 ))}
               </div>

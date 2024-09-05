@@ -6,7 +6,7 @@ const gameSchema = new mongoose.Schema({
     required: true
   },
   companies: [Number],
-  collections: [Number],
+  series: [Number],
   name: String,
   coverId: String,
   platforms: [Number],
