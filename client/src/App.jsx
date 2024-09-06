@@ -1,7 +1,8 @@
 import React from "react"
 import SimpleBar from "simplebar-react"
-import { Footer, Navbar } from "./components"
+import { ErrorCard, Footer, Navbar } from "./components"
 import { Outlet } from "react-router-dom"
+import * as Sentry from '@sentry/react'
 
 const SimpleBarStyle = {
   width: '100vw',
@@ -11,13 +12,19 @@ const SimpleBarStyle = {
 const App = () => {
   return (
     <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-hidden">
-      <SimpleBar style={SimpleBarStyle}>
-        <Navbar />
-        <div className="mt-32 px-48 min-h-screen">
-          <Outlet />
-        </div>
-        <Footer />
-      </SimpleBar>
+      <Sentry.ErrorBoundary fallback={({ error, componentStack, resetError }) => (
+        <React.Fragment>
+          <ErrorCard error={error} />
+        </React.Fragment>
+      )}>
+        <SimpleBar style={SimpleBarStyle}>
+          <Navbar />
+          <div className="mt-32 px-48 min-h-screen">
+            <Outlet />
+          </div>
+          <Footer />
+        </SimpleBar>
+      </Sentry.ErrorBoundary>
     </div>
   )
 }

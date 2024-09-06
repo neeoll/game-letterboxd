@@ -37,7 +37,6 @@ const Login = () => {
     const data = { emailOrUsername: emailOrUsername, password: password }
     axios.post('/auth/login', data)
     .then(res => {
-      console.log(res)
       window.location.reload()
     })
     .catch(err => {

@@ -3,11 +3,12 @@ import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import { platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
-import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution } from "../utils"
+import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution, useAsyncError } from "../utils"
 import axios from 'axios'
 
 const GameDetails = () => {
   const { gameId } = useParams()
+  const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(false)
@@ -25,16 +26,7 @@ const GameDetails = () => {
         setLoading(false)
       })
       .catch(error => {
-        if (error.response) { 
-          // client received an error response (5xx, 4xx)
-          console.error("Server error: ", error.response.status)
-        } else if (error.request) { 
-          // client never received a response, or request never left 
-          console.error("Network error: ", error.request)
-        } else { 
-          // anything else
-          console.error("Error: ", error.message)
-        } 
+        throwError(error)
       })
     }
     getDetails()

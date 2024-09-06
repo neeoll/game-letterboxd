@@ -147,6 +147,9 @@ const gamesRouter = Router()
   })
   .get("/:id", async (req, res) => {
     try {
+      const gameExists = await Game.findOne({ gameId: parseInt(req.params.id) })
+      if (!gameExists) { return res.status(404).json({ error: "Not Found" }) }
+
       let user = jsonwebtoken.decode(req.cookies.accessToken) || null
 
       const pipeline = [
