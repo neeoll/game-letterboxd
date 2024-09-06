@@ -12,7 +12,7 @@ const SimpleBarStyle = {
 const App = () => {
   return (
     <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-hidden">
-      <Sentry.ErrorBoundary fallback={({ error, componentStack, resetError }) => (
+      <Sentry.ErrorBoundary fallback={({ error, resetError }) => (
         <React.Fragment>
           <ErrorCard error={error} resetError={resetError} />
         </React.Fragment>

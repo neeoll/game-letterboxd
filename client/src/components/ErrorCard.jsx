@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 const ErrorCard = ({ error, resetError }) => {
   const navigate = useNavigate()
+
   return (
     <div className="flex flex-col items-center justify-center flex-wrap mt-24 mx-96 p-10 text-white bg-neutral-800 rounded-lg">
       {!error.response ? (
@@ -23,12 +24,12 @@ const ErrorCard = ({ error, resetError }) => {
               <p className="text-center">Please check your connection and try again, or contact us f the problem persists.</p>
             </div>
           </div>
-          <div class="max-w-full">
-            <details class="open:bg-neutral-900 open:ring-1 open:ring-white/10 p-6 rounded-lg">
-              <summary class="text-sm text-white font-semibold select-none">
+          <div className="max-w-full">
+            <details className="open:bg-neutral-900 open:ring-1 open:ring-white/10 p-6 rounded-lg">
+              <summary className="text-sm text-white font-semibold select-none">
                 Details
               </summary>
-              <div class="mt-3 text-sm text-white/50">
+              <div className="mt-3 text-sm text-white/50">
                 <p>{error.stack}</p>
               </div>
             </details>
@@ -68,20 +69,18 @@ const ErrorCard = ({ error, resetError }) => {
             </div> : 
             <></>
           }
-          <div class="max-w-full">
-            <details class="open:bg-neutral-900 open:ring-1 open:ring-white/10 p-6 rounded-lg">
-              <summary class="text-sm text-white font-semibold select-none">
+          <div className="max-w-full">
+            <details className="open:bg-neutral-900 open:ring-1 open:ring-white/10 p-6 rounded-lg">
+              <summary className="text-sm text-white font-semibold select-none">
                 Details
               </summary>
-              <div class="mt-3 text-sm text-white/50">
+              <div className="mt-3 text-sm text-white/50">
                 <p>{error.stack}</p>
               </div>
             </details>
           </div>
         </div>
       )}
-      {/* error.toString() combines both error message and error name */}
-      {/* <button onClick={() => resetError()} className="text-white">Click here to reset!</button> */}
     </div>
   )
 }
