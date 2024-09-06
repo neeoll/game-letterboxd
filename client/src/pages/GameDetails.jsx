@@ -16,8 +16,6 @@ const GameDetails = () => {
   
   useEffect(() => {
     async function getDetails() {
-      /* 'https://httpstat.us/500', { withCredentials: false } */
-      /* `/game/${gameId}` */
       axios.get(`/game/${gameId}`)
       .then(res => {
         document.title = `${res.data.data.name}`

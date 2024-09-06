@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useNavigate } from 'react-router-dom'
 
-const ErrorCard = ({ error }) => {
+const ErrorCard = ({ error, resetError }) => {
   const navigate = useNavigate()
   return (
     <div className="flex flex-col items-center justify-center flex-wrap mt-24 mx-96 p-10 text-white bg-neutral-800 rounded-lg">
@@ -53,7 +53,7 @@ const ErrorCard = ({ error }) => {
             <div className="flex flex-col justify-center items-center gap-4">
               <div className="text-white/75 font-light text-sm">
                 <p className="text-center">Oops, something went wrong.</p>
-                <p className="text-center">Try to refresh this page, or contact us if the problem persists.</p>
+                <p className="text-center">Try to <button onClick={() => resetError()} className="text-white">refresh</button> this page, or contact us if the problem persists.</p>
               </div>
             </div> : 
             <></>
@@ -87,7 +87,8 @@ const ErrorCard = ({ error }) => {
 }
 
 ErrorCard.propTypes = {
-  error: PropTypes.object
+  error: PropTypes.object,
+  resetError: PropTypes.func
 }
 
 export default ErrorCard
