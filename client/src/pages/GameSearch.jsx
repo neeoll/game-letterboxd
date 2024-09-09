@@ -49,35 +49,30 @@ const GameSearch = () => {
   if (loading) {
     return (
       <div className="flex flex-col gap-2 pb-4 animate-[pulse_1s_linear_infinite]">
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
-              <div key={index} className="h-6 w-32 bg-neutral-800 rounded" />
-            ))}
-          </div>
+        <div className="flex flex-col gap-1">
           <div className="flex w-full justify-between">
-            <div className="h-6 w-24 bg-neutral-800 rounded" />
+            <div className="h-6 w-24 placeholder" />
             <div className="flex gap-2">
-              <div className="w-40 h-6 rounded bg-neutral-800" />
-              <div className="w-12 h-6 rounded bg-neutral-800" />
+              <div className="w-40 h-8 placeholder" />
+              <div className="w-12 h-8 placeholder" />
             </div>
           </div>
         </div>
         <div className="flex flex-col justify-center gap-2"> 
-          <div className="flex flex-wrap gap-6 justify-center">
+          <div className="flex flex-wrap justify-center">
             {Array.apply(null, Array(35)).map(index => (
-              <div key={index} className={`flex flex-col items-center gap-2`}>
-                <div className="relative h-36 aspect-[45/64] bg-neutral-800 rounded" />
+              <div key={index} className={`flex flex-col basis-[12.5%] items-center gap-2 p-1`}>
+                <div className="relative size-full aspect-[45/64] placeholder" />
                 {sortBy == "releaseDate" || sortBy == "avgRating" ? 
-                  <div className="w-20 h-6 rounded bg-neutral-800" /> : <></>
+                  <div className="w-20 h-8 placeholder" /> : <></>
                 }
               </div>
             ))}
           </div>
           <div className="flex justify-center gap-4">
-            <div className="size-8 bg-neutral-800 rounded"/>
-            <div className="h-8 w-36 bg-neutral-800 rounded" />
-            <div className="size-8 bg-neutral-800 rounded"/>
+            <div className="size-8 placeholder"/>
+            <div className="h-8 w-36 placeholder" />
+            <div className="size-8 placeholder"/>
           </div>
         </div>
       </div>

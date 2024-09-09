@@ -55,11 +55,11 @@ const GamesByCompany = () => {
       <div className="flex flex-col gap-4 animate-[pulse_1s_linear_infinite]">
         <div className="flex flex-col gap-2 text-white">
           <div className="flex flex-col gap-2 pb-2">
-            <div className="w-20 h-6 bg-neutral-800 rounded" />
-            <div className="w-96 h-10 bg-neutral-800 rounded" />
+            <div className="w-20 h-6 placeholder" />
+            <div className="w-96 h-10 placeholder" />
             <div className="flex w-full flex-col gap-2">
               {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
-                <div key={index} className={`h-6 bg-neutral-800 rounded`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}}/>
+                <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}}/>
               ))}
             </div>
           </div>
@@ -69,14 +69,14 @@ const GamesByCompany = () => {
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
               {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
-                <div key={index} className="h-6 w-32 bg-neutral-800 rounded" />
+                <div key={index} className="h-6 w-32 placeholder" />
               ))}
             </div>
             <div className="flex w-full justify-between">
               <div className="flex justify-center items-end text-white/50 font-light text-sm">{count.toLocaleString()} Games</div>
               <div className="flex gap-2">
-                <div className="w-40 h-6 rounded bg-neutral-800" />
-                <div className="w-12 h-6 rounded bg-neutral-800" />
+                <div className="w-40 h-6 placeholder" />
+                <div className="w-12 h-6 placeholder" />
               </div>
             </div>
           </div>
@@ -84,15 +84,15 @@ const GamesByCompany = () => {
             <div className="flex flex-wrap gap-4 justify-center">
               {Array.apply(null, Array(35)).map(index => (
                 <div key={index} className={`flex flex-col items-center gap-2`}>
-                  <div className="relative h-48 aspect-[45/64] bg-neutral-800 rounded" />
-                  {sortBy == "releaseDate" || sortBy == "avgRating" ? <div className="w-20 h-6 rounded bg-neutral-800" /> : <></>}
+                  <div className="relative h-48 aspect-[45/64] placeholder" />
+                  {sortBy == "releaseDate" || sortBy == "avgRating" ? <div className="w-20 h-6 placeholder" /> : <></>}
                 </div>
               ))}
             </div>
             <div className="flex justify-center gap-4">
-              <div className="size-8 bg-neutral-800 rounded"/>
-              <div className="h-8 w-36 bg-neutral-800 rounded" />
-              <div className="size-8 bg-neutral-800 rounded"/>
+              <div className="size-8 placeholder"/>
+              <div className="h-8 w-36 placeholder" />
+              <div className="size-8 placeholder"/>
             </div>
           </div>
         </div>

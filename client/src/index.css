@@ -6,3 +6,10 @@
   font-family: 'Edunline';
   src: url('./fonts/edunline.ttf');
 }
+
+@layer components {
+  .placeholder {
+    background-color: rgb(38 38 38);
+    border-radius: 5px;
+  }
+}

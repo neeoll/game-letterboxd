@@ -19,9 +19,9 @@ const GameDetails = () => {
       axios.get(`/game/${gameId}`)
       .then(res => {
         document.title = `${res.data.data.name}`
+        console.log(res.data)
         setDetails(res.data.data)
         setUser(res.data.user)
-        setLoading(false)
       })
       .catch(error => {
         throwError(error)
@@ -37,7 +37,98 @@ const GameDetails = () => {
 
   if (loading) {
     return (
-      <div></div>
+      <div className="grid grid-cols-5 grid-auto-rows gap-x-2 animate-[pulse_1s_linear_infinite]">
+        {/* Cover */}
+        <div className="col-span-1 flex items-end justify-center">
+          <div className="basis-3/4">
+            <div className="size-full aspect-[45/64] placeholder" />
+          </div>
+        </div>
+        {/* Title */}
+        <div className="col-span-4 flex flex-col gap-2 px-2 justify-end">
+          <div className="h-12 w-[75%] placeholder" />
+          <div className="h-8 w-[50%] placeholder" />
+        </div>
+        {/* Review Dialog and Score Content */}
+        <div className="col-span-1 flex flex-col p-4 gap-2">
+          <div className="relative flex flex-col gap-1">
+            <div className="h-36 placeholder" />
+            <div className="h-72 placeholder" />
+          </div>
+        </div>
+        {/* Summary and Series */}
+        <div className="col-span-3 h-fit">
+          <div className="flex flex-col gap-2 p-2">
+            <div className="flex flex-col gap-1.5">
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+                <div className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
+              ))}
+            </div>
+            <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between px-2">
+              <div className="h-6 w-44 placeholder" />
+              <div className="h-6 w-16 placeholder" />
+            </div>
+            <div className="flex h-fit justify-start flex-wrap">
+              {Array.apply(null, Array(6)).map(index => (
+                <div className="basis-[16.66%] p-1">
+                  <div className="aspect-[45/64] placeholder"/>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* Platforms and Genres */}
+        <div className="col-span-1 flex flex-col gap-4 px-1">
+          {/* Platforms */}
+          <div className="flex flex-col gap-2">
+            <div className="h-6 w-24 placeholder" />
+            <div className="flex w-full flex-wrap gap-2">
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+                <div className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Genres */}
+          <div className="flex flex-col gap-2">
+            <div className="h-6 w-24 placeholder" />
+            <div className="flex w-full flex-wrap gap-2">
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+                <div className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="col-span-1" />
+        {/* Reviews */}
+        <div className="col-span-3">
+          <div className="flex flex-col gap-2">
+            {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+              <div className="flex flex-col py-4 gap-2">
+                <div className="flex gap-2">
+                  <div className="size-10 placeholder-lg" />
+                  <div className="flex flex-col w-full gap-1">
+                    <div className="h-6 w-24 placeholder" />
+                    <div className="flex gap-2 items-center">
+                      <div className="h-6 w-28 placeholder"/>
+                      <div className="h-6 w-48 placeholder" />
+                    </div>
+                    {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
+                      <div className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
+                    ))}
+                  </div>
+                </div>
+                <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="col-span-1" />
+      </div>
     )
   }
 
@@ -153,7 +244,7 @@ const GameDetails = () => {
                 <Link to={`/games/series/${details.series[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
               <div className="flex h-fit justify-start flex-wrap">
-                {details.series.map(game => (
+                {details.gamesInSeries.map(game => (
                   <GameCard key={game.gameId} size={"basis-[16.66%]"} game={game} />
                 ))}
               </div>

@@ -251,7 +251,7 @@ const gamesRouter = Router()
               { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
               { $limit: 6 }
             ],
-            as: 'series'
+            as: 'gamesInSeries'
           }
         }
       ]

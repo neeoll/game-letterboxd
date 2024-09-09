@@ -38,7 +38,7 @@ export const GameReview = (props) => {
     <div className="flex flex-col py-4 gap-2">
       <div className="flex gap-2 text-white">
         <img src={props.review.user.profileIcon || defaultImg} className="size-10 rounded-lg" />
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <div>{props.review.user.username}</div>
           <div className="flex gap-2 items-center">
             <StyledRating readOnly value={props.review.rating} size="small" />
