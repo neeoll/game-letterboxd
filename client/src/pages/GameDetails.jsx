@@ -22,6 +22,7 @@ const GameDetails = () => {
         console.log(res.data)
         setDetails(res.data.data)
         setUser(res.data.user)
+        setLoading(false)
       })
       .catch(error => {
         throwError(error)
