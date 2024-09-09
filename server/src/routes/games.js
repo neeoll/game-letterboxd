@@ -19,7 +19,7 @@ const gamesRouter = Router()
       const usersNum = await User.countDocuments({})
       
       const games = await Game.aggregate([
-        { $project: { gameId: 1, coverId: 1, popularity: 1, name: 1 } },
+        { $project: { slug: 1, coverId: 1, popularity: 1, name: 1 } },
         { $sort: { popularity: -1 } },
         { $limit: 10 },
       ])
@@ -121,7 +121,7 @@ const gamesRouter = Router()
         { 
           $facet: {
             results: [
-              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, platforms: 1, avgRating: 1, popularity: 1, _id: 0 } },
+              { $project: { name: 1, coverId: 1, releaseDate: 1, platforms: 1, avgRating: 1, popularity: 1, slug: 1, _id: 0 } },
               { $sort: { popularity: -1 } },
               { $limit: 100 }
             ],
@@ -145,15 +145,15 @@ const gamesRouter = Router()
       res.send("An error occurred").status(500)
     }
   })
-  .get("/:id", async (req, res) => {
+  .get("/:slug", async (req, res) => {
     try {
-      const gameExists = await Game.findOne({ gameId: parseInt(req.params.id) })
+      const gameExists = await Game.findOne({ slug: req.params.slug })
       if (!gameExists) { return res.status(404).json({ error: "Not Found" }) }
 
       let user = jsonwebtoken.decode(req.cookies.accessToken) || null
 
       const pipeline = [
-        { $match: { gameId: parseInt(req.params.id) } },
+        { $match: { slug: req.params.slug } },
         // Lookup Reviews
         {
           $lookup: {
@@ -248,7 +248,7 @@ const gamesRouter = Router()
                   gameId: { $ne: parseInt(req.params.id) }
                 }
               },
-              { $project: { name: 1, coverId: 1, gameId: 1, _id: 0 } },
+              { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } },
               { $limit: 6 }
             ],
             as: 'gamesInSeries'

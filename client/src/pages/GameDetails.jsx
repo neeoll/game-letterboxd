@@ -7,7 +7,7 @@ import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution
 import axios from 'axios'
 
 const GameDetails = () => {
-  const { gameId } = useParams()
+  const { slug } = useParams()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
@@ -16,10 +16,9 @@ const GameDetails = () => {
   
   useEffect(() => {
     async function getDetails() {
-      axios.get(`/game/${gameId}`)
+      axios.get(`/game/${slug}`)
       .then(res => {
         document.title = `${res.data.data.name}`
-        console.log(res.data)
         setDetails(res.data.data)
         setUser(res.data.user)
         setLoading(false)
@@ -30,7 +29,7 @@ const GameDetails = () => {
     }
     getDetails()
     return
-  }, [gameId])
+  }, [slug])
 
   async function addGame(status, id) {
     axios.post('/game/addGame', { status, id })

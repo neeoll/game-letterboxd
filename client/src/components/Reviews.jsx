@@ -8,7 +8,7 @@ export const HomeReview = (props) => {
   return (
     <div className="flex flex-col basis-1/2 gap-2 p-4">
       <div className="flex gap-2 text-white">
-        <Link to={`/game/${props.review.game[0].gameId}`} className="h-20">
+        <Link to={`/game/${props.review.game[0].slug}`} className="h-20">
           <img className="size-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${props.review.game[0].coverId}.jpg`} />
         </Link>
         <div className="flex flex-col text-white">
