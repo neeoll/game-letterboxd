@@ -102,9 +102,14 @@ const authRouter = Router()
     res.clearCookie('accessToken', { httpOnly: false, sameSite: 'none', secure: true })
     res.status(200).json({ message: "Authentication cookie cleared" })
   })
-  .get("/getUser", verifyToken, async (req, res) => {
+  .get("/getUser", async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.user.email }, { username: 1, password: 1, email: 1, profileIcon: 1 })
+      const accessToken = req.cookies.accessToken
+      if (!accessToken) { return res.status(200) }
+
+      const tokenData = jsonwebtoken.decode(accessToken)
+      console.log(tokenData)
+      const user = await User.findOne({ email: tokenData.email }, { username: 1, password: 1, email: 1, profileIcon: 1 })
       res.status(200).json(user)
     } catch (err) {
       console.error(err)
