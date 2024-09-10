@@ -1,10 +1,6 @@
 import mongoose from "mongoose"
 
 const companySchema = new mongoose.Schema({
-  companyId: { 
-    type: Number, 
-    required: true 
-  },
   slug: { 
     type: String, 
     required: true 

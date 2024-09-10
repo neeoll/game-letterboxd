@@ -1,10 +1,6 @@
 import mongoose from "mongoose"
 
 const seriesSchema = new mongoose.Schema({
-  seriesId: { 
-    type: Number, 
-    required: true 
-  },
   slug: {
     type: String,
     required: true
