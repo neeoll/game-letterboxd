@@ -28,9 +28,14 @@ const authRouter = Router()
     }
   })
   .post('/verifyCaptcha', async (req, res) => {
-    const { captchaValue } = req.body
-    const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
-    res.status(200).json({ data })
+    try {
+      const { captchaValue } = req.body
+      const { data } = await axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SITE_SECRET}&response=${captchaValue}`)
+      res.status(200).json({ data })
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
+    }
   })
   .post("/register", async (req, res) => {
     try {
@@ -90,7 +95,7 @@ const authRouter = Router()
 
       const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET)
       const cookieExpiry = new Date().getTime() + 1000 * 60 * 60 * 24 * 30
-      res.cookie('accessToken', token, { httpOnly: false, sameSite: 'none', secure: true, expires: new Date(cookieExpiry) })
+      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true, expires: new Date(cookieExpiry) })
       res.status(200).json(token)
     } catch (err) {
       console.error(err)
