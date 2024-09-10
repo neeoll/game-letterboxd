@@ -19,6 +19,7 @@ const Navbar = () => {
     async function getUserInfo() {
       axios.get('/auth/getUser')
       .then(res => setUserData(res.data))
+      .catch(err => console.error(err))
     }
     getUserInfo()
     return
