@@ -95,7 +95,7 @@ const authRouter = Router()
 
       const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET)
       const cookieExpiry = new Date().getTime() + 1000 * 60 * 60 * 24 * 30
-      res.cookie('accessToken', token, { httpOnly: true, secure: true, sameSite: 'none', expires: new Date(cookieExpiry) })
+      res.cookie('accessToken', token, { httpOnly: false, secure: true, sameSite: 'none', expires: new Date(cookieExpiry) })
       res.status(200).json({ token })
     } catch (err) {
       console.error(err)
@@ -104,7 +104,7 @@ const authRouter = Router()
   })
   .get('/logout', async (req, res) => {
     console.log("clearing authentication cookie")
-    res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'none' })
+    res.clearCookie('accessToken', { httpOnly: false, secure: true, sameSite: 'none' })
     res.status(200).json({ message: "Authentication cookie cleared" })
   })
   .get("/getUser", async (req, res) => {
