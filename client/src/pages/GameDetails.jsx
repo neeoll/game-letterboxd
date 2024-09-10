@@ -31,8 +31,8 @@ const GameDetails = () => {
     return
   }, [slug])
 
-  async function addGame(status, id) {
-    axios.post('/game/addGame', { status, id })
+  async function addGame(status, slug) {
+    axios.post('/game/addGame', { status, slug })
   }
 
   if (loading) {
@@ -61,7 +61,7 @@ const GameDetails = () => {
           <div className="flex flex-col gap-2 p-2">
             <div className="flex flex-col gap-1.5">
               {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
-                <div className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
+                <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
               ))}
             </div>
             <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
@@ -73,7 +73,7 @@ const GameDetails = () => {
             </div>
             <div className="flex h-fit justify-start flex-wrap">
               {Array.apply(null, Array(6)).map(index => (
-                <div className="basis-[16.66%] p-1">
+                <div key={index} className="basis-[16.66%] p-1">
                   <div className="aspect-[45/64] placeholder"/>
                 </div>
               ))}
@@ -87,7 +87,7 @@ const GameDetails = () => {
             <div className="h-6 w-24 placeholder" />
             <div className="flex w-full flex-wrap gap-2">
               {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
-                <div className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
+                <div key={index} className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
                 </div>
               ))}
             </div>
@@ -97,7 +97,7 @@ const GameDetails = () => {
             <div className="h-6 w-24 placeholder" />
             <div className="flex w-full flex-wrap gap-2">
               {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
-                <div className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
+                <div key={index} className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
                 </div>
               ))}
             </div>
@@ -108,7 +108,7 @@ const GameDetails = () => {
         <div className="col-span-3">
           <div className="flex flex-col gap-2">
             {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
-              <div className="flex flex-col py-4 gap-2">
+              <div key={index} className="flex flex-col py-4 gap-2">
                 <div className="flex gap-2">
                   <div className="size-10 placeholder-lg" />
                   <div className="flex flex-col w-full gap-1">
@@ -118,7 +118,7 @@ const GameDetails = () => {
                       <div className="h-6 w-48 placeholder" />
                     </div>
                     {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
-                      <div className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
+                      <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
                     ))}
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const GameDetails = () => {
             {details.company ? (
               <>
                 <p>by</p> 
-                <Link to={`/games/company/${details.company.companyId}`} className="text-white/75 font-semibold hover:text-white">{details.company.name}</Link>
+                <Link to={`/company/${details.company.slug}`} className="text-white/75 font-semibold hover:text-white">{details.company.name}</Link>
               </>
             ): <></>}
           </div>
@@ -170,11 +170,11 @@ const GameDetails = () => {
             <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
             {user ? (
               <div className="relative flex flex-col items-center gap-2 bg-neutral-800 rounded p-4">
-                <ReviewDialog gameId={details.gameId} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
+                <ReviewDialog slug={details.slug} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                 <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
                 <div className="flex gap-2">
                   {gameActions.map((action, index) => (
-                    <button key={index} onClick={() => addGame(action.status, details.gameId)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
+                    <button key={index} onClick={() => addGame(action.status, details.slug)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
                       {action.icon()}
                       <p>{action.name}</p>
                     </button>
@@ -241,11 +241,11 @@ const GameDetails = () => {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between px-2">
                 <p className="font-semibold">Other Games in Series</p>
-                <Link to={`/games/series/${details.series[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
+                <Link to={`/series/${details.series[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
               <div className="flex h-fit justify-start flex-wrap">
-                {details.gamesInSeries.map(game => (
-                  <GameCard key={game.gameId} size={"basis-[16.66%]"} game={game} />
+                {details.gamesInSeries.map((game, index) => (
+                  <GameCard key={index} size={"basis-[16.66%]"} game={game} />
                 ))}
               </div>
             </div> : <></>

@@ -14,7 +14,7 @@ const reviewSchema = new mongoose.Schema({
   },
   spoiler: {
     type: Boolean,
-    required: true,
+    default: false,
   },
   status: {
     type: String,
@@ -31,6 +31,10 @@ const reviewSchema = new mongoose.Schema({
   userRef: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
+  },
+  edited: {
+    type: Boolean,
+    default: false,
   }
 })
 

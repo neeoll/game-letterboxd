@@ -5,7 +5,7 @@ import { genres, platforms, sortCriteria } from "../dict"
 import axios from 'axios'
 
 const GamesByCompany = () => {
-  const { companyId } = useParams()
+  const { slug } = useParams()
 
   const [searchParams, setSearchParams] = useSearchParams()
   
@@ -23,7 +23,7 @@ const GamesByCompany = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`/game/company/${companyId}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      axios.get(`/game/company/${slug}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
         document.title = `${res.data.name} | Arcade Archive`
         setCompanyDetails({ name: res.data.name, description: res.data.description })
@@ -34,7 +34,7 @@ const GamesByCompany = () => {
       .catch(err => console.error(err))
     }
     gameSearch()
-  }, [companyId, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
+  }, [slug, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (params) => {
     const updatedParams = new URLSearchParams(location.search)
@@ -125,8 +125,8 @@ const GamesByCompany = () => {
       {/* Games Display */}
       <div className="flex flex-col justify-center gap-2"> 
         <div className="flex flex-wrap justify-center">
-          {results.map(game =>
-            <GameCard key={game.gameId} size={"basis-[12.5%]"} game={game} sortBy={sortBy} />
+          {results.map((game, index) =>
+            <GameCard key={index} size={"basis-[12.5%]"} game={game} sortBy={sortBy} />
           )}
         </div>
         <Pagination page={page} count={count} update={updateQueryParameter} />

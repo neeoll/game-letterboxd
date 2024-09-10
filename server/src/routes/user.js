@@ -59,7 +59,7 @@ const userRouter = Router()
             localField: 'games.gameRef',
             foreignField: '_id',
             pipeline: [
-              { $project: { name: 1, coverId: 1, gameId: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 } }
+              { $project: { name: 1, coverId: 1, slug: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 } }
             ],
             as: 'profileGames'
           }
@@ -73,7 +73,7 @@ const userRouter = Router()
               $push: {
                 name: '$profileGames.name', 
                 coverId: '$profileGames.coverId', 
-                gameId: '$profileGames.gameId', 
+                slug: '$profileGames.slug', 
                 lastUpdated: '$games.lastUpdated', 
                 status: '$games.status',
                 releaseDate: '$profileGames.releaseDate', 

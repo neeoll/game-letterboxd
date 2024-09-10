@@ -74,8 +74,8 @@ const Home = () => {
         <div className="flex flex-col items-start gap-1">
           <p className="text-white/75 text-2xl font-light">Popular Games</p>
           <div className="flex w-full justify-start items-center">
-            {homeData.games.map(game => (
-              <Link key={game.gameId} to={`/game/${game.slug}`} className={`relative basis-[10%] m-1 group rounded hover:outline outline-3 outline-accentPrimary`}>
+            {homeData.games.map((game, index) => (
+              <Link key={index} to={`/game/${game.slug}`} className={`relative basis-[10%] m-1 group rounded hover:outline outline-3 outline-accentPrimary`}>
                 <div className="absolute -inset-1 rounded-lg group-hover:bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm" />
                 <img loading="lazy" className="size-full object-cover aspect-[45/64] rounded group-hover:brightness-50" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
                 <p className="flex absolute inset-0 p-1 items-center justify-center text-center font-semibold text-white invisible group-hover:visible">{game.name}</p>

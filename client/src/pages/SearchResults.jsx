@@ -59,8 +59,8 @@ const SearchResults = () => {
         <p>{count} results for <span className="text-4xl font-semibold">{`"${searchText}"`}</span></p>
       </div>
       <div className="flex flex-col gap-2">
-        {results.map(game => (
-          <div key={game.gameId} className="flex flex-col gap-2 group">
+        {results.map((game, index) => (
+          <div key={index} className="flex flex-col gap-2 group">
             <div className="flex items-center gap-2">
               <div className="h-36 w-fit rounded">
                 <img loading="lazy" className="max-w-full max-h-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />

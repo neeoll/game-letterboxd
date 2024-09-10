@@ -1,12 +1,8 @@
 import mongoose from "mongoose"
 
 const gameSchema = new mongoose.Schema({
-  gameId: {
-    type: Number,
-    required: true
-  },
-  companies: [Number],
-  series: [Number],
+  companies: [String],
+  series: [String],
   name: String,
   coverId: String,
   platforms: [Number],

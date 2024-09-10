@@ -127,8 +127,8 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex flex-wrap w-full justify-center">
-              {user.games.filter(handleFilter).sort(handleSort).map(game => (
-                <GameCard key={game.gameId} size={"basis-[12.5%]"} game={game} />
+              {user.games.filter(handleFilter).sort(handleSort).map((game, index) => (
+                <GameCard key={index} size={"basis-[12.5%]"} game={game} />
               ))}
             </div>
           </div>

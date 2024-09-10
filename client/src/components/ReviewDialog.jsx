@@ -17,7 +17,7 @@ const ReviewDialog = (props) => {
   const [spoiler, setSpoiler] = useState(false)
 
   const submit = async () => {
-    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }
+    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, slug: props.slug }
     axios.post('/game/review', data)
     .then(setDialogOpen(false))
     .catch(err => console.error(err))
@@ -87,7 +87,7 @@ const ReviewDialog = (props) => {
 }
 
 ReviewDialog.propTypes = {
-  gameId: PropTypes.number,
+  slug: PropTypes.string,
   name: PropTypes.string,
   cover: PropTypes.string,
   platforms: PropTypes.array

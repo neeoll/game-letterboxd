@@ -4,7 +4,6 @@ import { gameCardTimestamp } from "../utils"
 import PropTypes from 'prop-types'
 
 const GameCard = (props) => {
-  console.log(props.game)
   return (
     <div className={`flex flex-col ${props.size} p-1 items-center gap-2 text-sm`}>
       <Link to={`/game/${props.game.slug}`} className="relative size-full group rounded hover:outline outline-3 outline-accentPrimary">

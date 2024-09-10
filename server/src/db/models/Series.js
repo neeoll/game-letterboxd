@@ -5,6 +5,10 @@ const seriesSchema = new mongoose.Schema({
     type: Number, 
     required: true 
   },
+  slug: {
+    type: String,
+    required: true
+  },
   games: [Number],
   name: {
     type: String,

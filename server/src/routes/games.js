@@ -38,25 +38,10 @@ const gamesRouter = Router()
   })
   .post('/addGame', verifyToken, async (req, res) => {
     try {
+      const { status, slug } = req.body
+
       const user = await User.findOne({ email: req.user.email })
-      let game
-      switch (req.body.status) {
-        case "played":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {played: user._id} }, { returnDocument: "after" })
-          break
-        case "playing":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {playing: user._id} }, { returnDocument: "after" })
-          break
-        case "backlog":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {backlog: user._id} }, { returnDocument: "after" })
-          break
-        case "wishlist":
-          game = await Game.findOneAndUpdate({ gameId: req.body.id }, { $addToSet: {wishlist: user._id} }, { returnDocument: "after" })
-          break
-        default:
-          res.status(500).json({ error: 'Internal server error' })
-          break
-      }
+      const game = await Game.findOneAndUpdate({ slug: slug }, { $addToSet: { [status]: user._id } }, { returnDocument: "after" })
       
       user.games.push({ gameRef: game._id, lastUpdated: Math.floor(new Date() / 1000), status: req.body.status })
       await user.save()
@@ -69,10 +54,10 @@ const gamesRouter = Router()
   })
   .post("/review", verifyToken, async (req, res) => {
     try {
-      const { rating, platform, body, spoiler, status, gameId } = req.body
+      const { rating, platform, body, spoiler, status, slug } = req.body
       const { id: userId } = req.user
 
-      const game = await Game.findOne({ gameId: gameId })
+      const game = await Game.findOne({ slug: slug })
 
       const existingReview = await Review.findOne({ gameRef: game._id, userRef: userId })
       const reviewData = {
@@ -93,7 +78,7 @@ const gamesRouter = Router()
         const review = await newReview.save()
 
         await Game.updateOne(
-          { gameId: gameId },
+          { slug: slug },
           { $addToSet: { reviews: review._id } }
         )
   
@@ -180,7 +165,7 @@ const gamesRouter = Router()
         {
           $group: {
             _id: '$_id',
-            gameId: { $first: '$gameId' },
+            slug: { $first: '$slug' },
             companies: { $first: '$companies' },
             series: { $first: '$series' },
             name: { $first: '$name' },
@@ -216,17 +201,17 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'companies',
-            let: { firstCompanyId: { $arrayElemAt: ['$companies', 0] } },
+            let: { firstCompanySlug: { $arrayElemAt: ['$companies', 0] } },
             pipeline: [
               {
                 $match: {
                   $expr: {
-                    $eq: ['$companyId', '$$firstCompanyId']
+                    $eq: ['$slug', '$$firstCompanySlug']
                   }
                 }
               },
               {
-                $project: { name: 1, companyId: 1, _id: 0 }
+                $project: { name: 1, slug: 1, _id: 0 }
               }
             ],
             as: 'company'
@@ -236,16 +221,16 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'games',
-            let: { seriesId: { $arrayElemAt: ['$series', 0] } },
+            let: { seriesSlug: { $arrayElemAt: ['$series', 0] } },
             pipeline: [
               {
                 $match: {
-                  $expr: { $in: ['$$seriesId', '$series'] }
+                  $expr: { $in: ['$$seriesSlug', '$series'] }
                 }
               },
               {
                 $match: {
-                  gameId: { $ne: parseInt(req.params.id) }
+                  slug: { $ne: req.params.slug }
                 }
               },
               { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } },
@@ -304,14 +289,14 @@ const gamesRouter = Router()
       res.status(500).json({ error: "Internal server error" })
     }
   })
-  .get("/company/:id", async (req, res) => {
+  .get("/company/:slug", async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query, {
-        companies: parseInt(req.params.id)
+        companies: req.params.slug
       })
 
       const results = await Company.aggregate([
-        { $match: { companyId: parseInt(req.params.id) } },
+        { $match: { slug: req.params.slug } },
         { $project: { _id: 0 } },
         { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }
       ])
@@ -321,14 +306,14 @@ const gamesRouter = Router()
       res.status(500).json({ error: "Internal server error" })
     }
   })
-  .get("/series/:id", async (req, res) => {
+  .get("/series/:slug", async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query, {
-        series: parseInt(req.params.id)
+        series: req.params.slug
       })
 
       const results = await Series.aggregate([
-        { $match: { seriesId: parseInt(req.params.id) } },
+        { $match: { slug: req.params.slug } },
         { $project: { name: 1 } },
         { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }
       ])
