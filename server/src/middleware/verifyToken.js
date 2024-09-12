@@ -2,7 +2,7 @@ import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config'
 
 export const verifyToken = (req, res, next) => {
-  const token = req.cookies.accessToken
+  const token = req.headers['authorization']
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' })
   }

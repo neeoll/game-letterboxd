@@ -9,7 +9,8 @@ import * as Pages from './pages'
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
 axios.defaults.withCredentials = true
 axios.defaults.headers = {
-  'Access-Control-Allow-Origin': '*'
+  'Access-Control-Allow-Origin': '*',
+  'authorization': localStorage.getItem('accessToken')
 }
 
 axios.interceptors.response.use(function (response) {

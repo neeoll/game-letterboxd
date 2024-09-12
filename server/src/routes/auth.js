@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 const authRouter = Router()
   .get('/checkAuthentication', async (req, res) => {
     try {
-      res.status(200).json(!!req.cookies.accessToken)
+      res.status(200).json(!!req.headers['authorization'])
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })
@@ -93,27 +93,19 @@ const authRouter = Router()
         return res.status(401).json({ error: 'User not verified' })
       }
 
-      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET)
-      const cookieExpiry = new Date().getTime() + 1000 * 60 * 60 * 24 * 30
-      res.cookie('accessToken', token, { path: '/', secure: true, sameSite: 'none', expires: new Date(cookieExpiry) })
+      const token = jsonwebtoken.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '30 days' })
       res.status(200).json({ token })
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Internal server error' })
     }
   })
-  .get('/logout', async (req, res) => {
-    console.log("clearing authentication cookie")
-    res.clearCookie('accessToken', { path: '/', secure: true, sameSite: 'none' })
-    res.status(200).json({ message: "Authentication cookie cleared" })
-  })
   .get("/getUser", async (req, res) => {
     try {
-      const accessToken = req.cookies.accessToken
+      const accessToken = req.headers['authorization']
       if (!accessToken) { return res.status(200) }
 
       const tokenData = jsonwebtoken.decode(accessToken)
-      console.log(tokenData)
       const user = await User.findOne({ email: tokenData.email }, { username: 1, password: 1, email: 1, profileIcon: 1 })
       res.status(200).json(user)
     } catch (err) {

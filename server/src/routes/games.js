@@ -135,7 +135,7 @@ const gamesRouter = Router()
       const gameExists = await Game.findOne({ slug: req.params.slug })
       if (!gameExists) { return res.status(404).json({ error: "Not Found" }) }
 
-      let user = jsonwebtoken.decode(req.cookies.accessToken) || null
+      let user = jsonwebtoken.decode(req.headers['authorization']) || null
 
       const pipeline = [
         { $match: { slug: req.params.slug } },

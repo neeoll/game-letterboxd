@@ -36,9 +36,8 @@ const Navbar = () => {
 
   function logout() {
     setMenuOpen(false)
-    axios.get('/auth/logout')
-    .then(window.location.reload())
-    .catch(err => console.error(err))
+    window.localStorage.removeItem('accessToken')
+    window.location.reload()
   }
 
   return (
