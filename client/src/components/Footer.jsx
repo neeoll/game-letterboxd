@@ -7,7 +7,7 @@ const Footer = () => {
       {/* Title Card */}
       <div>
         <div className="font-edunline text-3xl text-transparent bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text">
-          <Link to={"/"}>Arcade Archives</Link>
+          <Link to={"/"}>Arcade Archive</Link>
         </div>
         <p className="font-light text-sm text-white/75">Data provided by <Link to="https://www.igdb.com/api" target="_blank" rel="noopener noreferrer" className="hover:text-white">IGDB</Link></p>
       </div>

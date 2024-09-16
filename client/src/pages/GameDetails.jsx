@@ -157,10 +157,12 @@ const GameDetails = () => {
           <div className="flex gap-2 text-xl text-white/50">
             <p>{details.releaseDate > Date.now() / 1000 ? "Releases" : "Released"} on</p> 
             <Link to={{ pathname: "/games", search: `?year=${getYearFromTimestamp(details.releaseDate)}`}} className="text-white/75 font-semibold hover:text-white">{gameDetailsTimestamp(details.releaseDate)}</Link>
-            {details.company ? (
+            {details.companies.length != 0 ? (
               <>
-                <p>by</p> 
-                <Link to={`/company/${details.company.slug}`} className="text-white/75 font-semibold hover:text-white">{details.company.name}</Link>
+                <p>by</p>
+                {details.companies.slice(-2).map((company, index) => (
+                  <Link key={index} to={`/company/${company.slug}`} className="text-white/75 font-semibold hover:text-white">{company.name}{index != details.companies.slice(-2).length - 1 ? ", " : ""}</Link>
+                ))} 
               </>
             ): <></>}
           </div>
@@ -220,7 +222,7 @@ const GameDetails = () => {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between px-2">
                 <p className="font-semibold">Other Games in Series</p>
-                <Link to={`/series/${details.series[0]}`} className="text-sm font-semibold hover:underline">See more</Link>
+                <Link to={`/series/${details.series[details.series.length - 1]}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
               <div className="flex h-fit justify-start flex-wrap">
                 {details.gamesInSeries.map((game, index) => (

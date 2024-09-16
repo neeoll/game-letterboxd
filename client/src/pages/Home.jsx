@@ -45,7 +45,7 @@ const Home = () => {
       <div className="flex flex-col gap-8 pb-16">
         {/* Title */}
         <div className="w-fit">
-          <div className="font-edunline text-7xl text-transparent bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text">Arcade Archives</div>
+          <div className="font-edunline text-7xl text-transparent bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text">Arcade Archive</div>
           <p className="text-white/75 text-3xl font-light">Discover, Compile, and Review your games</p>
         </div>
         {/* Website Stats */}

@@ -130,24 +130,24 @@ const gamesRouter = Router()
         {
           $lookup: {
             from: 'companies',
-            let: { firstCompanySlug: { $arrayElemAt: ['$companies', 0] } },
+            let: { companyArray: '$companies' },
             pipeline: [
               {
                 $match: {
                   $expr: {
-                    $eq: ['$slug', '$$firstCompanySlug']
+                    $in: ['$slug', '$$companyArray']
                   }
                 }
               },
               { $project: { name: 1, slug: 1, _id: 0 } }
             ],
-            as: 'company'
+            as: 'companies'
           }
         },
         {
           $lookup: {
             from: 'games',
-            let: { seriesSlug: { $arrayElemAt: ['$series', 0] } },
+            let: { seriesSlug: { $arrayElemAt: ['$series', -1] } },
             pipeline: [
               {
                 $match: {
@@ -194,7 +194,6 @@ const gamesRouter = Router()
       }
       
       const results = await Game.aggregate(pipeline)
-      results[0].company.length != 0 ? results[0].company = results[0].company[0] : delete results[0].company
 
       if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
 

@@ -46,10 +46,10 @@ const Navbar = () => {
       {window.location.pathname != "/" ? (
         <div className="flex font-edunline group text-4xl text-transparent">
           <span className="absolute bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text group-hover:blur-sm">
-            <p>Arcade Archives</p>
+            <p>Arcade Archive</p>
           </span>
           <h1 className="relative bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text">
-            <Link to={"/"}>Arcade Archives</Link>
+            <Link to={"/"}>Arcade Archive</Link>
           </h1>
         </div>
       ) : (
