@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useLocation, Link } from "react-router-dom"
+import { RxStarFilled } from "react-icons/rx"
 import { platforms } from "../dict"
+import { Sort } from "../components"
 import axios from 'axios'
 
 const SearchResults = () => {
@@ -10,6 +12,9 @@ const SearchResults = () => {
   const [results, setResults] = useState([])
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
+
+  const [sortBy, setSortBy] = useState("avgRating")
+  const [sortOrder, setSortOrder] = useState(-1)
 
   useEffect(() => {
     async function gameSearch() {
@@ -28,6 +33,19 @@ const SearchResults = () => {
     gameSearch()
     return
   }, [searchText])
+
+  const updateSort = (params) => {
+    params.forEach(item => {
+      if (item.params == "sortBy") { return setSortBy(item.value) }
+      else { return setSortOrder(item.value) }
+    })
+  }
+
+  const handleSort = (a, b) => {
+    if (a[sortBy] < b[sortBy]) return -1 * sortOrder;
+    if (a[sortBy] > b[sortBy]) return 1 * sortOrder;
+    return 0;
+  }
 
   if (loading) {
     return (
@@ -58,17 +76,23 @@ const SearchResults = () => {
       <div className="flex justify-center text-white text-3xl">
         <p>{count} results for <span className="text-4xl font-semibold">{`"${searchText}"`}</span></p>
       </div>
+      <div className="flex gap-2">
+        <Sort criteria={searchSortCriteria} sortBy={sortBy} sortOrder={sortOrder} update={updateSort} />
+      </div>
       <div className="flex flex-col gap-2">
-        {results.map((game, index) => (
+        {results.sort(handleSort).map((game, index) => (
           <div key={index} className="flex flex-col gap-2 group">
-            <div className="flex items-center gap-2">
-              <div className="h-36 w-fit rounded">
-                <img loading="lazy" className="max-w-full max-h-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
+            <div className="flex items-center h-24 gap-2">
+              <div className="h-full w-fit">
+                <img loading="lazy" className="size-full object-cover object-center aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${game.coverId}.jpg`} />
               </div>
-              <div className="flex flex-col h-32 justify-start">
+              <div className="flex flex-col h-full justify-start gap-1">
                 <Link to={`/game/${game.slug}`} className="flex gap-1 text-white text-2xl hover:bg-gradient-to-r from-accentPrimary to-accentSecondary hover:bg-clip-text hover:text-transparent group/link">
                   <p>{game.name} <span className="text-white/75 group-hover/link:text-transparent">({new Date(game.releaseDate * 1000).getFullYear()})</span></p>
                 </Link>
+                <div className="flex items-center text-lg text-white/75 gap-1">
+                  <RxStarFilled /><p>{(game.avgRating || 0).toFixed(1)}</p>
+                </div>
                 <div className="flex text-white gap-1">
                   {game.platforms.map((gamePlatform, index) => (
                     <span key={gamePlatform} className="text-white/75">
@@ -85,5 +109,11 @@ const SearchResults = () => {
     </div>
   )
 }
+
+const searchSortCriteria = [
+  { name: "Avg. Rating", value: "avgRating" },
+  { name: "Name", value: "name" },
+  { name: "Release Date", value: "releaseDate" }
+]
 
 export default SearchResults

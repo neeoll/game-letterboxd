@@ -187,9 +187,9 @@ const gameStatuses = [
 ]
 
 const profileSortCriteria = [
-  { id: 1, name: "Date Added", value: "lastUpdated" },
-  { id: 2, name: "Name", value: "name" },
-  { id: 3, name: "Release Date", value: "releaseDate" }
+  { name: "Date Added", value: "lastUpdated" },
+  { name: "Name", value: "name" },
+  { name: "Release Date", value: "releaseDate" }
 ]
 
 export default Profile
