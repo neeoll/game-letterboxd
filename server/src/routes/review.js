@@ -3,10 +3,14 @@ import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 
 const reviewRouter = Router()
-  .get("/", async (req, res) => {
+  .get("/", verifyToken, async (req, res) => {
     try {
-      const { gameRef, userRef } = req.query
-      const review = await Review.findOne({ gameRef: gameRef, userRef: userRef })
+      const { gameRef } = req.query
+      const { id: userId } = req.user
+      const review = await Review.findOne({ gameRef: gameRef, userRef: userId })
+      if (!review) {
+        return res.status(200)
+      }
       res.status(200).json(review)
     } catch (err) {
       console.error(err)

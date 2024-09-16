@@ -117,7 +117,6 @@ const Profile = () => {
           {/* Games */}
           <div className="basis-4/6 flex flex-col gap-4 h-fit flex-wrap justify-center items-center">
             <div className="flex w-full justify-between gap-4">
-              {/* <div className="flex justify-center items-end text-white/50 font-light text-sm">{(games.length).toLocaleString()} Games</div> */}
               <div className="flex gap-4 w-[26rem]">
                 <DropdownSearch array={profileGenres} value={filterGenre} setValue={setFilterGenre} placeholder={"All Genres"} />
                 <DropdownSearch array={profilePlatforms} value={filterPlatform} setValue={setFilterPlatform} placeholder={"All Platforms"} />
@@ -128,11 +127,10 @@ const Profile = () => {
             </div>
             <div className="flex flex-wrap w-full justify-center">
               {user.games.filter(handleFilter).sort(handleSort).map((game, index) => (
-                <GameCard key={index} size={"basis-[12.5%]"} game={game} />
+                <GameCard key={index} size={"basis-[16.66%]"} game={game} />
               ))}
             </div>
           </div>
-          
             {/* Review Distribution */}
             <div className="flex flex-col basis-1/6">
               <div className="flex h-32 gap-1 border-b">
