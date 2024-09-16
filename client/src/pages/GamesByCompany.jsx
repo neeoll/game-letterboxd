@@ -23,7 +23,7 @@ const GamesByCompany = () => {
 
   useEffect(() => {
     async function gameSearch() {
-      axios.get(`/game/company/${slug}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
+      axios.get(`/company/${slug}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
       .then(res => {
         document.title = `${res.data.name} | Arcade Archive`
         setCompanyDetails({ name: res.data.name, description: res.data.description })

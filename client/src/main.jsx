@@ -7,7 +7,6 @@ import App from "./App"
 import * as Pages from './pages'
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
-axios.defaults.withCredentials = true
 axios.defaults.headers = {
   'Access-Control-Allow-Origin': '*',
   'authorization': localStorage.getItem('accessToken')
@@ -24,58 +23,20 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      {
-        path: '/profile',
-        element: <Pages.Profile />
-      },
-      {
-        path: "/settings",
-        element: <Pages.Settings />
-      },
-      {
-        path: "/",
-        element: <Pages.Home />
-      },
-      {
-        path: "/games",
-        element: <Pages.GameSearch />
-      },
-      {
-        path: "/company/:slug",
-        element: <Pages.GamesByCompany />
-      },
-      {
-        path: "/series/:slug",
-        element: <Pages.GamesBySeries />
-      },
-      {
-        path: "/game/:slug",
-        element: <Pages.GameDetails />
-      },
-      {
-        path: "/login",
-        element: <Pages.Login />
-      },
-      {
-        path: "/reset-password",
-        element: <Pages.PasswordReset />
-      },
-      {
-        path: "/register",
-        element: <Pages.Register />
-      },
-      {
-        path: "/games/search",
-        element: <Pages.SearchResults />
-      },
-      {
-        path: '/password-reset-form',
-        element: <Pages.SendResetLink />
-      },
-      {
-        path: "/verify-email",
-        element: <Pages.VerifyEmail />
-      }
+      { path: '/profile', element: <Pages.Profile /> },
+      { path: "/settings", element: <Pages.Settings /> },
+      { path: "/", element: <Pages.Home /> },
+      { path: "/games", element: <Pages.GameSearch /> },
+      { path: "/company/:slug", element: <Pages.GamesByCompany /> },
+      { path: "/series/:slug", element: <Pages.GamesBySeries /> },
+      { path: "/game/:slug", element: <Pages.GameDetails /> },
+      { path: '/game/:slug/:status', element: <Pages.Status /> },
+      { path: "/login", element: <Pages.Login /> },
+      { path: "/reset-password", element: <Pages.PasswordReset /> },
+      { path: "/register", element: <Pages.Register /> },
+      { path: "/games/search", element: <Pages.SearchResults /> },
+      { path: '/password-reset-form', element: <Pages.SendResetLink /> },
+      { path: "/verify-email", element: <Pages.VerifyEmail /> }
     ]
   }
 ])

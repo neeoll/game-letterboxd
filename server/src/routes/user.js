@@ -38,8 +38,7 @@ const userRouter = Router()
         const url = cloudinary.url(`${req.user.id}-profileIcon`)
         updatedFields.profileIcon = url
       }
-
-      console.log(updatedFields)
+      
       await User.findOneAndUpdate({ _id: req.user.id }, { $set: updatedFields })
 
       res.status(200).json({ message: "all good" })

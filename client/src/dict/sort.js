@@ -1,6 +1,6 @@
 export const sortCriteria = [
-  { id: 1, name: "Release Date", value: "releaseDate" },
-  { id: 2, name: "Name", value: "name" },
-  { id: 3, name: "Avg. Rating", value: "avgRating" },
-  { id: 4, name: "Popularity", value: "popularity" }
+  { name: "Release Date", value: "releaseDate" },
+  { name: "Name", value: "name" },
+  { name: "Avg. Rating", value: "avgRating" },
+  { name: "Popularity", value: "popularity" }
 ]

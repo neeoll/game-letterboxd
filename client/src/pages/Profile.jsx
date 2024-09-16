@@ -89,8 +89,8 @@ const Profile = () => {
               <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-white/75 py-2 px-10">
                 <p>User Stats</p>
                 <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-4">
-                  {gameStatuses.map(status => (
-                    <Link key={status.id} className="flex flex-col justify-center items-center align-middle group">
+                  {gameStatuses.map((status, index) => (
+                    <Link key={index} className="flex flex-col justify-center items-center align-middle group">
                       <p className="text-sm group-hover:text-white">{status.name}</p>
                       <div className="text-lg font-bold group-hover:text-white">{user.games.filter(game => game.status == status.value).length}</div>
                     </Link>

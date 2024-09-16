@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs'
 import axios from "axios"
 import 'dotenv/config'
 import User from "../db/models/User.js"
-import { verifyToken } from "../middleware/verifyToken.js"
 import nodemailer from "nodemailer"
 
 const transporter = nodemailer.createTransport({

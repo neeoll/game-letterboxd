@@ -1,6 +1,5 @@
 export const completionStatuses = [
   {
-    id: 1,
     element: () => (
       <div className="flex items-center gap-2">
         <div className="size-2 rounded-full bg-green-500" />
@@ -11,7 +10,6 @@ export const completionStatuses = [
     value: "completed"
   },
   {
-    id: 2,
     element: () => (
       <div className="flex items-center gap-2">
         <div className="size-2 rounded-full bg-sky-500" />
@@ -22,7 +20,6 @@ export const completionStatuses = [
     value: "played"
   },
   {
-    id: 3,
     element: () => (
       <div className="flex items-center gap-2">
         <div className="size-2 rounded-full bg-yellow-500" />
@@ -33,7 +30,6 @@ export const completionStatuses = [
     value: "shelved"
   },
   {
-    id: 4,
     element: () => (
       <div className="flex items-center gap-2">
         <div className="size-2 rounded-full bg-red-500" />

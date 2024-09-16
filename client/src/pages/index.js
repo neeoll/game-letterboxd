@@ -10,6 +10,22 @@ import Register from "./Register"
 import SearchResults from "./SearchResults"
 import SendResetLink from "./SendResetLink"
 import Settings from "./Settings"
+import Status from "./Status"
 import VerifyEmail from "./VerifyEmail"
 
-export { GameDetails, GamesByCompany, GamesBySeries, GameSearch, Home, Login, PasswordReset, Profile, Register, SearchResults, SendResetLink, Settings, VerifyEmail }
+export { 
+  GameDetails, 
+  GamesByCompany, 
+  GamesBySeries, 
+  GameSearch, 
+  Home, 
+  Login, 
+  PasswordReset, 
+  Profile, 
+  Register, 
+  SearchResults, 
+  SendResetLink, 
+  Settings, 
+  Status, 
+  VerifyEmail 
+}

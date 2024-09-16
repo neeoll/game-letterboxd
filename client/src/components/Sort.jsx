@@ -14,8 +14,8 @@ const Sort = (props) => {
         <ListboxButton className="flex text-white items-center gap-1 text-sm">{props.criteria.find(sort => sort.value == props.sortBy).name}<RxCaretDown /></ListboxButton>
         <ListboxOptions anchor="bottom start" className="rounded bg-neutral-700 text-xs mt-1">
           {
-            props.criteria.map(criteria => (
-              <ListboxOption key={criteria.id} value={criteria} className="py-1.5 px-2 hover:bg-gradient-to-r from-accentPrimary to-accentSecondary">
+            props.criteria.map((criteria, index) => (
+              <ListboxOption key={index} value={criteria} className="py-1.5 px-2 hover:bg-gradient-to-r from-accentPrimary to-accentSecondary">
                 <p className="text-white">{criteria.name}</p>
               </ListboxOption>
             ))

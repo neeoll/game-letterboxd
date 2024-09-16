@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
-import { platforms, genres } from "../dict"
+import { gameStatuses, platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution, useAsyncError } from "../utils"
 import axios from 'axios'
@@ -18,6 +18,7 @@ const GameDetails = () => {
     async function getDetails() {
       axios.get(`/game/${slug}`)
       .then(res => {
+        console.log(res.data)
         document.title = `${res.data.data.name}`
         setDetails(res.data.data)
         setUser(res.data.user)
@@ -170,7 +171,7 @@ const GameDetails = () => {
             <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
             {user ? (
               <div className="relative flex flex-col items-center gap-2 bg-neutral-800 rounded p-4">
-                <ReviewDialog slug={details.slug} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
+                <ReviewDialog gameId={details._id} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                 <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
                 <div className="flex gap-2">
                   {gameActions.map((action, index) => (
@@ -191,42 +192,20 @@ const GameDetails = () => {
               </div>
               <div className="flex flex-wrap w-full text-white/25 justify-center items-center text-center">
                 <div className="w-full flex h-24 gap-1 justify-center">
-                  {calculateRatingDistribution(details.reviews).map(rating => (
-                    <div key={rating.value} className="flex flex-col w-6 justify-end">
+                  {calculateRatingDistribution(details.reviews).map((rating, index) => (
+                    <div key={index} className="flex flex-col w-6 justify-end">
                       <div className={`bg-amber-400 rounded`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 5}px)`}} />
                     </div>
                   ))}
                 </div>
               </div>
               <div className="flex flex-col w-full font-light text-white/75">
-                <div className="flex w-full px-2 justify-between">
-                  <div className="flex gap-1 items-center">
-                    <IoLogoGameControllerB size={"1.25em"}/>
-                    <p>Played</p>
-                  </div>
-                  <div>{details.played.length}</div>
-                </div>
-                <div className="flex w-full px-2 justify-between">
-                  <div className="flex gap-1 items-center">
-                    <IoIosPlay size={"1.25em"}/>
-                    <p>Playing</p>
-                  </div>
-                  <div>{details.playing.length}</div>
-                </div>
-                <div className="flex w-full px-2 justify-between">
-                  <div className="flex gap-1 items-center">
-                    <IoIosBookmarks size={"1.25em"}/>
-                    <p>Backlogs</p>
-                  </div>
-                  <div>{details.backlog.length}</div>
-                </div>
-                <div className="flex w-full px-2 justify-between">
-                  <div className="flex gap-1 items-center">
-                    <IoIosGift size={"1.25em"}/>
-                    <p>Wishlist</p>
-                  </div>
-                  <div>{details.wishlist.length}</div>
-                </div>
+                {gameStatuses.map((status, index) => (
+                  <Link key={index} to={`/game/${details.slug}/${status.value}`} className="flex w-full px-2 justify-between hover:text-white">
+                    {status.element()}
+                    <div>{details[status.value].length}</div>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

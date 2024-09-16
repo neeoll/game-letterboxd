@@ -1,9 +1,6 @@
 import { Router } from "express"
-import 'dotenv/config'
 import Game from "../db/models/Game.js"
 import User from "../db/models/User.js"
-import Series from "../db/models/Series.js"
-import Company from "../db/models/Company.js"
 import Review from "../db/models/Review.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 import { queryToPipeline } from "../utils/queryToPipeline.js"
@@ -12,6 +9,7 @@ import Token from "../db/models/Token.js"
 import jsonwebtoken from 'jsonwebtoken'
 
 const gamesRouter = Router()
+  /* GET ROUTES */
   .get('/home', async (req, res) => {
     try {
       const gamesNum = await Game.countDocuments({})
@@ -34,69 +32,6 @@ const gamesRouter = Router()
       })
     } catch (err) {
       console.error(err)
-    }
-  })
-  .post('/addGame', verifyToken, async (req, res) => {
-    try {
-      const { status, slug } = req.body
-
-      const user = await User.findOne({ email: req.user.email })
-      const game = await Game.findOneAndUpdate({ slug: slug }, { $addToSet: { [status]: user._id } }, { returnDocument: "after" })
-      
-      user.games.push({ gameRef: game._id, lastUpdated: Math.floor(new Date() / 1000), status: req.body.status })
-      await user.save()
-
-      res.status(200).json({ message: 'all good'})
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: 'Internal server error' })
-    }
-  })
-  .post("/review", verifyToken, async (req, res) => {
-    try {
-      const { rating, platform, body, spoiler, status, slug } = req.body
-      const { id: userId } = req.user
-
-      const game = await Game.findOne({ slug: slug })
-
-      const existingReview = await Review.findOne({ gameRef: game._id, userRef: userId })
-      const reviewData = {
-        rating: rating,
-        body: body,
-        platform: platform,
-        spoiler: spoiler,
-        status: status,
-        timestamp: Math.floor(new Date() / 1000),
-        gameRef: game._id,
-        userRef: userId
-      }
-
-      if (existingReview) {
-        await Review.updateOne({ _id: existingReview._id }, reviewData);
-      } else {
-        const newReview = new Review(reviewData)
-        const review = await newReview.save()
-
-        await Game.updateOne(
-          { slug: slug },
-          { $addToSet: { reviews: review._id } }
-        )
-  
-        await User.updateOne(
-          { _id: userId },
-          { 
-            $addToSet: { 
-              reviews: review._id,
-              games: { gameRef: game._id, lastUpdated: Math.floor(new Date / 1000), status: "played" }
-            }
-          }
-        )
-      }
-
-      res.status(200).json({ message: "all good" })
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: "Internal server error" })
     }
   })
   .get('/search', async (req, res) => {
@@ -139,7 +74,6 @@ const gamesRouter = Router()
 
       const pipeline = [
         { $match: { slug: req.params.slug } },
-        // Lookup Reviews
         {
           $lookup: {
             from: 'reviews',
@@ -148,9 +82,7 @@ const gamesRouter = Router()
             as: 'reviews'
           }
         },
-        // Unwind the reviews array to handle each review separately
         { $unwind: { path: '$reviews', preserveNullAndEmptyArrays: true } },
-        // Lookup User data for each review
         {
           $lookup: {
             from: 'users',
@@ -159,9 +91,7 @@ const gamesRouter = Router()
             as: 'reviewUser'
           }
         },
-        // Unwind the reviewUser array to get the first matching user
         { $unwind: { path: '$reviewUser', preserveNullAndEmptyArrays: true } },
-        // Re-structure the reviews array with user data
         {
           $group: {
             _id: '$_id',
@@ -197,7 +127,6 @@ const gamesRouter = Router()
             },
           }
         },
-        // Company Lookup
         {
           $lookup: {
             from: 'companies',
@@ -210,14 +139,11 @@ const gamesRouter = Router()
                   }
                 }
               },
-              {
-                $project: { name: 1, slug: 1, _id: 0 }
-              }
+              { $project: { name: 1, slug: 1, _id: 0 } }
             ],
             as: 'company'
           }
         },
-        // Series Lookup
         {
           $lookup: {
             from: 'games',
@@ -263,9 +189,7 @@ const gamesRouter = Router()
               as: 'userReview'
             }
           },
-          {
-            $unwind: { path: '$userReview', preserveNullAndEmptyArrays: true }
-          }
+          { $unwind: { path: '$userReview', preserveNullAndEmptyArrays: true } }
         )
       }
       
@@ -275,11 +199,11 @@ const gamesRouter = Router()
       if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
 
       if (user) {
-        const token = await Token.findOne({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id) })
+        const token = await Token.findOne({ user: user.id, game: results[0]._id })
         if (!token) {
           const timestamp = new Date()
           timestamp.setHours(timestamp.getHours() + 12)
-          await Token.create({ user: new mongoose.Types.ObjectId(user.id), game: new mongoose.Types.ObjectId(results[0]._id), expiresAfter: timestamp.toISOString() })
+          await Token.create({ user: user.id, game: results[0]._id, expiresAfter: timestamp.toISOString() })
         }
       }
 
@@ -289,38 +213,70 @@ const gamesRouter = Router()
       res.status(500).json({ error: "Internal server error" })
     }
   })
-  .get("/company/:slug", async (req, res) => {
+  .get("/:slug/:status", async (req, res) => {
     try {
-      const pipeline = queryToPipeline(req.query, {
-        companies: req.params.slug
-      })
-
-      const results = await Company.aggregate([
-        { $match: { slug: req.params.slug } },
-        { $project: { _id: 0 } },
-        { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }
+      const { slug, status } = req.params
+      
+      const results = await Game.aggregate([
+        { $match: { slug: slug } },
+        {
+          $lookup: {
+            from: 'users',
+            let: { userArray: `$${status}`}, 
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: ['$_id', '$$userArray']
+                  }
+                }
+              }
+            ],
+            as: 'users'
+          }
+        },
+        { $unwind: { path: '$users', preserveNullAndEmptyArrays: true } },
+        { 
+          $group: {
+            _id: '$_id',
+            slug: { $first: '$slug' },
+            name: { $first: '$name' },
+            coverId: { $first: '$coverId' },
+            users: {
+              $push: {
+                _id: '$users._id',
+                username: '$users.username',
+                profileIcon: '$users.profileIcon',
+              }
+            },
+          }
+        }
       ])
+      
       res.status(200).json(results[0])
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })
     }
   })
-  .get("/series/:slug", async (req, res) => {
+  .post('/addGame', verifyToken, async (req, res) => {
     try {
-      const pipeline = queryToPipeline(req.query, {
-        series: req.params.slug
-      })
+      const { status, slug } = req.body
+      
+      const game = await Game.findOneAndUpdate({ slug: slug }, { $addToSet: { [status]: req.user.id } }, { returnDocument: "after" })
+      await User.updateOne(
+        { email: req.user.email }, 
+        { 
+          $addToSet: { 
+            games: { gameRef: game._id, lastUpdated: Math.floor(new Date() / 1000), status: req.body.status }
+          }
+        }
+      )
 
-      const results = await Series.aggregate([
-        { $match: { slug: req.params.slug } },
-        { $project: { name: 1 } },
-        { $lookup: { from: 'games', pipeline: pipeline, as: 'games' } }
-      ])
-      res.send(results[0]).status(200)
+      res.status(200).json({ message: 'all good'})
     } catch (err) {
       console.error(err)
-      res.status(500).json({ error: 'Internal server error'})
+      res.status(500).json({ error: 'Internal server error' })
     }
   })
 

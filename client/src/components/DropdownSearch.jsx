@@ -32,8 +32,8 @@ const DropdownSearch = (props) => {
       <ComboboxOptions anchor="bottom center" className="w-52 rounded bg-neutral-700 mt-2">
         <SimpleBar autoHide={false} style={{ maxHeight: 200 }}>
           {
-            filteredArray.map(item => (
-              <ComboboxOption key={item.id} value={item} className="p-1 text-white hover:bg-neutral-600 hover:cursor-pointer">
+            filteredArray.map((item, index) => (
+              <ComboboxOption key={index} value={item} className="p-1 text-white hover:bg-neutral-600 hover:cursor-pointer">
                 <p>{item.name}</p>
               </ComboboxOption>
             ))

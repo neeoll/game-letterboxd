@@ -17,8 +17,8 @@ const ReviewDialog = (props) => {
   const [spoiler, setSpoiler] = useState(false)
 
   const submit = async () => {
-    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, slug: props.slug }
-    axios.post('/game/review', data)
+    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }
+    axios.post('/review', data)
     .then(setDialogOpen(false))
     .catch(err => console.error(err))
   }
@@ -45,8 +45,8 @@ const ReviewDialog = (props) => {
                 <div className="flex flex-col items-center gap-4">
                   <img className="h-44 aspect-[45/64] rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${props.cover}.jpg`} />
                   <RadioGroup value={status} onChange={setStatus} className="flex flex-col gap-1 w-full">
-                    {completionStatuses.map(status => (
-                      <Field key={status.id} className="flex items-center justify-center text-white hover:cursor-pointer">
+                    {completionStatuses.map((status, index) => (
+                      <Field key={index} className="flex items-center justify-center text-white hover:cursor-pointer">
                         <Radio value={status.value} className="w-full group flex items-center justify-center rounded-md p-1 bg-neutral-800 data-[checked]:bg-gradient-to-r from-accentPrimary to-accentSecondary">
                           {status.name}
                         </Radio>
@@ -87,7 +87,7 @@ const ReviewDialog = (props) => {
 }
 
 ReviewDialog.propTypes = {
-  slug: PropTypes.string,
+  gameId: PropTypes.string,
   name: PropTypes.string,
   cover: PropTypes.string,
   platforms: PropTypes.array
