@@ -11,4 +11,18 @@ import { HomeReview, GameReview } from "./Reviews"
 import Sort from "./Sort"
 import StyledRating from "./StyledRating"
 
-export { DisplayButtons, DropdownSearch, ErrorCard, FilterSidebar, Footer, GameCard, Navbar, Pagination, ReviewDialog, HomeReview, GameReview, Sort, StyledRating }
+export { 
+  DisplayButtons,
+  DropdownSearch,
+  ErrorCard,
+  FilterSidebar,
+  Footer,
+  GameCard,
+  Navbar,
+  Pagination,
+  ReviewDialog,
+  HomeReview,
+  GameReview,
+  Sort,
+  StyledRating
+}

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from "react-router-dom"
-import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
+import { useEffect, useRef, useState } from 'react'
+import { Link } from "react-router-dom"
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
@@ -8,12 +8,11 @@ import _ from "lodash"
 import axios from 'axios'
 
 const Navbar = () => {
+  const search = useRef(null)
   const textDebounce = _.debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
   const [userData, setUserData] = useState()
   const [menuOpen, setMenuOpen] = useState(false)
-  
-  let navigate = useNavigate()
 
   useEffect(() => {
     async function getUserInfo() {
@@ -26,13 +25,16 @@ const Navbar = () => {
   }, [])
 
   const getGames = async (searchText) => {
-    if (searchText == "") return
+    if (searchText == "") { return setGames([]) }
     axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
     .then(res => setGames(res.data.results))
     .catch(err => console.error(err))
   }
 
-  const resetNavbar = () => { setGames([]) }
+  const resetResults = () => { 
+    search.current.value = ""
+    setGames([])
+  }
 
   function logout() {
     setMenuOpen(false)
@@ -86,40 +88,45 @@ const Navbar = () => {
           )
         }
         <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
-        <Combobox onChange={(value) => navigate(`/game/${value}`)} onClose={resetNavbar}>
-          <ComboboxInput
+        <div ref={parent} className="relative flex flex-col gap-1 group/searchbar">
+          <input
+            ref={search}
             type="text"
-            className="w-72 h-8 rounded p-2 text-sm text-white bg-neutral-700 focus:outline-none data-[focus]"
+            className="w-80 h-8 rounded p-2 text-sm text-white bg-neutral-700 outline-none"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
             onKeyDown={e => { 
               if (e.key === 'Enter') {
-                textDebounce("")
                 navigate({pathname: "/games/search", search: `?title=${encodeURIComponent(e.target.value)}`})
               }
             }}
             autoComplete="new-password"
           />
-          <ComboboxOptions anchor="bottom center" className="w-72 bg-neutral-700 mt-1 rounded">
-            <SimpleBar style={{ maxHeight: 300 }}>
-              {games.map((game, index) => (
-                <ComboboxOption autoFocus={false} key={game.slug} value={index} className="px-1 hover:bg-neutral-600 hover:cursor-pointer">
-                  <div className="p-1 flex w-full gap-2 items-center border-b border-white/50">
-                    <div className="h-10 flex justify-center items-center">
-                      <img className="w-full h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${game.coverId}.jpg`} />
-                    </div>
-                    <h1 className="text-white text-xs text-wrap">
-                      {`${game.name} `}
-                      <span className="text-white/75">
-                        {`(${new Date(game.releaseDate * 1000).getFullYear()})`}
-                      </span>
-                    </h1>
-                  </div>
-                </ComboboxOption>
-              ))}
-            </SimpleBar>
-          </ComboboxOptions>
-        </Combobox>
+          <div className="absolute w-full top-10 invisible group-focus-within/searchbar:visible">
+            {games.length == 0 ? 
+              <div className="w-full bg-neutral-700 p-1.5 flex justify-center rounded text-white/50 font-light text-sm">No results.</div> : 
+              <div className="w-full bg-neutral-700 rounded">
+                <SimpleBar style={{ maxHeight: 300 }}>
+                  {games.map((game, index) => (
+                    <Link key={index} to={`/game/${game.slug}`} onClick={() => resetResults()}>
+                      <div className="grid grid-cols-9 p-1 items-center hover:bg-neutral-600">
+                        <div className="col-span-1 h-10">
+                          <img className="h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${game.coverId}.jpg`} />
+                        </div>
+                        <div className="col-span-8 text-white text-xs text-wrap">
+                          {`${game.name} `}
+                          <span className="text-white/75">
+                            {`(${new Date(game.releaseDate * 1000).getFullYear()})`}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </SimpleBar>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     </nav>
   )
