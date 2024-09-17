@@ -16,9 +16,9 @@ const GameDetails = () => {
   
   useEffect(() => {
     async function getDetails() {
+      setLoading(true)
       axios.get(`/game/${slug}`)
       .then(res => {
-        console.log(res.data)
         document.title = `${res.data.data.name}`
         setDetails(res.data.data)
         setUser(res.data.user)

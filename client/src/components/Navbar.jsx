@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
@@ -9,6 +9,7 @@ import axios from 'axios'
 import { getYearFromTimestamp } from '../utils'
 
 const Navbar = () => {
+  const navigate = useNavigate()
   const search = useRef(null)
   const textDebounce = _.debounce((text) => getGames(text), 300)
   const [games, setGames] = useState([])
@@ -32,8 +33,16 @@ const Navbar = () => {
     .catch(err => console.error(err))
   }
 
-  const resetResults = () => { 
+  const handleSearch = () => {
+    navigate({ pathname: "/games/search", search: `?title=${encodeURIComponent(search.current.value)}` })
     search.current.value = ""
+    search.current.blur()
+    setGames([])
+  }
+
+  const resetResults = () => {
+    search.current.value = ""
+    search.current.blur()
     setGames([])
   }
 
@@ -44,7 +53,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52 bg-gradient-to-b from-neutral-900 from-10% to-transparent">
+    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52 bg-gradient-to-b from-neutral-900">
       {/* Title */}
       {window.location.pathname != "/" ? (
         <div className="flex font-edunline group text-4xl text-transparent">
@@ -89,7 +98,7 @@ const Navbar = () => {
           )
         }
         <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
-        <div ref={parent} className="relative group/searchbar">
+        <div className="relative group/searchbar">
           <input
             ref={search}
             type="text"
@@ -98,7 +107,7 @@ const Navbar = () => {
             placeholder="Search"
             onKeyDown={e => { 
               if (e.key === 'Enter') {
-                navigate({pathname: "/games/search", search: `?title=${encodeURIComponent(e.target.value)}`})
+                handleSearch()
               }
             }}
             autoComplete="new-password"
