@@ -6,6 +6,7 @@ import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _ from "lodash"
 import axios from 'axios'
+import { getYearFromTimestamp } from '../utils'
 
 const Navbar = () => {
   const search = useRef(null)
@@ -88,7 +89,7 @@ const Navbar = () => {
           )
         }
         <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
-        <div ref={parent} className="relative flex flex-col gap-1 group/searchbar">
+        <div ref={parent} className="relative group/searchbar">
           <input
             ref={search}
             type="text"
@@ -116,7 +117,7 @@ const Navbar = () => {
                         <div className="col-span-8 text-white text-xs text-wrap">
                           {`${game.name} `}
                           <span className="text-white/75">
-                            {`(${new Date(game.releaseDate * 1000).getFullYear()})`}
+                            {`(${getYearFromTimestamp(game.releaseDate)})`}
                           </span>
                         </div>
                       </div>
