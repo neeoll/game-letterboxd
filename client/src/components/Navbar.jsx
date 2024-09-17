@@ -70,25 +70,19 @@ const Navbar = () => {
       <div className="flex gap-4 items-center">
         {userData ? 
           (
-            <Menu>
-              <MenuButton className="cursor-default">
-                <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 items-center text-white/75 hover:text-white">{userData.username}<RxCaretDown className="text-lg" /></div>
-              </MenuButton>
-              <MenuItems onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} static={menuOpen} anchor="bottom center">
-                <div className="flex flex-col bg-neutral-800 text-white rounded mt-1 text-center">
+            <div className="relative">
+              <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 w-20 justify-center items-center text-white/75 hover:text-white">{userData.username}<RxCaretDown className="text-lg" /></div>
+              <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className={`absolute w-full pt-1 ${menuOpen == true ? "visible": "invisible"}`}>
+                <div className="flex flex-col items-center bg-neutral-800 rounded text-white">
                   {navbarDestinations.map((destination, index) => (
-                    <MenuItem key={index}>
-                      <Link onClick={() => setMenuOpen(false)} to={destination.route} className="first:rounded-t py-1.5 px-4 text-sm hover:bg-gradient-to-r from-accentPrimary to-accentSecondary">
-                        {destination.name}
-                      </Link>
-                    </MenuItem>
+                    <Link key={index} onClick={() => setMenuOpen(false)} to={destination.route} className="w-full text-center py-1.5 px-4 first:rounded-t text-sm hover:bg-gradient-to-r from-accentPrimary to-accentSecondary">
+                      {destination.name}
+                    </Link>
                   ))}
-                  <MenuItem>
-                    <button onClick={() => logout()} className="py-1.5 px-4 text-sm rounded-b hover:bg-red-500">Logout</button>
-                  </MenuItem>
+                  <button onClick={() => logout()} className="w-full text-center py-1.5 px-4 text-sm rounded-b hover:bg-red-500">Logout</button>
                 </div>
-              </MenuItems>
-            </Menu>
+              </div>
+            </div>
           ) :
           (
             <div className="flex gap-4">
