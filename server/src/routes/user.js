@@ -79,7 +79,7 @@ const userRouter = Router()
                 genres: '$profileGames.genres', 
                 platforms: '$profileGames.platforms',
               }
-            },
+            }
           }
         },
         {
@@ -88,14 +88,50 @@ const userRouter = Router()
             localField: '_id',
             foreignField: 'userRef',
             pipeline: [
-              { $project: { rating: 1 } }
+              { $match: { body: { $ne: "" } } },
+              { $project: { _id: 0, userRef: 0 } },
+              { $sort: { timestamp: -1 } },
+              { $limit: 6 }
             ],
-            as: 'reviews',
+            as: 'reviewData',
+          }
+        },
+        { $unwind: { path: '$reviewData', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'games',
+            localField: 'reviewData.gameRef',
+            foreignField: '_id',
+            pipeline: [
+              { $project: { name: 1, slug: 1, coverId: 1 } }
+            ],
+            as: 'reviewedGames'
+          }
+        },
+        { $unwind: { path: '$reviewedGames', preserveNullAndEmptyArrays: true } },
+        {
+          $group: {
+            _id: '$_id',
+            username: { $first: '$username' },
+            games: { $first: '$games' },
+            reviews: {
+              $push: {
+                body: '$reviewData.body',
+                status: '$reviewData.status',
+                rating: '$reviewData.rating',
+                timestamp: '$reviewData.timestamp',
+                platform: '$reviewData.platform',
+                gameName: '$reviewedGames.name',
+                gameSlug: '$reviewedGames.slug',
+                gameCover: '$reviewedGames.coverId'
+              }
+            }
           }
         }
       ])
       
       if (Object.keys(user[0].games[0]).length == 0) { user[0].games = [] }
+      if (Object.keys(user[0].reviews[0]).length == 0) { user[0].reviews = [] }
       res.status(200).json(user[0])
     } catch (err) {
       console.error(err)

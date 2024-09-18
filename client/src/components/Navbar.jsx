@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react"
 import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
