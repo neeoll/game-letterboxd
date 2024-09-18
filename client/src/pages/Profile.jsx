@@ -154,7 +154,7 @@ const Profile = () => {
           {/* Reviews */}
           <div className="col-span-6 flex flex-wrap">
             {user.reviews.map((review, index) => (
-              <div className="flex flex-col basis-1/2 gap-2 p-4">
+              <div key={index} className="flex flex-col basis-1/2 gap-2 p-4">
                 <div className="grid grid-cols-8 gap-2 text-white">
                   <Link to={`/game/${review.gameSlug}`} className="col-span-1">
                     <img className="w-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${review.gameCover}.jpg`} />
@@ -169,7 +169,7 @@ const Profile = () => {
                         <Link to={{ pathname: "/games", search: `?platform=${review.platform}`}}>{platforms.find(platform => platform.id == review.platform).name}</Link>
                       </div>
                     </div>
-                    <div>{review.body}</div>
+                    <div className="text-white/75">{review.body}</div>
                   </div>
                 </div>
                 <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
