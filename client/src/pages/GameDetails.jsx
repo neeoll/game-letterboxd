@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
+import axios from 'axios'
+import { IconButton } from "@mui/material"
+import { RxStar, RxStarFilled } from "react-icons/rx"
 import { gameStatuses, platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution, useAsyncError } from "../utils"
-import axios from 'axios'
 
 const GameDetails = () => {
   const { slug } = useParams()
@@ -12,6 +14,7 @@ const GameDetails = () => {
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(false)
+  const [favorite, setFavorite] = useState(false)
   const [details, setDetails] = useState()
   
   useEffect(() => {
@@ -20,6 +23,7 @@ const GameDetails = () => {
       axios.get(`/game/${slug}`)
       .then(res => {
         document.title = `${res.data.data.name}`
+        console.log(res.data)
         setDetails(res.data.data)
         setUser(res.data.user)
         setLoading(false)
@@ -34,6 +38,10 @@ const GameDetails = () => {
 
   async function addGame(status, slug) {
     axios.post('/game/addGame', { status, slug })
+  }
+
+  async function toggleFavorite(slug) {
+    axios.post('/game/favorite', { slug })
   }
 
   if (loading) {
@@ -138,7 +146,7 @@ const GameDetails = () => {
       {/* Background Image */}
       <div className="absolute -z-20 inset-0 bg-neutral-700">
         {details.images.length != 0 ?
-          <img className="size-full object-cover" src={`https://images.igdb.com/igdb/image/upload/t_1080p/${details.images[Math.floor(Math.random() * (details.images.length - 1))]}.jpg`}/> :
+          <img className="size-full object-cover" src={`https://images.igdb.com/igdb/image/upload/t_1080p_2x/${details.images[Math.floor(Math.random() * (details.images.length - 1))]}.jpg`}/> :
           <></>
         }
         <div className="absolute inset-0 bg-gradient-to-b from-transparent from-10% via-neutral-900 via-50% to-neutral-900 to-60%"></div>
@@ -147,8 +155,13 @@ const GameDetails = () => {
       <div className="grid grid-cols-5 grid-auto-rows gap-x-2">
         {/* Cover */}
         <div className="col-span-1 flex items-end justify-center">
-          <div className="basis-3/4">
+          <div className="relative basis-3/4">
             <img className="size-full aspect-[45/64] rounded z-10" src={`https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${details.coverId}.jpg`} />
+            <div className="absolute top-1.5 end-1.5">
+              <button onClick={() => toggleFavorite(details.slug)}className="group text-3xl">
+                {details.favorite ? <RxStarFilled className="text-yellow-500 group-active:text-white"/> : <RxStar className="group-active:text-yellow-500"/>}       
+              </button>
+            </div>
           </div>
         </div>
         {/* Title */}
@@ -174,7 +187,7 @@ const GameDetails = () => {
             {user ? (
               <div className="relative flex flex-col items-center gap-2 bg-neutral-800 rounded p-4">
                 <ReviewDialog gameId={details._id} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
-                <StyledRating defaultValue={details.userReview?.rating || 0} size="large" readOnly />
+                <StyledRating defaultValue={details.userRating || 0} size="large" readOnly />
                 <div className="flex gap-2">
                   {gameActions.map((action, index) => (
                     <button key={index} onClick={() => addGame(action.status, details.slug)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
@@ -196,7 +209,7 @@ const GameDetails = () => {
                 <div className="w-full flex h-24 gap-1 justify-center">
                   {calculateRatingDistribution(details.reviews).map((rating, index) => (
                     <div key={index} className="flex flex-col w-6 justify-end">
-                      <div className={`bg-amber-400 rounded`} style={{ height: `calc(${rating.percent}% + ${rating.percent + 5}px)`}} />
+                      <div className={`bg-amber-400 rounded`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
                     </div>
                   ))}
                 </div>
@@ -218,14 +231,14 @@ const GameDetails = () => {
             <p className="text-white/75">{details.summary}</p>
             <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
           </div>
-          {details.series.length != 0 ?
+          {details.seriesSlug ?
             <div className="flex flex-col gap-2">
               <div className="flex justify-between px-2">
                 <p className="font-semibold">Other Games in Series</p>
-                <Link to={`/series/${details.series[details.series.length - 1]}`} className="text-sm font-semibold hover:underline">See more</Link>
+                <Link to={`/series/${details.seriesSlug}`} className="text-sm font-semibold hover:underline">See more</Link>
               </div>
               <div className="flex h-fit justify-start flex-wrap">
-                {details.gamesInSeries.map((game, index) => (
+                {details.series.map((game, index) => (
                   <GameCard key={index} size={"basis-[16.66%]"} game={game} />
                 ))}
               </div>

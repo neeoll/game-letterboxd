@@ -9,9 +9,9 @@ import { getYearFromTimestamp } from '../utils'
 
 const Navbar = () => {
   const navigate = useNavigate()
-  const search = useRef(null)
-  const textDebounce = _.debounce((text) => getGames(text), 300)
-  const [games, setGames] = useState([])
+  const searchbar = useRef(null)
+  const textDebounce = _.debounce((text) => search(text), 300)
+  const [results, setResults] = useState([])
   const [userData, setUserData] = useState()
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -25,10 +25,10 @@ const Navbar = () => {
     return
   }, [])
 
-  const getGames = async (searchText) => {
-    if (searchText == "") { return setGames([]) }
+  const search = async (searchText) => {
+    if (searchText == "") { return setResults([]) }
     axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
-    .then(res => setGames(res.data.results))
+    .then(res => setResults(res.data.results))
     .catch(err => console.error(err))
   }
 
@@ -36,13 +36,13 @@ const Navbar = () => {
     navigate({ pathname: "/games/search", search: `?title=${encodeURIComponent(search.current.value)}` })
     search.current.value = ""
     search.current.blur()
-    setGames([])
+    setResults([])
   }
 
   const resetResults = () => {
     search.current.value = ""
     search.current.blur()
-    setGames([])
+    setResults([])
   }
 
   function logout() {
@@ -52,7 +52,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-6 px-52 bg-gradient-to-b from-neutral-900">
+    <nav className="absolute z-10 inset-0 items-center flex justify-between w-full h-fit py-4 px-52 bg-gradient-to-b from-neutral-900">
       {/* Title */}
       {window.location.pathname != "/" ? (
         <div className="flex font-edunline group text-4xl text-transparent">
@@ -93,25 +93,23 @@ const Navbar = () => {
         <Link to={"/games"} className="text-white/75 hover:text-white">Games</Link>
         <div className="relative group/searchbar">
           <input
-            ref={search}
+            ref={searchbar}
             type="text"
             className="w-80 h-8 rounded p-2 text-sm text-white bg-neutral-700 outline-none"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
             onKeyDown={e => { 
-              if (e.key === 'Enter') {
-                handleSearch()
-              }
+              if (e.key === 'Enter') { handleSearch() }
             }}
             autoComplete="new-password"
           />
           <div className="absolute w-full top-10 invisible group-focus-within/searchbar:visible">
-            {games.length == 0 ? 
+            {results.length == 0 ? 
               <div className="w-full bg-neutral-700 p-1.5 flex justify-center rounded text-white/50 font-light text-sm">No results.</div> : 
               <div className="w-full bg-neutral-700 rounded">
                 <SimpleBar style={{ maxHeight: 300 }}>
-                  {games.map((game, index) => (
-                    <Link key={index} to={`/game/${game.slug}`} onClick={() => resetResults()}>
+                  {results.map((result, index) => (
+                    <Link key={index} to={`/game/${result.slug}`} onClick={() => resetResults()}>
                       <div className="grid grid-cols-9 p-1 items-center hover:bg-neutral-600">
                         <div className="col-span-1 h-10">
                           <img className="h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${game.coverId}.jpg`} />

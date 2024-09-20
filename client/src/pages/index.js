@@ -11,6 +11,7 @@ import SearchResults from "./SearchResults"
 import SendResetLink from "./SendResetLink"
 import Settings from "./Settings"
 import Status from "./Status"
+import User from "./User"
 import VerifyEmail from "./VerifyEmail"
 
 export { 
@@ -27,5 +28,6 @@ export {
   SendResetLink, 
   Settings, 
   Status, 
-  VerifyEmail 
+  User,
+  VerifyEmail,
 }

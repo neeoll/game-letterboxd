@@ -22,11 +22,16 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   profileIcon: String,
+  bio: {
+    type: String,
+    default: ""
+  },
   verified: {
     type: Boolean,
     default: false
   },
   games: [gameSchema],
+  favoriteGames: [mongoose.Schema.Types.ObjectId],
   reviews: [mongoose.Schema.Types.ObjectId]
 })
 

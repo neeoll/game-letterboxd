@@ -9,7 +9,7 @@ const gameSchema = new mongoose.Schema({
   releaseDate: Number,
   genres: [Number],
   summary: String,
-  artworks: [String],
+  images: [String],
   popularity: Number,
   avgRating: Number,
   views: {

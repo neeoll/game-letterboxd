@@ -74,95 +74,52 @@ const gamesRouter = Router()
 
       const pipeline = [
         { $match: { slug: req.params.slug } },
-        {
-          $lookup: {
-            from: 'reviews',
-            localField: '_id',
-            foreignField: 'gameRef',
-            as: 'reviews'
-          }
-        },
-        { $unwind: { path: '$reviews', preserveNullAndEmptyArrays: true } },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'reviews.userRef',
-            foreignField: '_id',
-            as: 'reviewUser'
-          }
-        },
-        { $unwind: { path: '$reviewUser', preserveNullAndEmptyArrays: true } },
-        {
-          $group: {
-            _id: '$_id',
-            slug: { $first: '$slug' },
-            companies: { $first: '$companies' },
-            series: { $first: '$series' },
-            name: { $first: '$name' },
-            coverId: { $first: '$coverId' },
-            platforms: { $first: '$platforms' },
-            releaseDate: { $first: '$releaseDate' },
-            genres: { $first: '$genres' },
-            summary: { $first: '$summary' },
-            avgRating: { $first: '$avgRating' },
-            played: { $first: '$played' },
-            playing: { $first: '$playing' },
-            backlog: { $first: '$backlog' },
-            wishlist: { $first: '$wishlist' },
-            images: { $first: '$images' },
-            reviews: {
-              $push: {
-                _id: '$reviews._id',
-                rating: '$reviews.rating',
-                body: '$reviews.body',
-                platform: '$reviews.platform',
-                spoiler: '$reviews.spoiler',
-                status: '$reviews.status',
-                timestamp: '$reviews.timestamp',
-                user: {
-                  username: '$reviewUser.username',
-                  profileIcon: '$reviewUser.profileIcon'
-                }
-              }
-            },
-          }
-        },
+        /* Companies Lookup */
         {
           $lookup: {
             from: 'companies',
-            let: { companyArray: '$companies' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $in: ['$slug', '$$companyArray']
-                  }
-                }
-              },
-              { $project: { name: 1, slug: 1, _id: 0 } }
-            ],
+            localField: 'companies',
+            foreignField: 'slug',
+            pipeline: [{ $project: { name: 1, slug: 1, _id: 0 } }],
             as: 'companies'
+          }
+        },
+        /* Series Lookup */
+        { $addFields: { seriesSlug: { $arrayElemAt: ['$series', -1] } } },
+        {
+          $lookup: {
+            from: 'games',
+            localField: 'seriesSlug',
+            foreignField: 'series',
+            pipeline: [
+              { $match: { slug: { $ne: req.params.slug } } },
+              { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } },
+              { $limit: 6 }
+            ],
+            as: 'series'
           }
         },
         {
           $lookup: {
-            from: 'games',
-            let: { seriesSlug: { $arrayElemAt: ['$series', -1] } },
+            from: 'reviews',
+            localField: 'reviews',
+            foreignField: '_id',
             pipeline: [
               {
-                $match: {
-                  $expr: { $in: ['$$seriesSlug', '$series'] }
+                $lookup: {
+                  from: 'users',
+                  localField: 'userRef',
+                  foreignField: '_id',
+                  pipeline: [
+                    { $project: { username: 1, profileIcon: 1 } }
+                  ],
+                  as: 'user'
                 }
               },
-              {
-                $match: {
-                  slug: { $ne: req.params.slug }
-                }
-              },
-              { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } },
-              { $limit: 6 }
+              { $unwind: '$user' },
+              { $sort: { timestamp: -1 } }
             ],
-            as: 'gamesInSeries'
+            as: 'reviews'
           }
         }
       ]
@@ -172,30 +129,41 @@ const gamesRouter = Router()
           {
             $lookup: {
               from: 'reviews',
-              let: { ref: '$_id' },
+              localField: '_id',
+              foreignField: 'gameRef',
               pipeline: [
                 {
                   $match: { 
                     $expr: {
-                      $and: [
-                        { $eq: ['$gameRef', '$$ref'] },
-                        { $eq: ['$userRef', new mongoose.Types.ObjectId(user.id) ] }
-                      ]
+                      $eq: ['$userRef', new mongoose.Types.ObjectId(user.id) ]
                     }
                   }
                 },
-                { $project: { rating: 1 } }
+                { $project: { rating: 1, _id: 0 } }
               ],
               as: 'userReview'
             }
           },
-          { $unwind: { path: '$userReview', preserveNullAndEmptyArrays: true } }
+          { $unwind: { path: '$userReview', preserveNullAndEmptyArrays: true } },
+          { $addFields: { userRating: '$userReview.rating' } },
+          {
+            $lookup: {
+              from: 'users',
+              localField: '_id',
+              foreignField: 'favoriteGames',
+              as: 'user'
+            }
+          },
+          { 
+            $addFields: {
+              favorite: { $ne: ['$user', []] }
+            }
+          },  
+          { $unset: ['userReview', 'user'] }
         )
       }
       
       const results = await Game.aggregate(pipeline)
-
-      if (Object.keys(results[0].reviews[0]).length == 1) { results[0].reviews = [] }
 
       if (user) {
         const token = await Token.findOne({ user: user.id, game: results[0]._id })
@@ -276,6 +244,21 @@ const gamesRouter = Router()
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Internal server error' })
+    }
+  })
+  .post('/favorite', verifyToken, async (req, res) => {
+    try {
+      const { slug } = req.body
+      const game = await Game.findOne({ slug: slug })
+      await User.updateOne(
+        { email: req.user.email },
+        {
+          $addToSet: { favoriteGames: game._id }
+        }
+      )
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ error: "Internal server error" })
     }
   })
 

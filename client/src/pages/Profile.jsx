@@ -26,7 +26,7 @@ const Profile = () => {
     async function getUserInfo() {
       axios.get('/user/profileData')
       .then(res => {
-        document.title = `${res.data.username}'s Profile | Arcade Archive`
+        document.title = "Profile | Arcade Archive"
         setUser(res.data)
         setGenreCounts(countOccurrences(res.data.games.map(game => game.genres).flat().map(item => genres.find(genre => genre.id == item))))
         setPlatforms(Array.from(new Set(res.data.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))

@@ -11,7 +11,7 @@ const Home = () => {
     async function getHomeData() {
       axios.get('/game/home')
       .then(res => {
-        document.title = "Arcade Archive"
+        document.title = "Home | Arcade Archive"
         setHomeData(res.data)
         setLoading(false)
       })
