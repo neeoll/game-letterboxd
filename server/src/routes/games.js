@@ -121,7 +121,18 @@ const gamesRouter = Router()
             ],
             as: 'reviews'
           }
-        }
+        },
+        {
+          $addFields: {
+            statusCounts: {
+              backlog: { $size: '$backlog' },
+              playing: { $size: '$playing' },
+              played: { $size: '$played' },
+              wishlist: { $size: '$wishlist' }
+            }
+          }
+        },
+        { $unset: ['backlog', 'played', 'playing', 'wishlist'] }
       ]
 
       if (user) {
@@ -151,6 +162,15 @@ const gamesRouter = Router()
               from: 'users',
               localField: '_id',
               foreignField: 'favoriteGames',
+              pipeline: [
+                { 
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', new mongoose.Types.ObjectId(user.id) ]
+                    }
+                  }
+                }
+              ],
               as: 'user'
             }
           },
@@ -197,27 +217,13 @@ const gamesRouter = Router()
                     $in: ['$_id', '$$userArray']
                   }
                 }
-              }
+              },
+              { $project: { username: 1, profileIcon: 1, _id: 0 } }
             ],
             as: 'users'
           }
         },
-        { $unwind: { path: '$users', preserveNullAndEmptyArrays: true } },
-        { 
-          $group: {
-            _id: '$_id',
-            slug: { $first: '$slug' },
-            name: { $first: '$name' },
-            coverId: { $first: '$coverId' },
-            users: {
-              $push: {
-                _id: '$users._id',
-                username: '$users.username',
-                profileIcon: '$users.profileIcon',
-              }
-            },
-          }
-        }
+        { $project: { name: 1, coverId: 1, users: 1, slug: 1, _id: 0 } }
       ])
       
       res.status(200).json(results[0])
@@ -252,9 +258,7 @@ const gamesRouter = Router()
       const game = await Game.findOne({ slug: slug })
       await User.updateOne(
         { email: req.user.email },
-        {
-          $addToSet: { favoriteGames: game._id }
-        }
+        { $addToSet: { favoriteGames: game._id } }
       )
     } catch (err) {
       console.error(err)

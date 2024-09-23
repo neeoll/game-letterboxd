@@ -209,7 +209,7 @@ const GameDetails = () => {
                 <div className="w-full flex h-24 gap-1 justify-center">
                   {calculateRatingDistribution(details.reviews).map((rating, index) => (
                     <div key={index} className="flex flex-col w-6 justify-end">
-                      <div className={`bg-amber-400 rounded`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
+                      <div className={`bg-gradient-to-t from-accentPrimary to-accentSecondary rounded`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
                     </div>
                   ))}
                 </div>
@@ -218,7 +218,7 @@ const GameDetails = () => {
                 {gameStatuses.map((status, index) => (
                   <Link key={index} to={`/game/${details.slug}/${status.value}`} className="flex w-full px-2 justify-between hover:text-white">
                     {status.element()}
-                    <div>{details[status.value].length}</div>
+                    <div>{details.statusCounts[status.value]}</div>
                   </Link>
                 ))}
               </div>

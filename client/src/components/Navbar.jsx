@@ -28,7 +28,9 @@ const Navbar = () => {
   const search = async (searchText) => {
     if (searchText == "") { return setResults([]) }
     axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
-    .then(res => setResults(res.data.results))
+    .then(res => {
+      setResults(res.data.results)
+    })
     .catch(err => console.error(err))
   }
 
@@ -112,12 +114,12 @@ const Navbar = () => {
                     <Link key={index} to={`/game/${result.slug}`} onClick={() => resetResults()}>
                       <div className="grid grid-cols-9 p-1 items-center hover:bg-neutral-600">
                         <div className="col-span-1 h-10">
-                          <img className="h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${game.coverId}.jpg`} />
+                          <img className="h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${result.coverId}.jpg`} />
                         </div>
                         <div className="col-span-8 text-white text-xs text-wrap">
-                          {`${game.name} `}
+                          {`${result.name} `}
                           <span className="text-white/75">
-                            {`(${getYearFromTimestamp(game.releaseDate)})`}
+                            {`(${getYearFromTimestamp(result.releaseDate)})`}
                           </span>
                         </div>
                       </div>

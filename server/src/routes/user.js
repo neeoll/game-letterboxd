@@ -143,86 +143,24 @@ const userRouter = Router()
   .get("/:username", async (req, res) => {
     try {
       const user = await User.aggregate([
-        /* Get specific user document */
+        // Find user document
         { $match: { username: req.params.username } },
+        // Determine most common genres for user
         { 
-          $lookup: {
-            from: 'games',
-            let: { favoritesArray: '$favoriteGames'},
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $in: ['$_id', '$$favoritesArray']
-                  }
-                }
-              },
-              { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } }
-            ],
-            as: 'favorites'
-          }
-        },
-        /* Filter games array into array of subdocuments with a status of "played", sorted by timestamp */
-        { 
-          $addFields: {
-            recent: {
-              $sortArray: {
-                input: {
-                  $filter: {
-                    input: '$games',
-                    as: 'game',
-                    cond: { $eq: ['$$game.status', "played"] },
-                  }
-                },
-                sortBy: { lastUpdated: -1 }
-              }
-            }
-          }
-        },
-        /* Use the array to get corresponding game documents from the games collection */
-        {
-          $lookup: {
-            from: 'games',
-            localField: 'recent.gameRef',
-            foreignField: '_id',
-            pipeline: [
-              { $project: { name: 1, coverId: 1, slug: 1, _id: 0 } }
-            ],
-            as: 'recentlyPlayed'
-          }
-        },
-        { $unwind: { path: '$games', preserveNullAndEmptyArrays: true } },
-        {
           $lookup: {
             from: 'games',
             localField: 'games.gameRef',
             foreignField: '_id',
             pipeline: [
-              { $project: { genres: 1, platforms: 1, _id: 0 } }
+              { $unwind: '$genres' },
+              { $group: { _id: '$genres', count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 5 }
             ],
-            as: 'allGames'
+            as: 'genres'
           }
         },
-        { $unwind: { path: '$allGames', preserveNullAndEmptyArrays: true } },
-        
-        /* Group stage */
-        {
-          $group: {
-            _id: '$_id',
-            username: { $first: '$username' },
-            profileIcon: { $first: '$profileIcon' },
-            bio: { $first: '$bio'},
-            favorites: { $first: '$favorites' },
-            recentlyPlayed: { $first: '$recentlyPlayed' },
-            stats: {
-              $push: {
-                status: '$games.status',
-                genres: '$allGames.genres',
-                platforms: '$allGames.platforms'
-              }
-            },
-          }
-        },
+        // Review data collation
         {
           $lookup: {
             from: 'reviews',
@@ -230,53 +168,66 @@ const userRouter = Router()
             foreignField: 'userRef',
             pipeline: [
               { $match: { body: { $ne: "" } } },
-              { $project: { _id: 0, userRef: 0 } },
-              { $sort: { timestamp: -1 } },
-              { $limit: 6 }
+              {
+                $lookup: {
+                  from: 'games',
+                  localField: 'gameRef',
+                  foreignField: '_id',
+                  pipeline: [{ $project: { _id: 0, name: 1, slug: 1, coverId: 1 } }],
+                  as: 'game'
+                }
+              },
+              { $unwind: '$game' },
+              { $project: { _id: 0, __v: 0, gameRef: 0, userRef: 0 } }
             ],
-            as: 'reviewData',
+            as: 'reviews'
           }
         },
-        { $unwind: { path: '$reviewData', preserveNullAndEmptyArrays: true } },
+        // Retrieve most recently played games
         {
           $lookup: {
             from: 'games',
-            localField: 'reviewData.gameRef',
+            localField: 'games.gameRef',
             foreignField: '_id',
             pipeline: [
-              { $project: { name: 1, slug: 1, coverId: 1 } }
+              { $project: { _id: 0, name: 1, slug: 1, coverId: 1 } },
+              { $limit: 6 }
             ],
-            as: 'reviewedGames'
+            as: 'recentlyPlayed'
           }
         },
-        { $unwind: { path: '$reviewedGames', preserveNullAndEmptyArrays: true } },
+        // Retrive games marked as favorite for user
         {
-          $group: {
-            _id: '$_id',
-            username: { $first: '$username' },
-            profileIcon: { $first: '$profileIcon' },
-            bio: { $first: '$bio'},
-            favorites: { $first: '$favorites' },
-            recentlyPlayed: { $first: '$recentlyPlayed' },
-            stats: { $first: '$stats' },
-            reviews: {
-              $push: {
-                body: '$reviewData.body',
-                status: '$reviewData.status',
-                rating: '$reviewData.rating',
-                timestamp: '$reviewData.timestamp',
-                platform: '$reviewData.platform',
-                gameName: '$reviewedGames.name',
-                gameSlug: '$reviewedGames.slug',
-                gameCover: '$reviewedGames.coverId'
-              }
-            }
+          $lookup: {
+            from: 'games',
+            localField: 'favoriteGames',
+            foreignField: '_id',
+            pipeline: [{ $project: { _id: 0, name: 1, slug: 1, coverId: 1 } }],
+            as: 'favorites'
           }
+        },
+        // Project necessary values and add game status counts
+        { 
+          $project: {
+            _id: 0,
+            username: 1, 
+            profileIcon: 1, 
+            bio: 1, 
+            genres: 1,
+            reviews: 1,
+            recentlyPlayed: 1, 
+            recent: 1,
+            favorites: 1,
+            statusCounts: {
+              "Played": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['played', '$$game.status'] } } } },
+              "Playing": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['playing', '$$game.status'] } } } },
+              "Backlog": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['backlog', '$$game.status'] } } } },
+              "Wishlist": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['wishlist', '$$game.status'] } } } }
+            },
+          } 
         }
       ])
       
-      // if (Object.keys(user[0].games[0]).length == 0) { user[0].games = [] }
-      if (Object.keys(user[0].reviews[0]).length == 0) { user[0].reviews = [] }
       res.status(200).json(user[0])
     } catch (err) {
       console.error(err)
