@@ -15,6 +15,7 @@ const Settings = () => {
   const [emailValid, setEmailValid] = useState(true)
   const [username, setUsername] = useState(null)
   const [usernameValid, setUsernameValid] = useState(true)
+  const [bio, setBio] = useState(null)
 
   useEffect(() => {
     async function getUserData() {
@@ -58,6 +59,7 @@ const Settings = () => {
     formData.append('image', uri)
     formData.append('username', username)
     formData.append('email', email)
+    formData.append('bio', bio)
     
     axios.post('/user/update', formData)
     .then(window.location.reload())
@@ -116,7 +118,22 @@ const Settings = () => {
                   <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
                   <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
                 </div>
-                <div className={`relative w-96 group ${(username || email || blob) != null ? "" : "size-0 invisible"}`}>
+                {/* Bio */}
+                <div className="flex flex-col w-full items-start">
+                  <p className="text-sm text-white/50 font-extralight">Bio</p>
+                  <div className="relative w-full h-28">
+                    <textarea 
+                      onChange={(e) => setBio(e.target.value)}
+                      defaultValue={user.bio}
+                      maxLength={250}
+                      className="size-full p-1 rounded bg-neutral-700 text-white/75 text-sm outline-none resize-none peer"
+                    />
+                    <p className="absolute bottom-0 right-0 font-light text-white/50 text-xs">{bio?.length || 0}/250</p>
+                  </div>
+                  <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
+                  <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
+                </div>
+                <div className={`relative w-96 group ${(username || email || bio || blob) != null ? "" : "size-0 invisible"}`}>
                   <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</div>
                   <button onClick={submitChanges} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</button>
                 </div>

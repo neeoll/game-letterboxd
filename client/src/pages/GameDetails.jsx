@@ -39,6 +39,7 @@ const GameDetails = () => {
   }
 
   async function toggleFavorite(slug) {
+    setDetails({ ...details, favorite: !details.favorite })
     axios.post('/game/favorite', { slug })
   }
 

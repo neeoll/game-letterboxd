@@ -256,10 +256,15 @@ const gamesRouter = Router()
     try {
       const { slug } = req.body
       const game = await Game.findOne({ slug: slug })
-      await User.updateOne(
-        { email: req.user.email },
-        { $addToSet: { favoriteGames: game._id } }
-      )
+      let user = await User.findOne({ email: req.user.email, favoriteGames: game._id })
+      
+      if (user) {
+        await User.updateOne({ email: req.user.email }, { $pull: { favoriteGames: game._id } })
+        return res.status(200).json({ message: `${game.name} removed from user ${user.username}'s favorites` })
+      }
+
+      user = await User.findOneAndUpdate({ email: req.user.email }, { $addToSet: { favoriteGames: game._id } }, { returnDocument: 'after' })
+      res.status(200).json({ message: `${game.name} added to user ${user.username}'s favorites` })
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: "Internal server error" })

@@ -10,7 +10,7 @@ const upload = multer()
 const userRouter = Router()
   .post("/update", [verifyToken, upload.any()], async (req, res) => {
     try {
-      const { username, email, image } = req.body
+      const { username, email, bio, image } = req.body
 
       const existingUsername = await User.findOne({ username: username })
       if (existingUsername) {
@@ -24,6 +24,7 @@ const userRouter = Router()
       const updatedFields = {}
       if (username != 'null') { updatedFields.username = username }
       if (email != 'null') { updatedFields.email = email }
+      if (bio != 'null') { updatedFields.bio = bio }
 
       if (image != 'null') {
         cloudinary.config({
