@@ -111,7 +111,7 @@ const gamesRouter = Router()
                   localField: 'userRef',
                   foreignField: '_id',
                   pipeline: [
-                    { $project: { username: 1, profileIcon: 1 } }
+                    { $project: { _id: 0, username: 1, profileIcon: 1 } }
                   ],
                   as: 'user'
                 }

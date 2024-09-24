@@ -28,7 +28,6 @@ const Profile = () => {
       .then(res => {
         document.title = "Profile | Arcade Archive"
         setUser(res.data)
-        setGenreCounts(countOccurrences(res.data.games.map(game => game.genres).flat().map(item => genres.find(genre => genre.id == item))))
         setPlatforms(Array.from(new Set(res.data.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
         setGenres(Array.from(new Set(res.data.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
         setLoading(false)
@@ -90,11 +89,11 @@ const Profile = () => {
               <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
               <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-white/75 py-2 px-10">
                 <p>Stats</p>
-                <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-4">
-                  {gameStatuses.map((status, index) => (
+                <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-2">
+                  {Object.keys(user.statusCounts).map((status, index) => (
                     <Link key={index} className="flex flex-col justify-center items-center align-middle group">
-                      <p className="text-sm group-hover:text-white">{status.name}</p>
-                      <div className="text-lg font-bold group-hover:text-white">{user.games.filter(game => game.status == status.value).length}</div>
+                      <p className="text-sm group-hover:text-white">{status}</p>
+                      <div className="text-lg font-bold group-hover:text-white">{user.statusCounts[status]}</div>
                     </Link>
                   ))}
                 </div>
@@ -104,12 +103,12 @@ const Profile = () => {
             <div className="relative h-fit">
               <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
               <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-white/75 py-2 px-4">
-                <p className="text-md">Your Top Genres</p>
+                <p className="text-md">Top Genres</p>
                 <div className="flex flex-col w-full aspect-square gap-2">
-                  {genreCounts.map((genre, index) => (
+                  {user.genres.map((genre, index) => (
                     <div key={index} className="flex justify-between items-center align-middle group">
-                      <p className="text-xs group-hover:text-white">{genre[0]}</p>
-                      <div className="text-lg font-bold group-hover:text-white">{genre[1]}</div>
+                      <p className="text-xs group-hover:text-white">{genres.find(item => item.id === genre._id).name}</p>
+                      <div className="text-lg font-bold group-hover:text-white">{genre.count}</div>
                     </div>
                   ))}
                 </div>
@@ -139,10 +138,10 @@ const Profile = () => {
           </div>
           {/* Review Distribution */}
           <div className="col-span-1 flex flex-col">
-            <div className="grid grid-cols-5 h-32 gap-1 border-b">
+            <div className="grid grid-cols-5 h-32 gap-1">
               {calculateRatingDistribution(user.reviews).map(rating => (
                 <div key={rating.rating} className="col-span-1 flex flex-col justify-end">
-                  <div className={`bg-gradient-to-t from-accentPrimary to-accentSecondary rounded-t hover:brightness-150`} style={{ height: `${rating.percent}%`}} />
+                  <div className={`bg-gradient-to-t from-accentPrimary to-accentSecondary rounded hover:brightness-150`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
                 </div>
               ))}
             </div>
@@ -156,11 +155,11 @@ const Profile = () => {
             {user.reviews.map((review, index) => (
               <div key={index} className="flex flex-col basis-1/2 gap-2 p-4">
                 <div className="grid grid-cols-8 gap-2 text-white">
-                  <Link to={`/game/${review.gameSlug}`} className="col-span-1">
-                    <img className="w-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${review.gameCover}.jpg`} />
+                  <Link to={`/game/${review.game.slug}`} className="col-span-1">
+                    <img className="w-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${review.game.coverId}.jpg`} />
                   </Link>
                   <div className="col-span-7 flex flex-col text-white">
-                    <div>{review.gameName}</div>
+                    <div>{review.game.name}</div>
                     <div className="flex gap-2 items-center">
                       <StyledRating readOnly value={review.rating} size="small" />
                       <div className="flex gap-1">
@@ -181,41 +180,6 @@ const Profile = () => {
     </div>
   )
 }
-
-const countOccurrences = (array) => {
-  const countMap = {}
-
-  array.forEach(item => {
-    if (countMap[item.name]) { countMap[item.name]++ } 
-    else { countMap[item.name] = 1 }
-  })
-
-  const sortedArray = Object.entries(countMap).sort((a, b) => b[1] - a[1])
-  return sortedArray.slice(0, 5)
-}
-
-const gameStatuses = [
-  {
-    id: 1,
-    name: "Played",
-    value: "played"
-  },
-  {
-    id: 2,
-    name: "Playing",
-    value: "playing"
-  },
-  {
-    id: 3,
-    name: "Backlog",
-    value: "backlog"
-  },
-  {
-    id: 4,
-    name: "Wishlist",
-    value: "wishlist"
-  },
-]
 
 const profileSortCriteria = [
   { name: "Date Added", value: "lastUpdated" },

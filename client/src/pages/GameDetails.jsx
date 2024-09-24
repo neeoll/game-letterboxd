@@ -14,7 +14,6 @@ const GameDetails = () => {
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(false)
-  const [favorite, setFavorite] = useState(false)
   const [details, setDetails] = useState()
   
   useEffect(() => {
@@ -23,7 +22,6 @@ const GameDetails = () => {
       axios.get(`/game/${slug}`)
       .then(res => {
         document.title = `${res.data.data.name}`
-        console.log(res.data)
         setDetails(res.data.data)
         setUser(res.data.user)
         setLoading(false)

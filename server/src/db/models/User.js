@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
 const gameSchema = new mongoose.Schema({
+  _id: false,
   gameRef: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Game',

@@ -6,6 +6,7 @@ import { GameCard, StyledRating } from "../components"
 import { genres, platforms, completionStatuses } from "../dict"
 import { calculateRatingDistribution, useAsyncError } from "../utils"
 import axios from 'axios'
+import defaultImg from "../assets/default_profile.png"
 
 const User = () => {
   const { username } = useParams()
@@ -19,7 +20,6 @@ const User = () => {
       axios.get(`/user/${username}`)
       .then(res => {
         document.title = `${res.data.username}'s Profile | Arcade Archive`
-        console.log(res.data)
         setUser(res.data)
         setLoading(false)
       })
@@ -42,7 +42,7 @@ const User = () => {
       <div className="flex flex-col w-full gap-4">
         <div className="flex items-end gap-4">
           <div className="size-20">
-            <img src={user.profileIcon} className="rounded-lg" />
+            <img src={user?.profileIcon || defaultImg} className="rounded-lg" />
           </div>
           <div className="text-white text-xl font-semibold">{user.username}</div>
         </div>

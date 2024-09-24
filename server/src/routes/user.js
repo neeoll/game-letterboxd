@@ -50,39 +50,39 @@ const userRouter = Router()
   .get("/profileData", verifyToken, async (req, res) => {
     try {
       const user = await User.aggregate([
+        // Find user document
         { $match: { email: req.user.email } },
-        { $unwind: { path: '$games', preserveNullAndEmptyArrays: true } },
-        {
+        // Determine most common genres for user
+        { 
           $lookup: {
             from: 'games',
             localField: 'games.gameRef',
             foreignField: '_id',
             pipeline: [
-              { $project: { name: 1, coverId: 1, slug: 1, releaseDate: 1, genres: 1, platforms: 1, _id: 0 } }
+              { $unwind: '$genres' },
+              { $group: { _id: '$genres', count: { $sum: 1 } } },
+              { $sort: { count: -1 } },
+              { $limit: 5 }
             ],
-            as: 'profileGames'
+            as: 'genres'
           }
         },
-        { $unwind: { path: '$profileGames', preserveNullAndEmptyArrays: true } },
+        // User games lookup
         {
-          $group: {
-            _id: '$_id',
-            username: { $first: '$username' },
-            profileIcon: { $first: '$profileIcon' },
-            games: { 
-              $push: {
-                name: '$profileGames.name', 
-                coverId: '$profileGames.coverId', 
-                slug: '$profileGames.slug', 
-                lastUpdated: '$games.lastUpdated', 
-                status: '$games.status',
-                releaseDate: '$profileGames.releaseDate', 
-                genres: '$profileGames.genres', 
-                platforms: '$profileGames.platforms',
-              }
-            }
+          $lookup: {
+            from: 'games',
+            localField: 'games.gameRef',
+            foreignField: '_id',
+            let: { games: '$games' },
+            pipeline: [
+              { $addFields: { doc: { $filter: { input: '$$games', cond: { $eq: ['$$this.gameRef', '$_id'] } } } } },
+              { $unwind: '$doc' },
+              { $project: { _id: 0, name: 1, slug: 1, coverId: 1, platforms: 1, genres: 1, lastUpdated: '$doc.lastUpdated', status: '$doc.status', } },
+            ],
+            as: 'games'
           }
         },
+        // User reviews lookup
         {
           $lookup: {
             from: 'reviews',
@@ -90,50 +90,42 @@ const userRouter = Router()
             foreignField: 'userRef',
             pipeline: [
               { $match: { body: { $ne: "" } } },
-              { $project: { _id: 0, userRef: 0 } },
-              { $sort: { timestamp: -1 } },
-              { $limit: 6 }
+              { 
+                $lookup: {
+                  from: 'games',
+                  localField: 'gameRef',
+                  foreignField: '_id',
+                  pipeline: [
+                    { $project: { _id: 0, name: 1, slug: 1, coverId: 1 } }
+                  ],
+                  as: 'game'
+                }
+              },
+              { $unwind: '$game' },
+              { $project: { _id: 0, gameRef: 0, userRef: 0, spoiler: 0, edited: 0, __v: 0 } }
             ],
-            as: 'reviewData',
+            as: 'reviews'
           }
         },
-        { $unwind: { path: '$reviewData', preserveNullAndEmptyArrays: true } },
-        {
-          $lookup: {
-            from: 'games',
-            localField: 'reviewData.gameRef',
-            foreignField: '_id',
-            pipeline: [
-              { $project: { name: 1, slug: 1, coverId: 1 } }
-            ],
-            as: 'reviewedGames'
-          }
-        },
-        { $unwind: { path: '$reviewedGames', preserveNullAndEmptyArrays: true } },
-        {
-          $group: {
-            _id: '$_id',
-            username: { $first: '$username' },
-            profileIcon: { $first: '$profileIcon' },
-            games: { $first: '$games' },
-            reviews: {
-              $push: {
-                body: '$reviewData.body',
-                status: '$reviewData.status',
-                rating: '$reviewData.rating',
-                timestamp: '$reviewData.timestamp',
-                platform: '$reviewData.platform',
-                gameName: '$reviewedGames.name',
-                gameSlug: '$reviewedGames.slug',
-                gameCover: '$reviewedGames.coverId'
-              }
-            }
+        // Project necessary values and add game status counts
+        { 
+          $project: {
+            username: 1,
+            profileIcon: 1,
+            games: 1,
+            genres: 1,
+            platforms: 1,
+            reviews: 1,
+            statusCounts: {
+              "Played": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['played', '$$game.status'] } } } },
+              "Playing": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['playing', '$$game.status'] } } } },
+              "Backlog": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['backlog', '$$game.status'] } } } },
+              "Wishlist": { $size: { $filter: { input: '$games', as: 'game', cond: { $eq: ['wishlist', '$$game.status'] } } } }
+            },
           }
         }
       ])
       
-      if (Object.keys(user[0].games[0]).length == 0) { user[0].games = [] }
-      if (Object.keys(user[0].reviews[0]).length == 0) { user[0].reviews = [] }
       res.status(200).json(user[0])
     } catch (err) {
       console.error(err)
@@ -189,7 +181,12 @@ const userRouter = Router()
             from: 'games',
             localField: 'games.gameRef',
             foreignField: '_id',
+            let: { games: '$games' },
             pipeline: [
+              { $addFields: { doc: { $filter: { input: '$$games', cond: { $eq: ['$$this.gameRef', '$_id'] } } } } },
+              { $unwind: '$doc' },
+              { $match: { 'doc.status': 'played' } },
+              { $sort: { 'doc.lastUpdated': -1 } },
               { $project: { _id: 0, name: 1, slug: 1, coverId: 1 } },
               { $limit: 6 }
             ],
