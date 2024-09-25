@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { RxStarFilled } from "react-icons/rx"
 import { Link, useParams } from "react-router-dom"
-import 'simplebar-react/dist/simplebar.min.css'
 import { GameCard, StyledRating } from "../components"
 import { genres, platforms, completionStatuses } from "../dict"
 import { calculateRatingDistribution, useAsyncError } from "../utils"
@@ -55,7 +54,7 @@ const User = () => {
               <div className="grid grid-cols-5 h-32 gap-1">
                 {calculateRatingDistribution(user.reviews).map(rating => (
                   <div key={rating.rating} className="col-span-1 flex flex-col justify-end">
-                    <div className={`bg-gradient-to-t from-accentPrimary to-accentSecondary rounded hover:brightness-150`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
+                    <div className={`bg-gradient-to-t from-accentPrimary to-accentSecondary rounded`} style={{ height: `calc(${rating.percent}% + 1px)`}} />
                   </div>
                 ))}
               </div>
@@ -102,7 +101,7 @@ const User = () => {
               {/* Favorites */}
               <div>
                 <div className="text-2xl font-light text-white/50">Favorites</div>
-                <div className="flex flex-wrap w-full justify-center">
+                <div className="flex flex-wrap w-full justify-start p-2">
                   {user.favorites.map((game, index) => (
                     <GameCard key={index} size={`basis-[16.66%]`} game={game} />
                   ))}
@@ -111,7 +110,7 @@ const User = () => {
               {/* Recently Played */}
               <div>
                 <div className="text-2xl font-light text-white/50">Recently Played</div>
-                <div className="flex flex-wrap w-full justify-center">
+                <div className="flex flex-wrap w-full justify-start p-2">
                   {user.recentlyPlayed.map((game, index) => (
                     <GameCard key={index} size={`basis-[16.66%]`} game={game} />
                   ))}
@@ -120,9 +119,9 @@ const User = () => {
             </div>
             {/* Reviews */}
             <div className="flex flex-col">
-              <div>Recent Reviews</div>
+              <div className="text-2xl font-light text-white/50">Recent Reviews</div>
               {user.reviews.map((review, index) => (
-                <div key={index} className="flex flex-col basis-1/2 gap-2 p-4">
+                <div key={index} className="flex flex-col basis-1/2 gap-2 px-4 py-2">
                   <div className="grid grid-cols-8 gap-2 text-white">
                     <Link to={`/game/${review.game.slug}`} className="col-span-1">
                       <img className="w-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${review.game.coverId}.jpg`} />
