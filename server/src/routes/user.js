@@ -5,7 +5,9 @@ import { verifyToken } from "../middleware/verifyToken.js"
 import { v2 as cloudinary } from 'cloudinary'
 import multer from 'multer'
 
-const upload = multer()
+const upload = multer({
+  limits: { fieldSize: 25 * 1024 * 1024 }
+})
 
 const userRouter = Router()
   .post("/update", [verifyToken, upload.any()], async (req, res) => {
@@ -34,10 +36,10 @@ const userRouter = Router()
           secure: true
         })
         
-        await cloudinary.uploader.upload(image, { public_id: `${req.user.id}-profileIcon` })
 
-        const url = cloudinary.url(`${req.user.id}-profileIcon`)
-        updatedFields.profileIcon = url
+        const imageRef = await cloudinary.uploader.upload(image, { use_filename: false })
+        console.log(imageRef)
+        updatedFields.profileIcon = imageRef.url
       }
       
       await User.findOneAndUpdate({ _id: req.user.id }, { $set: updatedFields })

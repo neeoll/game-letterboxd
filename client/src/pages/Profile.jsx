@@ -13,7 +13,6 @@ const Profile = () => {
 
   const [user, setUser] = useState(null)
   const [profileGenres, setGenres] = useState([])
-  const [genreCounts, setGenreCounts] = useState([])
   const [profilePlatforms, setPlatforms] = useState([])
   const [loading, setLoading] = useState(true)
   

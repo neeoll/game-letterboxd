@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import axios from 'axios'
-import { IconButton } from "@mui/material"
 import { RxStar, RxStarFilled } from "react-icons/rx"
 import { gameStatuses, platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"

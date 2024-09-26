@@ -10,7 +10,7 @@ const Settings = () => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const [blob, setBlob] = useState()
+  const [uri, setUri] = useState()
   const [email, setEmail] = useState(null)
   const [emailValid, setEmailValid] = useState(true)
   const [username, setUsername] = useState(null)
@@ -34,27 +34,7 @@ const Settings = () => {
     getUserData()
   }, [])
 
-  function srcToFile(src, fileName, mimeType){
-    return (fetch(src)
-      .then(function(res) { return res.arrayBuffer() })
-      .then(function(buf) { return new File([buf], fileName, {type:mimeType}) })
-    )
-  }
-
-  const fileToBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => { resolve(reader.result) }
-    reader.onerror = error => reject(error)
-  })
-
   const submitChanges = async () => {
-    let uri = null
-    if (blob) {
-      const file = await srcToFile(blob, `${blob.split("/")[3]}`, 'image/png')
-      uri = await fileToBase64(file)
-    }
-
     const formData = new FormData()
     formData.append('image', uri)
     formData.append('username', username)
@@ -85,7 +65,7 @@ const Settings = () => {
           <TabPanel className="flex gap-2 p-4 text-white">
             <div className="flex gap-4">
               <div className="flex flex-col gap-2">
-                <CropDialog profileIcon={user.profileIcon} setBlob={setBlob} />
+                <CropDialog profileIcon={user.profileIcon} setUri={setUri} />
               </div>
               <div className="flex flex-col w-96 justify-center items-center gap-2">
                 {/* Username */}
@@ -133,7 +113,7 @@ const Settings = () => {
                   <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
                   <p className={`${emailValid ? "invisible h-0" : "visible h-fit"} text-pink-500 text-sm`}>{`"${email}" is already in use.`}</p>
                 </div>
-                <div className={`relative w-96 group ${(username || email || bio || blob) != null ? "" : "size-0 invisible"}`}>
+                <div className={`relative w-96 group ${(username || email || bio || uri) != null ? "" : "size-0 invisible"}`}>
                   <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</div>
                   <button onClick={submitChanges} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Save Changes</button>
                 </div>
