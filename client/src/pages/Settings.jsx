@@ -42,7 +42,10 @@ const Settings = () => {
     formData.append('bio', bio)
     
     axios.post('/user/update', formData)
-    .then(window.location.reload())
+    .then(res => {
+      console.log(res.data)
+      window.location.reload()
+    })
     .catch(err => {
       console.error(err)
     })

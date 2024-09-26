@@ -29,6 +29,10 @@ const userRouter = Router()
       if (bio != 'null') { updatedFields.bio = bio }
 
       if (image != 'null') {
+        const user = await User.findOne({ email: req.user.email })
+        const profileIcon = user.profileIcon
+        const id = profileIcon.split('/')[profileIcon.split('/').length - 1].slice(0, 20)
+
         cloudinary.config({
           cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
           api_key: process.env.CLOUDINARY_API_KEY,
@@ -36,7 +40,7 @@ const userRouter = Router()
           secure: true
         })
         
-
+        await cloudinary.uploader.destroy(id)
         const imageRef = await cloudinary.uploader.upload(image, { use_filename: false })
         console.log(imageRef)
         updatedFields.profileIcon = imageRef.url
