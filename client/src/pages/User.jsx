@@ -41,7 +41,7 @@ const User = () => {
       <div className="flex flex-col w-full gap-4">
         <div className="flex items-end gap-4">
           <div className="size-20">
-            <img src={user?.profileIcon || defaultImg} className="rounded-lg" />
+            <img src={user?.profileIcon || defaultImg} className="rounded-full" />
           </div>
           <div className="text-white text-xl font-semibold">{user.username}</div>
         </div>

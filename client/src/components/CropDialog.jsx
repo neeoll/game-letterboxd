@@ -2,7 +2,9 @@ import { forwardRef, useRef, useState } from "react"
 import { Dialog, DialogPanel } from "@headlessui/react"
 import Croppie from "croppie"
 import "croppie/croppie.css"
+import _ from "lodash"
 import { GrRotateLeft, GrRotateRight } from 'react-icons/gr'
+import { RxCross2 } from 'react-icons/rx'
 import Slider from "@mui/material/Slider"
 import defaultImg from "../assets/default_profile.png"
 import PropTypes from 'prop-types'
@@ -10,7 +12,7 @@ import PropTypes from 'prop-types'
 const croppieOptions = {
   showZoomer: false,
   enableOrientation: true,
-  viewport: { width: 300, height: 300 },
+  viewport: { width: 300, height: 300, type: 'circle' },
   boundary: { width: 300, height: 300 }
 }
 
@@ -22,9 +24,23 @@ const CropDialog = (props) => {
   const croppieInstanceRef = useRef(null)
   const sliderRef = useRef(null)
 
+  const resultDebounce = _.debounce(() => resultCrop(), 500)
+
+  const resultCrop = () => {
+    croppieInstanceRef.current.result({ type: "base64", circle: true }).then((base64) => {
+      setCroppedImage(base64)
+    })
+  }
+
   const handleFileUpload = () => { fileUpload.current.click() }
-  const changeOrientation = (value) => { croppieInstanceRef.current.rotate(value) }
-  const handleZoom = (value) => { croppieInstanceRef.current.setZoom(value) }
+  const changeOrientation = (value) => { 
+    croppieInstanceRef.current.rotate(value)
+    resultDebounce()
+  }
+  const handleZoom = (value) => { 
+    croppieInstanceRef.current.setZoom(value)
+    resultDebounce()
+  }
 
   const onFileUpload = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -41,6 +57,7 @@ const CropDialog = (props) => {
           )
         }
         await croppieInstanceRef.current.bind({ url: reader.result })
+        resultCrop()
         const { zoom } = croppieInstanceRef.current.get()
         sliderRef.current.setMin(zoom)
       }
@@ -52,10 +69,11 @@ const CropDialog = (props) => {
 
   const clear = () => {
     croppieInstanceRef.current = null
+    fileUpload.current.value = null
     setDialogOpen(false)
   }
 
-  const onResult = () => {
+  const crop = () => {
     croppieInstanceRef.current.result("base64").then((base64) => {
       props.setUri(base64)
       setCroppedImage(base64)
@@ -65,20 +83,37 @@ const CropDialog = (props) => {
 
   return (
     <div className="flex justify-center items-center">
-      <img onClick={() => handleFileUpload()} className="size-40 rounded-full bg-neutral-600 outline-none " src={croppedImage || props.profileIcon || defaultImg} />
+      <img onClick={handleFileUpload} className="size-40 rounded-full bg-neutral-600 outline-none " src={croppedImage || props.profileIcon || defaultImg} />
       <input ref={fileUpload} type="file" accept="image/*" onChange={onFileUpload} className="invisible size-0"/>
-      <Dialog open={dialogOpen} onClose={() => clear()} className="relative z-50">
+      <Dialog open={dialogOpen} onClose={clear} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
-          <DialogPanel>
-            <div className="flex p-4 gap-2 bg-neutral-800 rounded text-white">
-              <div className="flex flex-col w-full gap-1 rounded bg-neutral-800 p-4">
-                <div ref={croppieElementRef} />
-                <div className="flex w-full gap-4">
-                  <button onClick={() => changeOrientation(90)} className="text-2xl text-white/50 hover:text-white"><GrRotateLeft /></button>
-                  <CustomSlider ref={sliderRef} min={0} max={1.5} step={0.01} onChange={handleZoom} />
-                  <button onClick={() => changeOrientation(-90)} className="text-2xl text-white/50 hover:text-white"><GrRotateRight /></button>
+          <DialogPanel className="w-1/2">
+            <div className="flex flex-col p-4 gap-6 bg-neutral-800 rounded-md text-white outline outline-1 outline-white/25">
+              <div className="flex justify-between text-2xl text-white/75">
+                <p className="font-semibold">Crop Photo</p>
+                <button className="hover:text-white"><RxCross2 /></button>
+              </div>
+              <div className="flex">
+                <div className="basis-1/2 flex flex-col w-full gap-1">
+                  <div ref={croppieElementRef} />
+                  <div className="flex w-full gap-4">
+                    <button onClick={() => changeOrientation(90)} className="text-2xl text-white/50 hover:text-white"><GrRotateLeft /></button>
+                    <CustomSlider ref={sliderRef} min={0} max={1.5} step={0.01} onChange={handleZoom} />
+                    <button onClick={() => changeOrientation(-90)} className="text-2xl text-white/50 hover:text-white"><GrRotateRight /></button>
+                  </div>
                 </div>
-                <button onClick={onResult}>Crop</button>
+                <div className="flex flex-col">
+                  <div className="basis-1/2 flex items-center w-full gap-1">
+                    <img src={croppedImage || null} className="size-36 rounded-full"/>
+                    <img src={croppedImage || null} className="size-20 rounded-full"/>
+                    <img src={croppedImage || null} className="size-16 rounded-full"/>
+                    <img src={croppedImage || null} className="size-12 rounded-full"/>
+                  </div>
+                  <div className="flex gap-4">
+                    <button onClick={handleFileUpload}>Change Photo</button>
+                    <button onClick={crop} className="p-1 px-4 bg-gradient-to-r from-accentPrimary to-accentSecondary rounded">Save Photo</button>
+                  </div>
+                </div>
               </div>
             </div>
           </DialogPanel>

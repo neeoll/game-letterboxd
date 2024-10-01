@@ -31,7 +31,7 @@ const Status = () => {
         {data.users.map((user, index) => (
           <div key={index} className="flex flex-col gap-2 group">
             <div className="flex items-center gap-2">
-              <img loading="lazy" className="size-10 rounded-lg" src={`${user.profileIcon || defaultImg}`} />
+              <img loading="lazy" className="size-10 rounded-full" src={`${user.profileIcon || defaultImg}`} />
                 <Link to={``} className="flex gap-1 text-white hover:bg-gradient-to-r from-accentPrimary to-accentSecondary hover:bg-clip-text hover:text-transparent group/link">
                   <p>{user.username}</p>
                 </Link>
