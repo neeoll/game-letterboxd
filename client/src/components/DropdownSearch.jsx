@@ -15,25 +15,25 @@ const DropdownSearch = (props) => {
 
   return (
     <Combobox immediate value={props.array.find(item => item.id == props.value) || null} onChange={(value) => { if (value != null) props.setValue(value.id) }} onClose={() => setQuery('')}>
-      <div className="flex h-8 rounded w-full text-sm bg-neutral-700 text-white">
+      <div className="relative flex h-8 rounded w-full text-sm border border-white/50 focus:border-white text-white">
         <ComboboxInput
-          className="w-full p-1 text-sm bg-transparent outline-none"
+          className="w-52 p-1 text-sm bg-transparent outline-none"
           displayValue={(item) => item?.name}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={props.placeholder}
           autoComplete="new-password"
         />
         {props.value != -1 ? (
-          <button className="flex items-center size-8" onClick={() => props.setValue(-1)}>
+          <button className="absolute  right-0 flex items-center size-8" onClick={() => props.setValue(-1)}>
             <RxCross2 className="text-lg" />
           </button>
         ): (<></>)}
       </div>
-      <ComboboxOptions anchor="bottom center" className="w-52 rounded bg-neutral-700 mt-2">
+      <ComboboxOptions anchor="bottom start" className="w-52 rounded bg-neutral-900 border border-white/50 mt-2">
         <SimpleBar autoHide={false} style={{ maxHeight: 200 }}>
           {
             filteredArray.map((item, index) => (
-              <ComboboxOption key={index} value={item} className="p-1 text-white hover:bg-neutral-600 hover:cursor-pointer">
+              <ComboboxOption key={index} value={item} className="p-1 text-white hover:bg-neutral-800 hover:cursor-pointer">
                 <p>{item.name}</p>
               </ComboboxOption>
             ))

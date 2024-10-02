@@ -64,7 +64,7 @@ const ReviewDialog = (props) => {
                   <RadioGroup value={status} onChange={setStatus} className="flex flex-col gap-1 w-full">
                     {completionStatuses.map((status, index) => (
                       <Field key={index} className="flex items-center justify-center text-white hover:cursor-pointer">
-                        <Radio value={status.value} className="w-full group flex items-center justify-center rounded-md p-1 bg-neutral-800 data-[checked]:bg-gradient-to-r from-accentPrimary to-accentSecondary">
+                        <Radio value={status.value} className="w-full group flex items-center justify-center rounded-md p-1 hover:outline outline-1 data-[checked]:bg-gradient-to-r from-accentPrimary to-accentSecondary">
                           {status.name}
                         </Radio>
                       </Field>
@@ -78,7 +78,10 @@ const ReviewDialog = (props) => {
                   </div>
                   <div className="flex flex-col justify-start gap-2">
                     <p className="text-xl text-white/75">Review</p>
-                    <textarea defaultValue={review} onChange={(e) => setReview(e.target.value)} className="rounded p-1 bg-neutral-700" rows={5} cols={50}/>
+                    <div className="relative w-full h-44">
+                      <textarea defaultValue={review} onChange={(e) => setReview(e.target.value)} maxLength={250} className="size-full text-sm rounded p-1 bg-transparent border border-white/50 focus:border-white resize-none"/>
+                      <div className="absolute bottom-1 right-1 font-light text-white/50 text-xs">{review?.length || 0}/250</div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <Checkbox checked={spoiler} onChange={setSpoiler} className="flex justify-center items-center group size-4 rounded-full border border-2 bg-neutral-700 data-[checked]:bg-gradient-to-r from-accentPrimary to-accentSecondary data-[checked]:border-none">
@@ -89,7 +92,7 @@ const ReviewDialog = (props) => {
                 </div>
               </div>
               <div className="w-1/2 flex gap-2 justify-end items-center">
-                <button onClick={() => clear()} className="size-full rounded bg-neutral-600 p-1 text-white hover:bg-red-700">Cancel</button>
+                <button onClick={() => clear()} className="size-full rounded p-1 text-white/50 hover:text-white">Cancel</button>
                 <div className="w-full relative group">
                   <div className="absolute size-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1"></div>
                   <button onClick={() => submit()} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1">Submit</button>

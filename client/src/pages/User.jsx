@@ -66,7 +66,7 @@ const User = () => {
             {/* Game Counts */}
             <div className="relative h-fit">
               <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
-              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-white/75 py-2 px-4">
+              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-900 rounded text-white/75 py-2 px-4">
                 <p>Stats</p>
                 <div className="grid grid-rows-2 grid-cols-2 w-full aspect-square gap-2">
                   {Object.keys(user.statusCounts).map((status, index) => (
@@ -81,7 +81,7 @@ const User = () => {
             {/* Top Genres */}
             <div className="relative h-fit">
               <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
-              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-800 rounded text-white/75 py-2 px-4">
+              <div className="relative flex flex-col items-center gap-2 h-full bg-neutral-900 rounded text-white/75 py-2 px-4">
                 <p className="text-md">Top Genres</p>
                 <div className="flex flex-col w-full aspect-square gap-2">
                   {user.genres.map((genre, index) => (

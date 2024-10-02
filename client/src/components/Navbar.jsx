@@ -97,7 +97,7 @@ const Navbar = () => {
           <input
             ref={searchbar}
             type="text"
-            className="w-80 h-8 rounded p-2 text-sm text-white bg-neutral-700 outline-none"
+            className="w-80 h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
             onChange={e => textDebounce(e.target.value)}
             placeholder="Search"
             onKeyDown={e => { 
@@ -107,12 +107,12 @@ const Navbar = () => {
           />
           <div className="absolute w-full top-10 invisible group-focus-within/searchbar:visible">
             {results.length == 0 ? 
-              <div className="w-full bg-neutral-700 p-1.5 flex justify-center rounded text-white/50 font-light text-sm">No results.</div> : 
-              <div className="w-full bg-neutral-700 rounded">
+              <div className="w-full bg-neutral-900 border border-white/50 p-1.5 flex justify-center rounded text-white/50 font-light text-sm">No results.</div> : 
+              <div className="w-full bg-neutral-900 border border-white/50 rounded">
                 <SimpleBar style={{ maxHeight: 300 }}>
                   {results.map((result, index) => (
                     <Link key={index} to={`/game/${result.slug}`} onClick={() => resetResults()}>
-                      <div className="grid grid-cols-9 p-1 items-center hover:bg-neutral-600">
+                      <div className="grid grid-cols-9 p-1 items-center hover:bg-neutral-800">
                         <div className="col-span-1 h-10">
                           <img className="h-full object-cover aspect-[45/64] rounded" src={`https://images.igdb.com/igdb/image/upload/t_cover_small_2x/${result.coverId}.jpg`} />
                         </div>

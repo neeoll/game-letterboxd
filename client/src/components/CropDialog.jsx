@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useState } from "react"
-import { Dialog, DialogPanel } from "@headlessui/react"
+import { CloseButton, Dialog, DialogPanel } from "@headlessui/react"
 import Croppie from "croppie"
 import "croppie/croppie.css"
 import _ from "lodash"
@@ -24,7 +24,7 @@ const CropDialog = (props) => {
   const croppieInstanceRef = useRef(null)
   const sliderRef = useRef(null)
 
-  const resultDebounce = _.debounce(() => resultCrop(), 500)
+  const resultDebounce = _.debounce(() => resultCrop(), 100)
 
   const resultCrop = () => {
     croppieInstanceRef.current.result({ type: "base64", circle: true }).then((base64) => {
@@ -88,10 +88,10 @@ const CropDialog = (props) => {
       <Dialog open={dialogOpen} onClose={clear} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
           <DialogPanel className="w-1/2">
-            <div className="flex flex-col p-4 gap-6 bg-neutral-800 rounded-md text-white outline outline-1 outline-white/25">
+            <div className="flex flex-col p-4 gap-6 bg-neutral-900 rounded-md text-white outline outline-1 outline-white/25">
               <div className="flex justify-between text-2xl text-white/75">
                 <p className="font-semibold">Crop Photo</p>
-                <button className="hover:text-white"><RxCross2 /></button>
+                <CloseButton className="hover:text-white"><RxCross2 /></CloseButton>
               </div>
               <div className="flex">
                 <div className="basis-1/2 flex flex-col w-full gap-1">
@@ -102,7 +102,7 @@ const CropDialog = (props) => {
                     <button onClick={() => changeOrientation(-90)} className="text-2xl text-white/50 hover:text-white"><GrRotateRight /></button>
                   </div>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col justify-between items-end">
                   <div className="basis-1/2 flex items-center w-full gap-1">
                     <img src={croppedImage || null} className="size-36 rounded-full"/>
                     <img src={croppedImage || null} className="size-20 rounded-full"/>

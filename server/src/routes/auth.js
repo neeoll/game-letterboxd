@@ -5,6 +5,7 @@ import axios from "axios"
 import 'dotenv/config'
 import User from "../db/models/User.js"
 import nodemailer from "nodemailer"
+import { verifyToken } from '../middleware/verifyToken.js'
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
@@ -105,7 +106,7 @@ const authRouter = Router()
       if (!accessToken) { return res.status(200) }
 
       const tokenData = jsonwebtoken.decode(accessToken)
-      const user = await User.findOne({ email: tokenData.email }, { username: 1, password: 1, email: 1, profileIcon: 1, bio: 1 })
+      const user = await User.findOne({ email: tokenData.email })
       res.status(200).json(user)
     } catch (err) {
       console.error(err)
@@ -145,6 +146,15 @@ const authRouter = Router()
         return res.status(200).json({ email: user.email, status: "ok" })
       })
     } catch (err) {
+      res.status(500).json({ error: "Internal server error" })
+    }
+  })
+  .post('/changePassword', verifyToken, async (req, res) => {
+    try {
+      console.log(req.body)
+      res.status(200).json({ message: "all good" })
+    } catch (err) {
+      console.error(err)
       res.status(500).json({ error: "Internal server error" })
     }
   })
