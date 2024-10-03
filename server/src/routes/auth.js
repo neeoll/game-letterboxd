@@ -151,7 +151,7 @@ const authRouter = Router()
   })
   .post('/changePassword', verifyToken, async (req, res) => {
     try {
-      console.log(req.body)
+      await User.updateOne({ email: req.user.email }, { $set: { password: req.body.hash } })
       res.status(200).json({ message: "all good" })
     } catch (err) {
       console.error(err)

@@ -3,6 +3,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import CropDialog from "../components/CropDialog"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import PasswordChangeDialog from "../components/PasswordChangeDialog"
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -138,7 +139,7 @@ const Settings = () => {
           <TabPanel className="flex gap-2 p-4 text-white bg-neutral-800">
             <div className="flex gap-4">
               <div className="flex flex-col w-96 justify-center items-center gap-2">
-                
+                <PasswordChangeDialog password={user.password} />
               </div>
             </div>
           </TabPanel>
