@@ -2,32 +2,21 @@ import { useEffect, useState } from "react";
 import { CloseButton, Dialog, DialogPanel } from "@headlessui/react";
 import 'simplebar-react/dist/simplebar.min.css';
 import axios from 'axios'
-import PropTypes from 'prop-types'
 import { RxCheck, RxCross2 } from "react-icons/rx";
 import bcrypt from 'bcryptjs'
 
-const PasswordChangeDialog = (props) => {
+const PasswordChangeDialog = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [oldPassword, setOldPassword] = useState(null)
   const [oldPasswordMatch, setOldPasswordMatch] = useState(true)
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
-  const verifyPassword = () => {
-    return bcrypt.compareSync(oldPassword, props.password)
-  }
-
   const submit = async () => {
-    const passwordMatch = verifyPassword()
-    if (!passwordMatch) { 
-      setOldPasswordMatch(false)
-      return
-    }
-
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(newPassword, salt)
 
-    const data = { newPassword: hash }
+    const data = { oldPassword, hash }
     axios.post('/auth/changePassword', data)
     .then(res => {
       console.log(res.data)
@@ -119,10 +108,6 @@ const PasswordChangeDialog = (props) => {
       </Dialog>
     </div>
   )
-}
-
-PasswordChangeDialog.propTypes = {
-  
 }
 
 export default PasswordChangeDialog

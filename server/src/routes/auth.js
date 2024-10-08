@@ -106,7 +106,7 @@ const authRouter = Router()
       if (!accessToken) { return res.status(200) }
 
       const tokenData = jsonwebtoken.decode(accessToken)
-      const user = await User.findOne({ email: tokenData.email })
+      const user = await User.findOne({ email: tokenData.email }, { project: { password: 0 } })
       res.status(200).json(user)
     } catch (err) {
       console.error(err)
@@ -151,7 +151,15 @@ const authRouter = Router()
   })
   .post('/changePassword', verifyToken, async (req, res) => {
     try {
-      await User.updateOne({ email: req.user.email }, { $set: { password: req.body.hash } })
+      const user = await User.findOne({ email: req.user.email })
+      if (!user) { return res.status(401).json({ error: 'Invalid credentials' }) }
+
+      const passwordMatch = bcrypt.compareSync(user.password, req.body.oldPassword)
+      if (!passwordMatch) { return res.status(401).json({ error: "Invalid credentials"}) }
+
+      user.password = req.body.hash
+      await user.save()
+      
       res.status(200).json({ message: "all good" })
     } catch (err) {
       console.error(err)
