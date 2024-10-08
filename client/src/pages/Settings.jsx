@@ -136,7 +136,7 @@ const Settings = () => {
             </div>
           </TabPanel>
           {/* Security Tab */}
-          <TabPanel className="flex gap-2 p-4 text-white bg-neutral-800">
+          <TabPanel className="flex gap-2 p-4 text-white">
             <div className="flex flex-col gap-4">
               <p className="text-2xl font-light text-white/50">Authentication Settings</p>
               <PasswordChangeDialog password={user.password} />
