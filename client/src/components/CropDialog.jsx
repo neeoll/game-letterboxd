@@ -79,6 +79,8 @@ const CropDialog = (props) => {
       setCroppedImage(base64)
       setDialogOpen(false)
     })
+    croppieInstanceRef.current = null
+    fileUpload.current.value = null
   }
 
   return (
