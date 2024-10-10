@@ -42,9 +42,9 @@ const SearchResults = () => {
   }
 
   const handleSort = (a, b) => {
-    if (a[sortBy] < b[sortBy]) return -1 * sortOrder;
-    if (a[sortBy] > b[sortBy]) return 1 * sortOrder;
-    return 0;
+    if (a[sortBy] < b[sortBy]) return -1 * sortOrder
+    if (a[sortBy] > b[sortBy]) return 1 * sortOrder
+    return 0
   }
 
   if (loading) {

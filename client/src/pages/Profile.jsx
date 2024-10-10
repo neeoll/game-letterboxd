@@ -49,20 +49,20 @@ const Profile = () => {
   }
 
   const handleSort = (a, b) => {
-    if (a[sortBy] < b[sortBy]) return -1 * sortOrder;
-    if (a[sortBy] > b[sortBy]) return 1 * sortOrder;
-    return 0;
+    if (a[sortBy] < b[sortBy]) return -1 * sortOrder
+    if (a[sortBy] > b[sortBy]) return 1 * sortOrder
+    return 0
   }
 
   const handleFilter = (game) => {
-    let isMatch = true;
+    let isMatch = true
     if (filterPlatform !== -1) {
-      isMatch = isMatch && game.platforms.includes(filterPlatform);
+      isMatch = isMatch && game.platforms.includes(filterPlatform)
     }
     if (filterGenre !== -1) {
-      isMatch = isMatch && game.genres.includes(filterGenre);
+      isMatch = isMatch && game.genres.includes(filterGenre)
     }
-    return isMatch;
+    return isMatch
   }
 
   if (loading) {

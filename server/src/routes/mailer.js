@@ -30,7 +30,7 @@ const mailerRouter = Router()
   
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          res.status(400).json({ error: error });
+          res.status(400).json({ error: error })
         } else {
           res.status(200).json({ message: info.response })
         }
@@ -57,7 +57,7 @@ const mailerRouter = Router()
   
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          res.status(400).json({ error: error });
+          res.status(400).json({ error: error })
         } else {
           res.status(200).json({ message: info.response })
         }
@@ -86,7 +86,7 @@ const mailerRouter = Router()
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          res.status(400).json({ error: error });
+          res.status(400).json({ error: error })
         } else {
           res.status(200).json({ message: info.response })
         }

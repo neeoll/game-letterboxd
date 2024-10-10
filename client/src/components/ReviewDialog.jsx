@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { Checkbox, Dialog, DialogPanel, Field, Radio, RadioGroup  } from "@headlessui/react";
-import 'simplebar-react/dist/simplebar.min.css';
-import { RxCheck } from "react-icons/rx";
-import DropdownSearch from "./DropdownSearch";
+import { useEffect, useState } from "react"
+import { Checkbox, Dialog, DialogPanel, Field, Radio, RadioGroup  } from "@headlessui/react"
+import 'simplebar-react/dist/simplebar.min.css'
+import { RxCheck } from "react-icons/rx"
+import DropdownSearch from "./DropdownSearch"
 import axios from 'axios'
-import { completionStatuses } from "../dict/completionStatuses";
-import StyledRating from "./StyledRating";
+import { completionStatuses } from "../dict/completionStatuses"
+import StyledRating from "./StyledRating"
 import PropTypes from 'prop-types'
 
 const ReviewDialog = (props) => {

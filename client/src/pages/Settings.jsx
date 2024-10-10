@@ -43,8 +43,9 @@ const Settings = () => {
       <TabGroup vertical defaultIndex={0} className="grid grid-cols-10 w-full h-full">
         <TabList className="col-span-2 flex flex-col text-white/50">
           {tabs.map((tab, index) => (
-            <Tab key={index} className="border-l-2 border-white/50 p-3 group data-[selected]:border-accentPrimary data-[selected]:my-2 data-[selected]:py-1">
-              <p className="text-left text-white/50 group-hover:text-white group-data-[selected]:text-white">{tab}</p>
+            <Tab key={index} className="flex items-center group">
+              <div className="w-[2px] h-full bg-white/50 group-data-[selected]:h-3/4 group-data-[selected]:bg-gradient-to-b from-accentPrimary to-accentSecondary"></div>
+              <p className="text-left p-4 text-white/50 group-hover:text-white group-data-[selected]:text-white">{tab}</p>
             </Tab>
           ))}
         </TabList>

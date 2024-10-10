@@ -90,7 +90,7 @@ export default async function getCroppedImg(
   )
 
   // As Base64 string
-  // return croppedCanvas.toDataURL('image/jpeg');
+  // return croppedCanvas.toDataURL('image/jpeg')
 
   // As a blob
   return new Promise((resolve, reject) => {

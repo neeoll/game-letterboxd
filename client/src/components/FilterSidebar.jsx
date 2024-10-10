@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Dialog, DialogPanel } from "@headlessui/react";
-import 'simplebar-react/dist/simplebar.min.css';
-import DropdownSearch from "./DropdownSearch";
+import { useState } from "react"
+import { Dialog, DialogPanel } from "@headlessui/react"
+import 'simplebar-react/dist/simplebar.min.css'
+import DropdownSearch from "./DropdownSearch"
 import PropTypes from 'prop-types'
 
 const FilterSidebar = (props) => {

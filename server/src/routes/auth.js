@@ -65,7 +65,7 @@ const authRouter = Router()
   
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          res.status(400).json({ error: error });
+          res.status(400).json({ error: error })
         } else {
           res.status(200).json({ message: info.response })
         }
@@ -154,7 +154,7 @@ const authRouter = Router()
       const user = await User.findOne({ email: req.user.email })
       if (!user) { return res.status(401).json({ error: 'Invalid credentials' }) }
 
-      const passwordMatch = bcrypt.compareSync(user.password, req.body.oldPassword)
+      const passwordMatch = bcrypt.compareSync(req.body.oldPassword, user.password)
       if (!passwordMatch) { return res.status(401).json({ error: "Invalid credentials"}) }
 
       user.password = req.body.hash

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { CloseButton, Dialog, DialogPanel } from "@headlessui/react";
-import 'simplebar-react/dist/simplebar.min.css';
+import { useState } from "react"
+import { CloseButton, Dialog, DialogPanel } from "@headlessui/react"
+import 'simplebar-react/dist/simplebar.min.css'
 import axios from 'axios'
-import { RxCheck, RxCross2 } from "react-icons/rx";
+import { RxCheck, RxCross2 } from "react-icons/rx"
 import bcrypt from 'bcryptjs'
 
 const PasswordChangeDialog = () => {
@@ -19,9 +19,15 @@ const PasswordChangeDialog = () => {
     const data = { oldPassword, hash }
     axios.post('/auth/changePassword', data)
     .then(res => {
-      console.log(res.data)
+      if (res.status == 200) {
+        clear()
+      }
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      if (err.response.data.error == "Invalid credentials") {
+        setOldPasswordMatch(false)
+      }
+    })
   }
 
   const clear = () => {
@@ -33,7 +39,7 @@ const PasswordChangeDialog = () => {
 
   return (
     <div className="flex justify-center items-center">
-      <button onClick={() => setDialogOpen(true)} className="w-full bg-gradient-to-r from-accentPrimary to-accentSecondary rounded text-white font-bold rounded p-1 px-2">Change Password</button>
+      <button onClick={() => setDialogOpen(true)} className="w-full bg-gradient-to-r from-accentPrimary to-accentSecondary rounded text-white rounded p-1 px-2">Change Password</button>
       <Dialog open={dialogOpen} onClose={() => clear()} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4 bg-gradient-to-t from-[#ff990055] to-[#ff00ff33]">
           <DialogPanel className="w-1/2">
@@ -42,7 +48,7 @@ const PasswordChangeDialog = () => {
                 <p>Change Password</p>
                 <CloseButton><RxCross2 /></CloseButton>
               </div>
-              <form onSubmit={submit} className="flex flex-col w-full justify-center items-center gap-6">
+              <div onSubmit={submit} className="flex flex-col w-full justify-center items-center gap-6">
                 {/* Old Password */}
                 <div className="flex flex-col w-full items-start">
                   <p className="text-sm text-white/50 font-extralight">Old Password</p>
@@ -95,13 +101,13 @@ const PasswordChangeDialog = () => {
                   )}
                 </div>
                 <div className="flex w-full gap-4 justify-end">
-                  <button className="p-1 text-white/50 hover:text-white">Cancel</button>
+                  <CloseButton className="p-1 text-white/50 hover:text-white">Cancel</CloseButton>
                   <div className={`relative group`}>
                     <div className="absolute w-full h-full blur-sm group-hover:bg-gradient-to-r hover:gradient-to-r from-accentPrimary to-accentSecondary p-1 px-2">Save Changes</div>
-                    <button type="submit" className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1 px-2">Save Changes</button>
+                    <button onClick={() => submit()} className="relative w-full rounded text-white bg-gradient-to-r from-accentPrimary to-accentSecondary p-1 px-2">Save Changes</button>
                   </div>
                 </div>
-              </form>
+              </div>
             </div>
           </DialogPanel>
         </div>
