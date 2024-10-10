@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import PasswordChangeDialog from "../components/PasswordChangeDialog"
 import ProfileEdit from "../components/Settings/ProfileEdit"
 
-const tabs = ["Profile", "Security", "Tab 3", "Tab 4"]
+const tabs = ["Profile", "Security"]
 
 const Settings = () => {
   const navigate = useNavigate()
