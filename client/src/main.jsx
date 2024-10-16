@@ -12,12 +12,6 @@ axios.defaults.headers = {
   'authorization': localStorage.getItem('accessToken')
 }
 
-axios.interceptors.response.use(function (response) {
-  return response
-}, function (error) {
-  return Promise.reject(error)
-})
-
 const router = createBrowserRouter([
   {
     path: "/",
