@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
-import axios from 'axios'
 import defaultImg from '../assets/default_profile.png'
+import { gameAPI } from "../api"
 
 const Status = () => {
   const { slug, status } = useParams()
@@ -9,14 +9,12 @@ const Status = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function getUsers() {
-      axios.get(`/game/${slug}/${status}`)
-      .then(res => {
-        setData(res.data)
-        setLoading(false)
-      })
-    }
-    getUsers()
+    gameAPI.status(slug, status)
+    .then(response => {
+      setData(response)
+      setLoading(false)
+    })
+    .catch(error => console.error(error))
   }, [slug, status])
 
   if (loading) {

@@ -1,25 +1,22 @@
-import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import background from "../assets/homepage.png"
+import { get } from "../api"
+import { useAsyncError } from "../utils"
 
 const Home = () => {
+  const throwError = useAsyncError() 
   const [homeData, setHomeData] = useState()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function getHomeData() {
-      axios.get('/game/home')
-      .then(res => {
-        document.title = "Home | Arcade Archive"
-        setHomeData(res.data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-    }
-    getHomeData()
+    document.title = "Home | Arcade Archive"
+    get()
+    .then(response => {
+      setHomeData(response)
+      setLoading(false)
+    })
+    .catch(error = throwError(error))
   }, [])
 
   const abbreviateNumber = (num) => {

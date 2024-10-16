@@ -1,7 +1,5 @@
 import { Router } from "express"
-import Game from "../db/models/Game.js"
-import User from "../db/models/User.js"
-import Review from "../db/models/Review.js"
+import { Game, User } from "../db/models/index.js"
 import { verifyToken } from "../middleware/verifyToken.js"
 import { queryToPipeline } from "../utils/queryToPipeline.js"
 import mongoose from "mongoose"
@@ -9,31 +7,6 @@ import Token from "../db/models/Token.js"
 import jsonwebtoken from 'jsonwebtoken'
 
 const gamesRouter = Router()
-  /* GET ROUTES */
-  .get('/home', async (req, res) => {
-    try {
-      const gamesNum = await Game.countDocuments({})
-      const reviewsNum = await Review.countDocuments({})
-      const usersNum = await User.countDocuments({})
-      
-      const games = await Game.aggregate([
-        { $project: { slug: 1, coverId: 1, popularity: 1, name: 1 } },
-        { $sort: { popularity: -1 } },
-        { $limit: 10 },
-      ])
-
-      res.status(200).json({ 
-        games: games, 
-        counts: [
-          { name: "Games", num: gamesNum },
-          { name: "Reviews", num: reviewsNum },
-          { name: "Users", num: usersNum } 
-        ]
-      })
-    } catch (err) {
-      console.error(err)
-    }
-  })
   .get('/search', async (req, res) => {
     try {
       const results = await Game.aggregate([
@@ -55,7 +28,7 @@ const gamesRouter = Router()
       res.status(500).json({ error: 'Internal server error' })
     }
   })
-  .get('/', async (req, res) => {
+  .get('/all', async (req, res) => {
     try {
       const pipeline = queryToPipeline(req.query)
       const results = await Game.aggregate(pipeline)

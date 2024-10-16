@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
-import axios from 'axios'
 import { RxStar, RxStarFilled } from "react-icons/rx"
 import { gameStatuses, platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
 import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution, useAsyncError } from "../utils"
+import { gameAPI } from "../api"
 
-const GameDetails = () => {
+const Game = () => {
   const { slug } = useParams()
   const throwError = useAsyncError()
 
@@ -16,30 +16,19 @@ const GameDetails = () => {
   const [details, setDetails] = useState()
   
   useEffect(() => {
-    async function getDetails() {
-      setLoading(true)
-      axios.get(`/game/${slug}`)
-      .then(res => {
-        document.title = `${res.data.data.name}`
-        setDetails(res.data.data)
-        setUser(res.data.user)
-        setLoading(false)
-      })
-      .catch(error => {
-        throwError(error)
-      })
-    }
-    getDetails()
-    return
+    gameAPI.get(slug)
+    .then(response => {
+      document.title = response.data.name
+      setDetails(response.data)
+      setUser(response.user)
+      setLoading(false)
+    })
+    .catch(error => throwError(error))
   }, [slug])
-
-  async function addGame(status, slug) {
-    axios.post('/game/addGame', { status, slug })
-  }
 
   async function toggleFavorite(slug) {
     setDetails({ ...details, favorite: !details.favorite })
-    axios.post('/game/favorite', { slug })
+    gameAPI.favorite(slug)
   }
 
   if (loading) {
@@ -188,7 +177,7 @@ const GameDetails = () => {
                 <StyledRating defaultValue={details.userRating || 0} size="large" readOnly />
                 <div className="flex gap-2">
                   {gameActions.map((action, index) => (
-                    <button key={index} onClick={() => addGame(action.status, details.slug)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
+                    <button key={index} onClick={() => gameAPI.add(action.status, details.slug)} className="flex flex-col gap-1 text-xs text-white/75 hover:text-white items-center">
                       {action.icon()}
                       <p>{action.name}</p>
                     </button>
@@ -312,4 +301,4 @@ const gameActions = [
   },
 ]
 
-export default GameDetails
+export default Game

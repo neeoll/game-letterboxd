@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from 'axios'
+import { authAPI, mailerAPI } from "../api"
 
 const SendResetLink = () => {
   const navigate = useNavigate()
@@ -9,28 +9,22 @@ const SendResetLink = () => {
   const [resetLinkSent, setResetLinkSent] = useState(false)
 
   useEffect(() => {
-    axios.get('/auth/checkAuthentication')
-    .then(res => {
-      if (res.data == true) {
-        return navigate('/profile')
-      }
+    document.title = "Password Reset Form | Arcade Archive"
+    authAPI.check()
+    .then(response => {
+      if (response == true) return navigate('/profile')
     })
-    .catch(err => {
-      console.error(err)
-      window.location.reload()
+    .catch(error => {
+      if (error.response.status == 500) window.location.reload()
     })
   }, [])
 
   async function submit(e) {
     e.preventDefault()
 
-    axios.post('/mailer/sendPasswordResetLink', { email })
+    mailerAPI.passwordResetLink(email)
     .then(setResetLinkSent(true))
     .catch(err => console.error(err))
-  }
-
-  const resendLink = () => {
-    axios.post('/mailer/sendPasswordResetLink', { email })
   }
 
   if (resetLinkSent) {
@@ -44,7 +38,7 @@ const SendResetLink = () => {
             <p className="text-white/50">
               {"Didn't receive the link?"}
             </p>
-            <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
+            <button onClick={() => mailerAPI.passwordResetLink(email)} className="brightness-75 bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import PasswordChangeDialog from "../components/PasswordChangeDialog"
-import ProfileEdit from "../components/Settings/ProfileEdit"
+import ProfileEdit from "../components/ProfileEdit"
+import { authAPI } from "../api"
 
 const tabs = ["Profile", "Security"]
 
@@ -14,21 +14,15 @@ const Settings = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function getUserData() {
-      axios.get('/auth/getUser')
-      .then(res => {
-        document.title = "Settings | Arcade Archive"
-        console.log(res.data)
-        setUser(res.data)
-        setLoading(false)
-      })
-      .catch(err => {
-        if (err.response.status == 401) {
-          navigate('/')
-        }
-      })
-    }
-    getUserData()
+    document.title = "Settings | Arcade Archive"
+    authAPI.user()
+    .then(response => {
+      setUser(response)
+      setLoading(false)
+    })
+    .catch(err => {
+      if (err.response.status == 401) return navigate('/')
+    })
   }, [])
 
   if (loading) {

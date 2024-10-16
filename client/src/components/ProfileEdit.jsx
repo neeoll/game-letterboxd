@@ -1,7 +1,7 @@
 import { useState } from "react"
-import CropDialog from '../CropDialog'
-import axios from "axios"
+import CropDialog from './CropDialog'
 import PropTypes from 'prop-types'
+import { userAPI } from "../api"
 
 const ProfileEdit = (props) => {
   const [uri, setUri] = useState()
@@ -10,18 +10,9 @@ const ProfileEdit = (props) => {
   const [bio, setBio] = useState(null)
 
   const submitChanges = async () => {
-    const formData = new FormData()
-    formData.append('image', uri)
-    formData.append('username', username)
-    formData.append('bio', bio)
-    
-    axios.post('/user/update', formData)
-    .then(res => {
-      console.log(res.data)
-    })
-    .catch(err => {
-      console.error(err)
-    })
+    userAPI.update(uri, username, bio)
+    .then(response => console.log(response))
+    .catch(error => console.error(error))
   }
 
   return (

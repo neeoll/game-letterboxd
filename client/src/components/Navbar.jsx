@@ -4,8 +4,8 @@ import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _ from "lodash"
-import axios from 'axios'
 import { getYearFromTimestamp } from '../utils'
+import { authAPI, gameAPI } from '../api'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -16,26 +16,20 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    async function getUserInfo() {
-      axios.get('/auth/getUser')
-      .then(res => setUserData(res.data))
-      .catch(err => console.error(err))
-    }
-    getUserInfo()
-    return
+    authAPI.user()
+    .then(response => setUserData(response))
+    .catch(error => console.error(error))
   }, [])
 
   const search = async (searchText) => {
     if (searchText == "") { return setResults([]) }
-    axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
-    .then(res => {
-      setResults(res.data.results)
-    })
-    .catch(err => console.error(err))
+    gameAPI.search(encodeURIComponent(searchText))
+    .then(response => setResults(response.results))
+    .catch(error => console.error(error))
   }
 
   const handleSearch = () => {
-    navigate({ pathname: "/games/search", search: `?title=${encodeURIComponent(search.current.value)}` })
+    navigate({ pathname: "/games/search", search: `?title=${encodeURIComponent(searchbar.current.value)}` })
     search.current.value = ""
     search.current.blur()
     setResults([])

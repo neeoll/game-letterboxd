@@ -3,9 +3,9 @@ import { useLocation, Link } from "react-router-dom"
 import { RxStarFilled } from "react-icons/rx"
 import { platforms } from "../dict"
 import { Sort } from "../components"
-import axios from 'axios'
+import { gameAPI } from "../api"
 
-const SearchResults = () => {
+const Search = () => {
   const location = useLocation()
   const searchText = new URLSearchParams(location.search).get("title")
   
@@ -17,21 +17,16 @@ const SearchResults = () => {
   const [sortOrder, setSortOrder] = useState(-1)
 
   useEffect(() => {
-    async function gameSearch() {
-      axios.get(`/game/search?title=${encodeURIComponent(searchText)}`)
-      .then(res => {
-        document.title = `Search - ${searchText}`
-        setCount(res.data.count[0].count)
-        setResults(res.data.results)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-    }
-    setTimeout(5000)
-    gameSearch()
-    return
+    document.title = `Search - ${searchText} | Arcade Archive`
+    gameAPI.search(encodeURIComponent(searchText))
+    .then(response => {
+      setCount(response.count[0].count)
+      setResults(response.results)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.error(error)
+    })
   }, [searchText])
 
   const updateSort = (params) => {
@@ -116,4 +111,4 @@ const searchSortCriteria = [
   { name: "Release Date", value: "releaseDate" }
 ]
 
-export default SearchResults
+export default Search

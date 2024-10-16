@@ -2,13 +2,13 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
-import axios from 'axios'
+import { authAPI } from "../api"
 
 const PasswordReset = () => {
   const navigate = useNavigate()
   const token = new URLSearchParams(location.search).get("token")
   
-  const [userEmail, setUserEmail] = useState("")
+  const [email, setEmail] = useState("")
 
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -18,17 +18,13 @@ const PasswordReset = () => {
 
   useEffect(() => {
     if (!token) { return navigate('/') }
-    async function checkLinkValidity() {
-     axios.get(`/auth/verifyToken?token=${token}`)
-     .then(res => {
-        if (res.data.status == "exp") {
-          return setLinkExpired(true)
-        }
-        setUserEmail(res.data.email)
-      })
-     .catch(err => console.error(err))
-    }
-    checkLinkValidity()
+    document.title = "Password Reset | Arcade Archive"
+    authAPI.token(token)
+    .then(response => {
+      if (response.status == "exp") return setLinkExpired(true)
+      setEmail(response.email)
+    })
+    .catch(error => console.error(error))
   }, [token])
 
   async function submitPasswordChange(e) {
@@ -37,9 +33,9 @@ const PasswordReset = () => {
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(newPassword, salt)
 
-    axios.post('/auth/resetPassword', { userEmail, hash })
+    authAPI.resetPassword(email, hash)
     .then(setChangeSuccessful(true))
-    .catch(err => console.error(err))
+    .catch(error => console.error(error))
   }
 
   if (linkExpired) {

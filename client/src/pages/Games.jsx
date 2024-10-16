@@ -1,11 +1,13 @@
 import { useSearchParams } from "react-router-dom"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { genres, platforms, sortCriteria } from "../dict"
 import { DisplayButtons, FilterSidebar, GameCard, Pagination, Sort } from "../components"
+import { gameAPI } from "../api/gameAPI"
+import { useAsyncError } from "../utils"
 
-const GameSearch = () => {
+const Games = () => {
   const [searchParams, setSearchParams] = useSearchParams()
+  const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
   const [count, setCount] = useState(0)
@@ -19,17 +21,14 @@ const GameSearch = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
-    async function gameSearch() {
-      axios.get(`/game?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
-      .then(res => {
-        document.title = "Games | Arcade Archive"
-        setCount(res.data.count[0].count)
-        setResults(res.data.results)
-        setLoading(false)
-      })
-      .catch(err => console.error(err))
-    }
-    gameSearch()
+    document.title = "Games | Arcade Archive"
+    gameAPI.all(currentGenre, currentPlatform, year, sortBy, sortOrder, page)
+    .then(response => {
+      setCount(response.count[0].count)
+      setResults(response.results)
+      setLoading(false)
+    })
+    .catch(error => throwError(error))
   }, [currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (params) => {
@@ -105,4 +104,4 @@ const GameSearch = () => {
   )
 }
 
-export default GameSearch
+export default Games

@@ -4,8 +4,8 @@ import { Link, useParams } from "react-router-dom"
 import { GameCard, StyledRating } from "../components"
 import { genres, platforms, completionStatuses } from "../dict"
 import { calculateRatingDistribution, useAsyncError } from "../utils"
-import axios from 'axios'
 import defaultImg from "../assets/default_profile.png"
+import { userAPI } from "../api"
 
 const User = () => {
   const { username } = useParams()
@@ -15,19 +15,16 @@ const User = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    async function getUser() {
-      axios.get(`/user/${username}`)
-      .then(res => {
-        document.title = `${res.data.username}'s Profile | Arcade Archive`
-        setUser(res.data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error(err)
-        throwError(err)
-      })
-    }
-    getUser()
+    userAPI.findUser(username)
+    .then(response => {
+      document.title = `${response.username}'s Profile | Arcade Archive`
+      setUser(response)
+      setLoading(false)
+    })
+    .catch(err => {
+      console.error(err)
+      throwError(err)
+    })
   }, [username])
 
   if (loading) {

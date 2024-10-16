@@ -6,7 +6,7 @@ import 'simplebar-react/dist/simplebar.min.css'
 import { DropdownSearch, GameCard, Sort, StyledRating } from "../components"
 import { genres, platforms, completionStatuses } from "../dict"
 import { calculateRatingDistribution } from "../utils"
-import axios from 'axios'
+import { userAPI } from '../api'
 
 const Profile = () => {
   const navigate = useNavigate()
@@ -22,23 +22,17 @@ const Profile = () => {
   const [filterGenre, setFilterGenre] = useState(-1)
 
   useEffect(() => {
-    async function getUserInfo() {
-      axios.get('/user/profileData')
-      .then(res => {
-        document.title = "Profile | Arcade Archive"
-        setUser(res.data)
-        setPlatforms(Array.from(new Set(res.data.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
-        setGenres(Array.from(new Set(res.data.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
-        setLoading(false)
-      })
-      .catch(err => {
-        if (err.response.status == 401) {
-          navigate('/')
-        }
-      })
-    }
-    getUserInfo()
-    return
+    document.title = "Profile | Arcade Archive"
+    userAPI.get()
+    .then(response => {
+      setUser(response)
+      setPlatforms(Array.from(new Set(response.games.map(game => game.platforms).flat())).map(item => platforms.find(platform => platform.id == item)))
+      setGenres(Array.from(new Set(response.games.map(game => game.genres).flat())).map(item => genres.find(genre => genre.id == item)))
+      setLoading(false)
+    })
+    .catch(error => {
+      if (error.response.status == 401) navigate('/')
+    })
   }, [])
 
   const updateSort = (params) => {

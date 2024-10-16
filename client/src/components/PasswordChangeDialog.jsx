@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { CloseButton, Dialog, DialogPanel } from "@headlessui/react"
 import 'simplebar-react/dist/simplebar.min.css'
-import axios from 'axios'
 import { RxCheck, RxCross2 } from "react-icons/rx"
 import bcrypt from 'bcryptjs'
+import { authAPI } from "../api"
 
 const PasswordChangeDialog = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -16,17 +16,10 @@ const PasswordChangeDialog = () => {
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(newPassword, salt)
 
-    const data = { oldPassword, hash }
-    axios.post('/auth/changePassword', data)
-    .then(res => {
-      if (res.status == 200) {
-        clear()
-      }
-    })
-    .catch(err => {
-      if (err.response.data.error == "Invalid credentials") {
-        setOldPasswordMatch(false)
-      }
+    authAPI.changePassword(oldPassword, hash)
+    .then(clear())
+    .catch(error => {
+      if (error.response.data.error == "Invalid credentials") setOldPasswordMatch(false) 
     })
   }
 

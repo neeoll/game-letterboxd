@@ -1,31 +1,31 @@
-import GameDetails from "./GameDetails"
-import GamesByCompany from "./GamesByCompany"
-import GamesBySeries from "./GamesBySeries"
-import GameSearch from "./GameSearch"
+import Company from "./Company"
+import Game from "./Game"
+import Games from "./Games"
 import Home from "./Home"
 import Login from "./Login"
 import PasswordReset from "./PasswordReset"
 import Profile from "./Profile"
 import Register from "./Register"
-import SearchResults from "./SearchResults"
+import Search from "./Search"
 import SendResetLink from "./SendResetLink"
+import Series from "./Series"
 import Settings from "./Settings"
 import Status from "./Status"
 import User from "./User"
 import VerifyEmail from "./VerifyEmail"
 
 export { 
-  GameDetails, 
-  GamesByCompany, 
-  GamesBySeries, 
-  GameSearch, 
+  Company, 
+  Game, 
+  Games, 
   Home, 
   Login, 
   PasswordReset, 
   Profile, 
   Register, 
-  SearchResults, 
+  Search, 
   SendResetLink, 
+  Series,
   Settings, 
   Status, 
   User,

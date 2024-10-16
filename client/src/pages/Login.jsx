@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
-import axios from 'axios'
-import { verifyCaptcha } from "../utils"
+import { authAPI } from "../api"
 
 const Login = () => {
   const navigate = useNavigate()
@@ -14,15 +13,13 @@ const Login = () => {
   const [failedLogin, setFailedLogin] = useState(false)
 
   useEffect(() => {
-    axios.get('/auth/checkAuthentication')
-    .then(res => {
-      document.title = "Login | Arcade Archive"
-      if (res.data == true) {
-        return navigate('/profile')
-      }
+    document.title = "Login | Arcade Archive"
+    authAPI.check()
+    .then(response => {
+      if (response == true) return navigate('/profile')
     })
-    .catch(err => {
-      if (err.response.status == 500) { window.location.reload() }
+    .catch(error => {
+      if (error.response.status == 500) { window.location.reload() }
     })
   }, [])
 
@@ -31,17 +28,16 @@ const Login = () => {
     const captchaValue = recaptcha.current.getValue()
     if (!captchaValue) { return alert('Please verify the reCAPTCHA') }
 
-    const captchaVerified = await verifyCaptcha(captchaValue)
+    const captchaVerified = await authAPI.captcha(captchaValue)
     if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
 
-    const data = { emailOrUsername: emailOrUsername, password: password }
-    axios.post('/auth/login', data)
-    .then(res => {
-      window.localStorage.setItem('accessToken', res.data.token)
+    authAPI.login(emailOrUsername, password)
+    .then(response => {
+      window.localStorage.setItem('accessToken', response.token)
       window.location.reload()
     })
-    .catch(err => {
-      if (err.response.status == 401) setFailedLogin(true) 
+    .catch(error => {
+      if (error.response.status == 401) setFailedLogin(true) 
     })
   }
 

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
-import axios from 'axios'
+import { authAPI, mailerAPI } from "../api"
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
@@ -11,22 +11,18 @@ const VerifyEmail = () => {
   const [linkResend, setLinkResend] = useState(false)
 
   useEffect(() => {
-    async function verify() {
-      axios.get(`/auth/verifyEmail?token=${token}`)
-      .then(res => {
-        if (res.data.status == "exp") { return setLinkExpired(true) }
-        setVerificationSuccessful(true)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-    }
-    verify()
+    document.title = "Verify Email | Arcade Archive"
+    authAPI.verifyEmail(token)
+    .then(response => {
+      if (response.status == "exp") return setLinkExpired(true)
+      setVerificationSuccessful(true)
+    })
+    .catch(err => console.error(err))
   }, [token])
 
   const resendLink = async () => {
     setLinkResend(true)
-    axios.get(`/mailer/resendVerification-verify?token=${token}`)
+    mailerAPI.resendVerify(token)
   }
 
   if (linkResend) {

@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
-import axios from 'axios'
-import { verifyCaptcha } from "../utils"
+import { authAPI, mailerAPI } from "../api"
 
 const Register = () => {
   const navigate = useNavigate()
@@ -20,15 +19,13 @@ const Register = () => {
   const [registerSuccessful, setRegisterSuccessful] = useState(false)
 
   useEffect(() => {
-    axios.get('/auth/checkAuthentication')
-    .then(res => {
-      document.title = "Register | Arcade Archive"
-      if (res.data == true) {
-        return navigate('/profile')
-      }
+    document.title = "Register | Arcade Archive"
+    authAPI.check()
+    .then(response => {
+      if (response == true) return navigate('/profile')
     })
-    .catch(err => {
-      if (err.response.status == 500) { window.location.reload() }
+    .catch(error => {
+      if (error.response.status == 500) { window.location.reload() }
     })
   }, [])
 
@@ -37,24 +34,18 @@ const Register = () => {
     const captchaValue = recaptcha.current.getValue()
     if (!captchaValue) { return alert('Please verify the reCAPTCHA') }
 
-    const captchaVerified = await verifyCaptcha(captchaValue)
+    const captchaVerified = await authAPI.captcha(captchaValue)
     if (!captchaVerified) { return alert('reCAPTCHA validation failed') }
 
     const salt = bcrypt.genSaltSync(10)
     const hash = bcrypt.hashSync(password, salt)
 
-    const data = { username: username, email: email, password: hash }
-
-    axios.post('/auth/register', data)
+    authAPI.register(username, email, hash)
     .then(setRegisterSuccessful(true))
-    .catch(err => {
-      if (err.response.data.error == 'Username already in use') { setUsernameValid(false) }
-      if (err.response.data.error == 'Email already in use') { setEmailValid(false) }
+    .catch(error => {
+      if (error.response.data.error == 'Username already in use') { setUsernameValid(false) }
+      if (error.response.data.error == 'Email already in use') { setEmailValid(false) }
     })
-  }
-
-  const resendLink = () => {
-    axios.get('/mailer/resendVerification-register', { email })
   }
 
   if (registerSuccessful) {
@@ -68,7 +59,7 @@ const Register = () => {
             <p className="text-white/50">
               {"Didn't receive the link?"}
             </p>
-            <button onClick={() => resendLink()} className="brightness-75 bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
+            <button onClick={() => mailerAPI.resendRegister(email)} className="brightness-75 bg-gradient-to-r from-accentPrimary to-accentSecondary bg-clip-text text-transparent font-medium hover:brightness-100" href="#0">Resend</button>
           </div>
         </div>
       </div>

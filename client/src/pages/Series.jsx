@@ -2,15 +2,17 @@ import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { DisplayButtons, Sort, FilterSidebar, GameCard, Pagination } from "../components"
 import { genres, platforms, sortCriteria } from "../dict"
-import axios from 'axios'
+import { companyAPI } from "../api/companyAPI"
+import { useAsyncError } from "../utils"
 
-const GamesByCompany = () => {
+const Series = () => {
   const { slug } = useParams()
+  const throwError = useAsyncError()
 
   const [searchParams, setSearchParams] = useSearchParams()
-  
+
   const [loading, setLoading] = useState(true)
-  const [companyDetails, setCompanyDetails] = useState({})
+  const [seriesDetails, setSeriesDetails] = useState({})
   const [count, setCount] = useState(0)
   const [results, setResults] = useState([])
 
@@ -22,18 +24,15 @@ const GamesByCompany = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
-    async function gameSearch() {
-      axios.get(`/company/${slug}?genre=${currentGenre}&platform=${currentPlatform}&year=${year}&sortBy=${sortBy}&sortOrder=${sortOrder}&page=${page}`)
-      .then(res => {
-        document.title = `${res.data.name} | Arcade Archive`
-        setCompanyDetails({ name: res.data.name, description: res.data.description })
-        setCount(res.data.games[0].count[0].count)
-        setResults(res.data.games[0].results)
-        setLoading(false)
-      })
-      .catch(err => console.error(err))
-    }
-    gameSearch()
+    companyAPI.get(slug, currentGenre, currentPlatform, year, sortBy, sortOrder, page)
+    .then(response => {
+      document.title = `${response.name} | Arcade Archive`
+      setSeriesDetails({ name: response.name })
+      setCount(response.games[0].count[0].count)
+      setResults(response.games[0].results)
+      setLoading(false)
+    })
+    .catch(error => throwError(error))
   }, [slug, currentGenre, currentPlatform, page, sortBy, sortOrder, year])
 
   const updateQueryParameter = (params) => {
@@ -54,14 +53,9 @@ const GamesByCompany = () => {
     return (
       <div className="flex flex-col gap-4 animate-[pulse_1s_linear_infinite]">
         <div className="flex flex-col gap-2 text-white">
-          <div className="flex flex-col gap-2 pb-2">
+          <div className="flex flex-col pb-2 gap-2">
             <div className="w-20 h-6 placeholder" />
             <div className="w-96 h-10 placeholder" />
-            <div className="flex w-full flex-col gap-2">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
-                <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}}/>
-              ))}
-            </div>
           </div>
           <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
         </div>
@@ -73,7 +67,7 @@ const GamesByCompany = () => {
               ))}
             </div>
             <div className="flex w-full justify-between">
-              <div className="flex justify-center items-end text-white/50 font-light text-sm">{count.toLocaleString()} Games</div>
+              <div className="h-6 w-24 placeholder" />
               <div className="flex gap-2">
                 <div className="w-40 h-6 placeholder" />
                 <div className="w-12 h-6 placeholder" />
@@ -85,7 +79,9 @@ const GamesByCompany = () => {
               {Array.apply(null, Array(35)).map(index => (
                 <div key={index} className={`flex flex-col items-center gap-2`}>
                   <div className="relative h-48 aspect-[45/64] placeholder" />
-                  {sortBy == "releaseDate" || sortBy == "avgRating" ? <div className="w-20 h-6 placeholder" /> : <></>}
+                  {sortBy == "releaseDate" || sortBy == "avgRating" ? 
+                    <div className="w-20 h-6 placeholder" /> : <></>
+                  }
                 </div>
               ))}
             </div>
@@ -102,12 +98,11 @@ const GamesByCompany = () => {
 
   return (
     <div className="grid grid-flow-row auto-rows-max gap-2 pb-8 text-white">
-      {/* Name and Summary */}
-      <div className="flex flex-col gap-2">
-        <div>
-          <p className="text-sm font-light text-white/50">Company</p>
-          <p className="text-3xl mb-2 font-semibold">{companyDetails.name}</p>
-          <p className="font-light text-white/75">{companyDetails.description != "N/A" ? companyDetails.description : ""}</p>
+      {/* Name */}
+      <div className="flex flex-col gap-2 text-white">
+        <div className="pb-2">
+          <p className="text-sm font-light text-white/50">Series</p>
+          <p className="text-3xl font-semibold">{seriesDetails.name}</p>
         </div>
         <div className="h-0.5 bg-gradient-to-r from-accentPrimary to-accentSecondary" />
       </div>
@@ -129,10 +124,10 @@ const GamesByCompany = () => {
             <GameCard key={index} size={"basis-[12.5%]"} game={game} sortBy={sortBy} />
           )}
         </div>
-        <Pagination page={page} count={count} update={updateQueryParameter} />
+        <Pagination page={page} count={count} update={updateQueryParameter}/>
       </div>
     </div>
   )
 }
 
-export default GamesByCompany
+export default Series

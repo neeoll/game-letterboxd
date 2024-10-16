@@ -3,10 +3,10 @@ import { Checkbox, Dialog, DialogPanel, Field, Radio, RadioGroup  } from "@headl
 import 'simplebar-react/dist/simplebar.min.css'
 import { RxCheck } from "react-icons/rx"
 import DropdownSearch from "./DropdownSearch"
-import axios from 'axios'
 import { completionStatuses } from "../dict/completionStatuses"
 import StyledRating from "./StyledRating"
 import PropTypes from 'prop-types'
+import { reviewAPI } from "../api"
 
 const ReviewDialog = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -17,25 +17,19 @@ const ReviewDialog = (props) => {
   const [spoiler, setSpoiler] = useState(false)
 
   useEffect(() => {
-    async function getReview() {
-      axios.get(`/review?gameRef=${props.gameId}`)
-      .then(res => {
-        setStatus(res.data.status)
-        setRating(res.data.rating)
-        setPlatform(res.data.platform)
-        setReview(res.data.body)
-        setSpoiler(res.data.spoiler)
-      })
-      .catch(err => {
-        console.error(err)
-      })
-    }
-    getReview()
+    reviewAPI.get(props.gameId)
+    .then(response => {
+      setStatus(response.status)
+      setRating(response.rating)
+      setPlatform(response.platform)
+      setReview(response.body)
+      setSpoiler(response.spoiler)
+    })
+    .catch(err => console.error(err))
   }, [])
 
   const submit = async () => {
-    const data = { rating: rating, platform: platform, body: review, spoiler: spoiler, status: status, gameId: props.gameId }
-    axios.post('/review', data)
+    reviewAPI.create(rating, platform, review, spoiler, status, props.gameId)
     .then(setDialogOpen(false))
     .catch(err => console.error(err))
   }

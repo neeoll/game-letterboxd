@@ -19,10 +19,10 @@ const reviewRouter = Router()
   })
   .post("/", verifyToken, async (req, res) => {
     try {
-      const { rating, platform, body, spoiler, status, gameId } = req.body
+      const { rating, platform, body, spoiler, status, gameRef } = req.body
       const { id: userId } = req.user
 
-      const existingReview = await Review.findOne({ gameRef: gameId, userRef: userId })
+      const existingReview = await Review.findOne({ gameRef: gameRef, userRef: userId })
       const reviewData = {
         rating: rating,
         body: body,
