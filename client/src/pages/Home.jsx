@@ -16,7 +16,7 @@ const Home = () => {
       setHomeData(response)
       setLoading(false)
     })
-    .catch(error = throwError(error))
+    .catch(error => throwError(error))
   }, [])
 
   const abbreviateNumber = (num) => {
