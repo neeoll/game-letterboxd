@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom"
+import { useOutletContext, useParams, useSearchParams } from "react-router-dom"
 import { DisplayButtons, Sort, FilterSidebar, GameCard, Pagination } from "../components"
 import { genres, platforms, sortCriteria } from "../dict"
 import { companyAPI } from "../api/companyAPI"
@@ -7,6 +7,7 @@ import { useAsyncError } from "../utils"
 
 const Series = () => {
   const { slug } = useParams()
+  const ref = useOutletContext()
   const throwError = useAsyncError()
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -24,6 +25,7 @@ const Series = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     companyAPI.get(slug, currentGenre, currentPlatform, year, sortBy, sortOrder, page)
     .then(response => {
       document.title = `${response.name} | Arcade Archive`

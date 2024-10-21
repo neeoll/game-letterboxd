@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useLocation, Link } from "react-router-dom"
+import { useLocation, Link, useOutletContext } from "react-router-dom"
 import { RxStarFilled } from "react-icons/rx"
 import { platforms } from "../dict"
 import { Sort } from "../components"
@@ -7,6 +7,7 @@ import { gameAPI } from "../api"
 
 const Search = () => {
   const location = useLocation()
+  const ref = useOutletContext()
   const searchText = new URLSearchParams(location.search).get("title")
   
   const [results, setResults] = useState([])
@@ -17,6 +18,7 @@ const Search = () => {
   const [sortOrder, setSortOrder] = useState(-1)
 
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     document.title = `Search - ${searchText} | Arcade Archive`
     gameAPI.search(encodeURIComponent(searchText))
     .then(response => {

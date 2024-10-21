@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { RxStarFilled } from "react-icons/rx"
-import { Link, useParams } from "react-router-dom"
+import { Link, useOutletContext, useParams } from "react-router-dom"
 import { GameCard, StyledRating } from "../components"
 import { genres, platforms, completionStatuses } from "../dict"
 import { calculateRatingDistribution, useAsyncError } from "../utils"
@@ -9,12 +9,14 @@ import { userAPI } from "../api"
 
 const User = () => {
   const { username } = useParams()
+  const ref = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
 
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     userAPI.findUser(username)
     .then(response => {
       document.title = `${response.username}'s Profile | Arcade Archive`

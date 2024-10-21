@@ -10,6 +10,8 @@ const SimpleBarStyle = {
 }
 
 const App = () => {
+  const scrollableNodeRef = React.useRef()
+
   return (
     <div className="min-h-full h-fit absolute inset-0 z-1 flex flex-col bg-neutral-900 overflow-hidden">
       <Sentry.ErrorBoundary fallback={({ error, resetError }) => (
@@ -17,10 +19,10 @@ const App = () => {
           <ErrorCard error={error} resetError={resetError} />
         </React.Fragment>
       )}>
-        <SimpleBar style={SimpleBarStyle}>
+        <SimpleBar scrollableNodeProps={{ ref: scrollableNodeRef }} style={SimpleBarStyle}>
           <Navbar />
           <div className="mt-32 px-48 min-h-screen">
-            <Outlet />
+            <Outlet context={scrollableNodeRef} />
           </div>
           <Footer />
         </SimpleBar>

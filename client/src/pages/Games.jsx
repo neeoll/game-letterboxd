@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom"
+import { useOutletContext, useSearchParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { genres, platforms, sortCriteria } from "../dict"
 import { DisplayButtons, FilterSidebar, GameCard, Pagination, Sort } from "../components"
@@ -7,6 +7,7 @@ import { useAsyncError } from "../utils"
 
 const Games = () => {
   const [searchParams, setSearchParams] = useSearchParams()
+  const ref = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
@@ -21,6 +22,7 @@ const Games = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     document.title = "Games | Arcade Archive"
     gameAPI.all(currentGenre, currentPlatform, year, sortBy, sortOrder, page)
     .then(response => {

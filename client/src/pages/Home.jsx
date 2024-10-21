@@ -5,7 +5,7 @@ import { get } from "../api"
 import { useAsyncError } from "../utils"
 
 const Home = () => {
-  const throwError = useAsyncError() 
+  const throwError = useAsyncError()
   const [homeData, setHomeData] = useState()
   const [loading, setLoading] = useState(true)
 
@@ -20,8 +20,7 @@ const Home = () => {
   }, [])
 
   const abbreviateNumber = (num) => {
-    const abbreviation = Intl.NumberFormat('en-US', {notation: "compact", maximumFractionDigits: 1}).format(num)
-    return abbreviation
+    return Intl.NumberFormat('en-US', {notation: "compact", maximumFractionDigits: 1}).format(num)
   }
 
   if (loading) {

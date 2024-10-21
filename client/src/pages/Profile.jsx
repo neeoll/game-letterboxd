@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { RxStarFilled } from "react-icons/rx"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import { DropdownSearch, GameCard, Sort, StyledRating } from "../components"
@@ -10,6 +10,7 @@ import { userAPI } from '../api'
 
 const Profile = () => {
   const navigate = useNavigate()
+  const ref = useOutletContext()
 
   const [user, setUser] = useState(null)
   const [profileGenres, setGenres] = useState([])
@@ -22,6 +23,7 @@ const Profile = () => {
   const [filterGenre, setFilterGenre] = useState(-1)
 
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     document.title = "Profile | Arcade Archive"
     userAPI.get()
     .then(response => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useOutletContext } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import { RxStar, RxStarFilled } from "react-icons/rx"
 import { gameStatuses, platforms, genres } from "../dict"
@@ -9,6 +9,7 @@ import { gameAPI } from "../api"
 
 const Game = () => {
   const { slug } = useParams()
+  const ref = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,7 @@ const Game = () => {
   const [details, setDetails] = useState()
   
   useEffect(() => {
+    ref.current.scrollTo(0, 0)
     gameAPI.get(slug)
     .then(response => {
       document.title = response.data.name
