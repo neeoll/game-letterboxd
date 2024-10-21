@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { useParams, Link, useOutletContext } from "react-router-dom"
 import { IoLogoGameControllerB, IoIosPlay, IoIosGift, IoIosBookmarks } from "react-icons/io"
 import { RxStar, RxStarFilled } from "react-icons/rx"
-import { gameStatuses, platforms, genres } from "../dict"
+import { platforms, genres } from "../dict"
 import { GameCard, GameReview, ReviewDialog, StyledRating } from "../components"
-import { gameDetailsTimestamp, getYearFromTimestamp, calculateRatingDistribution, useAsyncError } from "../utils"
+import { calculateRatingDistribution, useAsyncError, timestamps } from "../utils"
 import { gameAPI } from "../api"
 
 const Game = () => {
@@ -158,7 +158,7 @@ const Game = () => {
           <h1 className="text-5xl font-semibold">{details.name}</h1>
           <div className="flex gap-2 text-xl text-white/50">
             <p>{details.releaseDate > Date.now() / 1000 ? "Releases" : "Released"} on</p> 
-            <Link to={{ pathname: "/games", search: `?year=${getYearFromTimestamp(details.releaseDate)}`}} className="text-white/75 font-semibold hover:text-white">{gameDetailsTimestamp(details.releaseDate)}</Link>
+            <Link to={{ pathname: "/games", search: `?year=${timestamps.year(details.releaseDate)}`}} className="text-white/75 font-semibold hover:text-white">{timestamps.verbose(details.releaseDate)}</Link>
             {details.companies.length != 0 ? (
               <>
                 <p>by</p>
@@ -279,6 +279,45 @@ const Game = () => {
     </div>
   )
 }
+
+const gameStatuses = [
+  {
+    element: () => (
+      <div className="flex gap-1 items-center">
+        <IoLogoGameControllerB size={"1.25em"}/>
+        <p>Played</p>
+      </div>
+    ),
+    value: "played"
+  },
+  {
+    element: () => (
+      <div className="flex gap-1 items-center">
+        <IoIosPlay size={"1.25em"}/>
+        <p>Playing</p>
+      </div>
+    ),
+    value: "playing"
+  },
+  {
+    element: () => (
+      <div className="flex gap-1 items-center">
+        <IoIosBookmarks size={"1.25em"}/>
+        <p>Backlog</p>
+      </div>
+    ),
+    value: "backlog"
+  },
+  {
+    element: () => (
+      <div className="flex gap-1 items-center">
+        <IoIosGift size={"1.25em"}/>
+        <p>Wishlist</p>
+      </div>
+    ),
+    value: "wishlist"
+  },
+]
 
 const gameActions = [
   {

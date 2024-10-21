@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { RxStarFilled } from "react-icons/rx"
-import { gameCardTimestamp } from "../utils"
 import PropTypes from 'prop-types'
+import { timestamps } from "../utils"
 
 const GameCard = (props) => {
   return (
@@ -12,9 +12,7 @@ const GameCard = (props) => {
         <p className="flex absolute inset-0 p-1 items-center justify-center text-center font-semibold text-white invisible group-hover:visible">{props.game.name}</p>
       </Link>
       {props.sortBy == "releaseDate" ? 
-        <div className="flex text-white/75 rounded outline outline-1 p-1">
-          {gameCardTimestamp(props.game.releaseDate)}
-        </div> : <></>
+        <div className="flex text-white/75 rounded outline outline-1 p-1">{timestamps.default(props.game.releaseDate)}</div> : <></>
       }
       {props.sortBy == "avgRating" ?
         <div className="flex items-center text-white/75 gap-1 rounded outline outline-1 p-1">

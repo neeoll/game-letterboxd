@@ -1,5 +1,5 @@
-import calculateRatingDistribution from "./calculateRatingDistribution"
-import { gameCardTimestamp, gameDetailsTimestamp, getYearFromTimestamp } from "./timestamp"
+import { calculateRatingDistribution } from "./calculateRatingDistribution"
+import { timestamps } from "./timestamps"
 import { useAsyncError } from "./useAsyncError"
 
-export { calculateRatingDistribution, gameCardTimestamp, gameDetailsTimestamp, getYearFromTimestamp, useAsyncError }
+export { calculateRatingDistribution, timestamps, useAsyncError }

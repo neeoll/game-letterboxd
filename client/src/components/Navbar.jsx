@@ -4,7 +4,7 @@ import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _ from "lodash"
-import { getYearFromTimestamp } from '../utils'
+import { timestamps } from '../utils'
 import { authAPI, gameAPI } from '../api'
 
 const Navbar = () => {
@@ -113,7 +113,7 @@ const Navbar = () => {
                         <div className="col-span-8 text-white text-xs text-wrap">
                           {`${result.name} `}
                           <span className="text-white/75">
-                            {`(${getYearFromTimestamp(result.releaseDate)})`}
+                            {`(${timestamps.year(result.releaseDate)})`}
                           </span>
                         </div>
                       </div>

@@ -1,4 +1,6 @@
-const calculateRatingDistribution = (reviews) => {
+export const calculateRatingDistribution = (reviews) => {
+  if (reviews.length == 0) return Array.apply(null, Array(5)).map((_, index) => ({ value: index + 1, percent: 0, count: 0}))
+
   return [
     { value: 1, percent: Math.floor((reviews.filter(rating => rating.rating == 1).length / reviews.length) * 100), count: reviews.filter(review => review.rating == 1).length },
     { value: 2, percent: Math.floor((reviews.filter(rating => rating.rating == 2).length / reviews.length) * 100), count: reviews.filter(review => review.rating == 2).length },
@@ -7,5 +9,3 @@ const calculateRatingDistribution = (reviews) => {
     { value: 5, percent: Math.floor((reviews.filter(rating => rating.rating == 5).length / reviews.length) * 100), count: reviews.filter(review => review.rating == 5).length },
   ]
 }
-
-export default calculateRatingDistribution
