@@ -58,7 +58,7 @@ const Game = () => {
         <div className="col-span-3 h-fit">
           <div className="flex flex-col gap-2 p-2">
             <div className="flex flex-col gap-1.5">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map((_, index) => (
                 <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
               ))}
             </div>
@@ -70,7 +70,7 @@ const Game = () => {
               <div className="h-6 w-16 placeholder" />
             </div>
             <div className="flex h-fit justify-start flex-wrap">
-              {Array.apply(null, Array(6)).map(index => (
+              {Array.apply(null, Array(6)).map((_, index) => (
                 <div key={index} className="basis-[16.66%] p-1">
                   <div className="aspect-[45/64] placeholder"/>
                 </div>
@@ -84,7 +84,7 @@ const Game = () => {
           <div className="flex flex-col gap-2">
             <div className="h-6 w-24 placeholder" />
             <div className="flex w-full flex-wrap gap-2">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map((_, index) => (
                 <div key={index} className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
                 </div>
               ))}
@@ -94,7 +94,7 @@ const Game = () => {
           <div className="flex flex-col gap-2">
             <div className="h-6 w-24 placeholder" />
             <div className="flex w-full flex-wrap gap-2">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map((_, index) => (
                 <div key={index} className="h-6 w-20 placeholder" style={{ width: `${Math.floor(Math.random() * 20) + 30}%`}}>
                 </div>
               ))}
@@ -105,7 +105,7 @@ const Game = () => {
         {/* Reviews */}
         <div className="col-span-3">
           <div className="flex flex-col gap-2">
-            {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map(index => (
+            {Array.apply(null, Array(Math.floor(Math.random() * 3) + 3)).map((_, index) => (
               <div key={index} className="flex flex-col py-4 gap-2">
                 <div className="flex gap-2">
                   <div className="size-10 placeholder-lg" />
@@ -115,7 +115,7 @@ const Game = () => {
                       <div className="h-6 w-28 placeholder"/>
                       <div className="h-6 w-48 placeholder" />
                     </div>
-                    {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
+                    {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map((_, index) => (
                       <div key={index} className={`h-6 placeholder`} style={{ width: `${Math.floor(Math.random() * 21) + 80}%`}} />
                     ))}
                   </div>

@@ -64,7 +64,7 @@ const Series = () => {
         <div className="flex flex-col gap-2 pb-4">
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map(index => (
+              {Array.apply(null, Array(Math.floor(Math.random() * 3) + 1)).map((_, index) => (
                 <div key={index} className="h-6 w-32 placeholder" />
               ))}
             </div>
@@ -78,7 +78,7 @@ const Series = () => {
           </div>
           <div className="flex flex-col justify-center gap-2"> 
             <div className="flex flex-wrap gap-4 justify-center">
-              {Array.apply(null, Array(35)).map(index => (
+              {Array.apply(null, Array(35)).map((_, index) => (
                 <div key={index} className={`flex flex-col items-center gap-2`}>
                   <div className="relative h-48 aspect-[45/64] placeholder" />
                   {sortBy == "releaseDate" || sortBy == "avgRating" ? 

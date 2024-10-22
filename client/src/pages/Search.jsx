@@ -51,7 +51,7 @@ const Search = () => {
           <div className="h-10 w-96 placeholder" />
         </div>
         <div className="flex flex-col gap-2">
-          {Array.apply(null, Array(10)).map(index => (
+          {Array.apply(null, Array(10)).map((_, index) => (
             <div key={index} className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="h-36 aspect-[45/64] placeholder" />

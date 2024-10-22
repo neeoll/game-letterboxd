@@ -61,7 +61,7 @@ const Games = () => {
         </div>
         <div className="flex flex-col justify-center gap-2"> 
           <div className="flex flex-wrap justify-center">
-            {Array.apply(null, Array(35)).map(index => (
+            {Array.apply(null, Array(35)).map((_, index) => (
               <div key={index} className={`flex flex-col basis-[12.5%] items-center gap-2 p-1`}>
                 <div className="relative size-full aspect-[45/64] placeholder" />
                 {sortBy == "releaseDate" || sortBy == "avgRating" ? 
