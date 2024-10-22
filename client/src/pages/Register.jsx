@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import bcrypt from 'bcryptjs'
 import { RxCheck, RxCross2 } from 'react-icons/rx'
@@ -7,6 +7,7 @@ import { authAPI, mailerAPI } from "../api"
 
 const Register = () => {
   const navigate = useNavigate()
+  const context = useOutletContext()
 
   const recaptcha = useRef()
   const [email, setEmail] = useState("")
@@ -20,13 +21,7 @@ const Register = () => {
 
   useEffect(() => {
     document.title = "Register | Arcade Archive"
-    authAPI.check()
-    .then(response => {
-      if (response == true) return navigate('/profile')
-    })
-    .catch(error => {
-      if (error.response.status == 500) { window.location.reload() }
-    })
+    if (context.user != null) return navigate('/profile')
   }, [])
 
   async function submitRegister(e) {

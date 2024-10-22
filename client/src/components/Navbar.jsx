@@ -1,25 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
 import { RxCaretDown } from 'react-icons/rx'
 import SimpleBar from "simplebar-react"
 import 'simplebar-react/dist/simplebar.min.css'
 import _ from "lodash"
 import { timestamps } from '../utils'
-import { authAPI, gameAPI } from '../api'
+import { gameAPI } from '../api'
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
   const navigate = useNavigate()
   const searchbar = useRef(null)
   const textDebounce = _.debounce((text) => search(text), 300)
   const [results, setResults] = useState([])
-  const [userData, setUserData] = useState()
   const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    authAPI.user()
-    .then(response => setUserData(response))
-    .catch(error => console.error(error))
-  }, [])
 
   const search = async (searchText) => {
     if (searchText == "") { return setResults([]) }
@@ -63,10 +56,10 @@ const Navbar = () => {
         <div className="font-edunline text-4xl invisible">Arcade Archive</div>
       )}
       <div className="flex gap-4 items-center">
-        {userData ? 
+        {user ? 
           (
             <div className="relative">
-              <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 w-20 justify-center items-center text-white/75 hover:text-white">{userData.username}<RxCaretDown className="text-lg" /></div>
+              <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className="flex gap-1 w-20 justify-center items-center text-white/75 hover:text-white">{user.username}<RxCaretDown className="text-lg" /></div>
               <div onMouseEnter={() => setMenuOpen(true)} onMouseLeave={() => setMenuOpen(false)} className={`absolute w-full pt-1 ${menuOpen == true ? "visible": "invisible"}`}>
                 <div className="flex flex-col items-center bg-neutral-800 rounded text-white">
                   {navbarDestinations.map((destination, index) => (

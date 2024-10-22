@@ -5,10 +5,6 @@ export const authAPI = {
     const response = await axios.get('/auth/getUser')
     return response.data
   },
-  check: async () => {
-    const response = await axios.get('/auth/checkAuthentication')
-    return response.data
-  },
   captcha: async (captchaValue) => {
     if (!captchaValue) {
       return alert('Please verify the reCAPTCHA')

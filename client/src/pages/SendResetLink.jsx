@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { authAPI, mailerAPI } from "../api"
+import { useNavigate, useOutletContext } from "react-router-dom"
+import { mailerAPI } from "../api"
 
 const SendResetLink = () => {
   const navigate = useNavigate()
+  const context = useOutletContext()
   
   const [email, setEmail] = useState("")
   const [resetLinkSent, setResetLinkSent] = useState(false)
 
   useEffect(() => {
     document.title = "Password Reset Form | Arcade Archive"
-    authAPI.check()
-    .then(response => {
-      if (response == true) return navigate('/profile')
-    })
-    .catch(error => {
-      if (error.response.status == 500) window.location.reload()
-    })
+    if (context.user != null) return navigate('/profile')
   }, [])
 
   async function submit(e) {

@@ -13,7 +13,6 @@ const Game = () => {
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(false)
   const [details, setDetails] = useState()
   
   useEffect(() => {
@@ -22,7 +21,6 @@ const Game = () => {
     .then(response => {
       document.title = response.data.name
       setDetails(response.data)
-      setUser(response.user)
       setLoading(false)
     })
     .catch(error => throwError(error))
@@ -173,7 +171,7 @@ const Game = () => {
         <div className="col-span-1 flex flex-col p-4 gap-2">
           <div className="relative flex flex-col gap-1">
             <div className={`absolute -inset-1 rounded-lg bg-gradient-to-t from-accentPrimary to-accentSecondary opacity-75 blur-sm`} />
-            {user ? (
+            {context.user ? (
               <div className="relative flex flex-col items-center gap-2 bg-neutral-800 rounded p-4">
                 <ReviewDialog gameId={details._id} name={details.name} cover={details.coverId} platforms={details.platforms.map(item => platforms.find(platform => platform.id == item))} />
                 <StyledRating defaultValue={details.userRating || 0} size="large" readOnly />

@@ -19,14 +19,6 @@ const transporter = nodemailer.createTransport({
 })
 
 const authRouter = Router()
-  .get('/checkAuthentication', async (req, res) => {
-    try {
-      res.status(200).json(!!req.headers['authorization'])
-    } catch (err) {
-      console.error(err)
-      res.status(500).json({ error: "Internal server error" })
-    }
-  })
   .post('/verifyCaptcha', async (req, res) => {
     try {
       const { captchaValue } = req.body
@@ -106,7 +98,7 @@ const authRouter = Router()
       if (!accessToken) { return res.status(200) }
 
       const tokenData = jsonwebtoken.decode(accessToken)
-      const user = await User.findOne({ email: tokenData.email }, { project: { password: 0 } })
+      const user = await User.findOne({ email: tokenData.email }, { project: { favoriteGames: 0, games: 0, password: 0, reviews: 0, __v: 0, _id: 0 } })
       res.status(200).json(user)
     } catch (err) {
       console.error(err)

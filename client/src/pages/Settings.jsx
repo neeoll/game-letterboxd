@@ -1,35 +1,18 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import PasswordChangeDialog from "../components/PasswordChangeDialog"
 import ProfileEdit from "../components/ProfileEdit"
-import { authAPI } from "../api"
 
 const tabs = ["Profile", "Security"]
 
 const Settings = () => {
   const navigate = useNavigate()
-
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const context = useOutletContext()
 
   useEffect(() => {
-    document.title = "Settings | Arcade Archive"
-    authAPI.user()
-    .then(response => {
-      setUser(response)
-      setLoading(false)
-    })
-    .catch(err => {
-      if (err.response.status == 401) return navigate('/')
-    })
-  }, [])
-
-  if (loading) {
-    return (
-      <div></div>
-    )
-  }
+    if (context.user == null) return navigate('/')
+  })
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,7 +29,7 @@ const Settings = () => {
         <TabPanels className="col-span-8 w-full -mt-12 rounded-r-md">
           {/* Profile Tab */}
           <TabPanel className="flex gap-2 p-4 text-white">
-            <ProfileEdit user={user} />
+            <ProfileEdit user={context.user} />
           </TabPanel>
           {/* Security Tab */}
           <TabPanel className="flex gap-2 p-4 text-white">

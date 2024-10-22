@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import ReCAPTCHA from 'react-google-recaptcha'
 import { IoWarningOutline } from "react-icons/io5"
 import { authAPI } from "../api"
 
 const Login = () => {
   const navigate = useNavigate()
+  const context = useOutletContext()
 
   const recaptcha = useRef()
   const [emailOrUsername, setEmailOrUsername] = useState("")
@@ -14,13 +15,7 @@ const Login = () => {
 
   useEffect(() => {
     document.title = "Login | Arcade Archive"
-    authAPI.check()
-    .then(response => {
-      if (response == true) return navigate('/profile')
-    })
-    .catch(error => {
-      if (error.response.status == 500) { window.location.reload() }
-    })
+    if (context.user != null) return navigate('/profile')
   }, [])
 
   async function submitLogin(e) {
