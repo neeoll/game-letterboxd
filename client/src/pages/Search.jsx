@@ -7,7 +7,7 @@ import { gameAPI } from "../api"
 
 const Search = () => {
   const location = useLocation()
-  const ref = useOutletContext()
+  const context = useOutletContext()
   const searchText = new URLSearchParams(location.search).get("title")
   
   const [results, setResults] = useState([])
@@ -18,7 +18,7 @@ const Search = () => {
   const [sortOrder, setSortOrder] = useState(-1)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     document.title = `Search - ${searchText} | Arcade Archive`
     gameAPI.search(encodeURIComponent(searchText))
     .then(response => {

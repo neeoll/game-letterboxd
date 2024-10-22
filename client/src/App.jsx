@@ -22,7 +22,7 @@ const App = () => {
         <SimpleBar scrollableNodeProps={{ ref: scrollableNodeRef }} style={SimpleBarStyle}>
           <Navbar />
           <div className="mt-32 px-48 min-h-screen">
-            <Outlet context={scrollableNodeRef} />
+            <Outlet context={{ scrollRef: scrollableNodeRef }} />
           </div>
           <Footer />
         </SimpleBar>

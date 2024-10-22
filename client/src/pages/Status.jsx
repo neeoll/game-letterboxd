@@ -4,14 +4,14 @@ import defaultImg from '../assets/default_profile.png'
 import { gameAPI } from "../api"
 
 const Status = () => {
-  const ref = useOutletContext()
+  const context = useOutletContext()
 
   const { slug, status } = useParams()
   const [data, setData] = useState()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     gameAPI.status(slug, status)
     .then(response => {
       setData(response)

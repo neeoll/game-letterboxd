@@ -10,7 +10,7 @@ import { userAPI } from '../api'
 
 const Profile = () => {
   const navigate = useNavigate()
-  const ref = useOutletContext()
+  const context = useOutletContext()
 
   const [user, setUser] = useState(null)
   const [profileGenres, setGenres] = useState([])
@@ -23,7 +23,7 @@ const Profile = () => {
   const [filterGenre, setFilterGenre] = useState(-1)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     document.title = "Profile | Arcade Archive"
     userAPI.get()
     .then(response => {

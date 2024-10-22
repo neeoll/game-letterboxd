@@ -9,7 +9,7 @@ import { gameAPI } from "../api"
 
 const Game = () => {
   const { slug } = useParams()
-  const ref = useOutletContext()
+  const context = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
@@ -17,7 +17,7 @@ const Game = () => {
   const [details, setDetails] = useState()
   
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     gameAPI.get(slug)
     .then(response => {
       document.title = response.data.name

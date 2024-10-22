@@ -9,14 +9,14 @@ import { userAPI } from "../api"
 
 const User = () => {
   const { username } = useParams()
-  const ref = useOutletContext()
+  const context = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     userAPI.findUser(username)
     .then(response => {
       document.title = `${response.username}'s Profile | Arcade Archive`

@@ -7,7 +7,7 @@ import { useAsyncError } from "../utils"
 
 const Games = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const ref = useOutletContext()
+  const context = useOutletContext()
   const throwError = useAsyncError()
 
   const [loading, setLoading] = useState(true)
@@ -22,7 +22,7 @@ const Games = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     document.title = "Games | Arcade Archive"
     gameAPI.all(currentGenre, currentPlatform, year, sortBy, sortOrder, page)
     .then(response => {

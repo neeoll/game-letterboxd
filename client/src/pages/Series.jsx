@@ -7,7 +7,7 @@ import { useAsyncError } from "../utils"
 
 const Series = () => {
   const { slug } = useParams()
-  const ref = useOutletContext()
+  const context = useOutletContext()
   const throwError = useAsyncError()
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -25,7 +25,7 @@ const Series = () => {
   const page = parseInt(searchParams.get('page') || '1', 10)
 
   useEffect(() => {
-    ref.current.scrollTo(0, 0)
+    context.scrollRef.current.scrollTo(0, 0)
     companyAPI.get(slug, currentGenre, currentPlatform, year, sortBy, sortOrder, page)
     .then(response => {
       document.title = `${response.name} | Arcade Archive`
