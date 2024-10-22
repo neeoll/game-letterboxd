@@ -98,7 +98,7 @@ const authRouter = Router()
       if (!accessToken) { return res.status(200) }
 
       const tokenData = jsonwebtoken.decode(accessToken)
-      const user = await User.findOne({ email: tokenData.email }, { project: { favoriteGames: 0, games: 0, password: 0, reviews: 0, __v: 0, _id: 0 } })
+      const user = await User.findOne({ email: tokenData.email }, { favoriteGames: 0, games: 0, password: 0, reviews: 0, __v: 0, _id: 0 })
       res.status(200).json(user)
     } catch (err) {
       console.error(err)
