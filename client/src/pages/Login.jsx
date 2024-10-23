@@ -50,7 +50,7 @@ const Login = () => {
                 setEmailOrUsername(e.target.value)
               }} 
               type="text" 
-              className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none`}
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
               required 
             />
           </div>
@@ -63,7 +63,7 @@ const Login = () => {
                 setPassword(e.target.value)
               }}
               type="password"
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
               minLength={6}
               required 
             />

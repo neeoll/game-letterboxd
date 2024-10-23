@@ -75,7 +75,7 @@ const Register = () => {
                 setUsername(e.target.value)
               }}
               type="text"
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
               maxLength={16}
               required 
             />
@@ -90,7 +90,7 @@ const Register = () => {
                 setEmail(e.target.value)
               }}
               type="email"
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none peer"
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none peer"
               required 
             />
             <p className={`invisible h-0 ${email != "" ? "peer-invalid:visible peer-invalid:h-fit" : ""} text-pink-500 text-sm`}>Please provide a valid email address.</p>
@@ -102,7 +102,7 @@ const Register = () => {
             <input 
               onChange={(e) => setPassword(e.target.value)}
               type="password"
-              className="w-full p-1 rounded bg-neutral-700 text-white/75 outline-none"
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
               minLength={6}
               required 
             />
@@ -113,7 +113,7 @@ const Register = () => {
             <input 
               onChange={(e) => setConfirmPassword(e.target.value)} 
               type="password" 
-              className={`w-full p-1 rounded bg-neutral-700 text-white/75 outline-none`} 
+              className="w-full h-8 rounded p-2 text-sm text-white bg-transparent border border-white/50 focus:border-white outline-none"
               minLength={password.length}
               required 
             />
