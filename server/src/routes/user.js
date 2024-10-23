@@ -24,20 +24,21 @@ const userRouter = Router()
       if (bio != 'null') { updatedFields.bio = bio }
 
       if (image != 'null') {
-        const user = await User.findOne({ email: req.user.email })
-        const profileIcon = user.profileIcon
-        const id = profileIcon.split('/')[profileIcon.split('/').length - 1].slice(0, 20)
-
         cloudinary.config({
           cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
           api_key: process.env.CLOUDINARY_API_KEY,
           api_secret: process.env.CLOUDINARY_API_SECRET,
           secure: true
         })
+
+        const user = await User.findOne({ email: req.user.email })
+        if (user.profileIcon != ("" || undefined)) {
+          console.log("deleting old picture...")
+          const id = user.profileIcon.split('/')[profileIcon.split('/').length - 1].slice(0, 20)
+          cloudinary.uploader.destroy(id)
+        }
         
-        await cloudinary.uploader.destroy(id)
         const imageRef = await cloudinary.uploader.upload(image, { use_filename: false })
-        console.log(imageRef)
         updatedFields.profileIcon = imageRef.url
       }
       

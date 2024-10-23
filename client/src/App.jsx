@@ -13,7 +13,7 @@ const SimpleBarStyle = {
 const App = () => {
   const scrollableNodeRef = React.useRef()
 
-  const [user, setUser] = useState()
+  const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
